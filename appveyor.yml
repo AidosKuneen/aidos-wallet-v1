@@ -1,6 +1,5 @@
 platform:
   - x64
-skip_tags: true
 cache:
   - node_modules
   - '%APPDATA%\npm-cache'
