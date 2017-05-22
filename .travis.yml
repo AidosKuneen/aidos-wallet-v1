@@ -50,13 +50,10 @@ deploy:
     api_key:
       secure: Th34E/cIC3LXfAaRKbgFT/rXGIAcxny5tJ4HyxSIWnF+GM67d8n76csAzwNKvF0ERLnET6zmdzlUdhwgX2orfJTPqh4A8IQCYUTa+H2DtabT1dOjOM4M3p2Ni/l80jbKiCZfgw3/sUIyCjm7PDNiO25/0YkhoBszCLYTwSeTShi0T8AzCAo3hHUFikaaEHkbVBsnTnQWPOZhAgAGukotXqizwEscz8o/zC0P0yvb5tPpHK2Mj9iX5wPOkzVpegQJ0RWYxl/9S8zwWEaJoGYIIlZhQ4Y09WW9nJG3hr1yoo9Vq+eME2p/B9YqWcOghCe1WbdLlZ7cosES2JSpjI+lSuu4F/Q/t5yZDh/ykV9YqYg1RQ99+rr/ugSkvrfrf4NiFDECztwgGnmCkxTYnA4MU5xlp+5JCpehqKROPj4V5zeBeBnhDmhdSzh8Vje0y9UbCGYPYkHvoEpgNhxLiYinZjsk0zsAwAyQpIYQiCSdHYrPk4ZFWaAWA/ev/hxW2szyP6R7/B8MPtsClEvsJ1H3TN94gWaZnhx3r053KLMLVH3MBxonTJ38otXzcdY67Jm5jEJgHokKPLfE1z4Ul+RkcC8SGcYD7Hjj73woUGABnGIherWg8jZ/RwbT2Yi1I4Jl4CgtgYpmPHX731W+LBbyHSL1Gw1dmHTCwBGrg4tlPCk=
     file:
-      - out/Aidos-1.0.0-ia32.AppImage
       - out/Aidos-1.0.0-x86_64.AppImage
-      - out/Aidos-1.0.0-ia32.tar.gz
       - out/Aidos-1.0.0.tar.gz
       - out/Aidos_1.0.0_amd64.deb
       - out/Aidos-1.0.0.rpm
-      - out/Aidos-1.0.0-ia32.rpm
     skip_cleanup: true
     on:
       repo: AidosKuneen/aidos-wallet
