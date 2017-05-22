@@ -1,4 +1,3 @@
-version: $(appveyor_repo_tag_name)
 platform:
   - x64
 skip_tags: true
