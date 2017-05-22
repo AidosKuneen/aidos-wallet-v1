@@ -1,0 +1,40 @@
+version: $(appveyor_repo_tag_name)
+platform:
+  - x64
+skip_tags: true
+cache:
+  - node_modules
+  - '%APPDATA%\npm-cache'
+  - '%USERPROFILE%\.electron'
+
+install:
+  - ps: Install-Product node 7 x64
+  - npm install electron
+  - npm install bower
+  - npm install electron-builder
+  - npm install
+
+
+build_script:
+  - npm run compile:win
+  - tree /f out
+
+test: off
+
+artifacts:
+
+  # pushing a single file
+   - path: 'out/Aidos Wallet Setup 1.0.0.exe'
+
+deploy:
+  release: $(appveyor_repo_tag_name)
+  description: ''
+  provider: GitHub
+  auth_token:
+      secure: 3iQcaZ+ekUfV7qNqpOzlT1mY/pT4mhoNxxKsySYB643/Y6QWaPEEHqiOzHtQh+6k
+  artifact: "out/Aidos Wallet Setup 1.0.0.exe"            # upload all NuGet packages to release assets
+  draft: false
+  prerelease: false
+  on:
+    appveyor_repo_tag: true        # deploy on tag push only
+ 

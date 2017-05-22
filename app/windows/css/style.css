@@ -1,0 +1,165 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  background-color: #fff;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+#message {
+  border: 1px solid gray;
+  padding: 10px;
+  background: #efefef;
+}
+
+.content {
+  padding: 20px;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  left: 0; 
+  right: 0;
+  padding: 20px;
+  background-color: #f1f1f1;
+}
+
+.btn {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 10px 20px;
+  border: none;
+  background-color: grey;
+  box-shadow: none;
+  color: #fff;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #3498db;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+}
+
+.btn-default {
+  background-color: #34495e;
+}
+
+.btn-choice {
+  background-color: #a9a9a9;
+}
+
+.btn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.btn-pull-left {
+  float: left;
+}
+
+.btn-pull-right {
+  float: right;
+}
+
+h1 {
+  margin: 0;
+  margin-bottom: 20px;
+  font-size:  30px;
+  line-height: 1.5;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+a,
+a:hover,
+a:visited {
+  color: #07C;
+  text-decoration: underline;
+}
+
+#message > span {
+  display: none;
+}
+
+#edit-launch-arguments-section, #server-output-section {
+  display: none;
+}
+
+#server-output, #nodes {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  height: 120px;
+  font-family: courier;
+  font-size: 16px;
+}
+
+#nodes {
+  background: #ccc;
+  color: #000;
+}
+
+p.label {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+p.note {
+  font-size: 85%;
+  font-style: italic;
+  color: darkgray;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.fadein {
+  animation: fadein 3s;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.two-columns {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+
+.two-columns > div {
+  display: table-cell;
+  height: 100%;
+  width: 50%;
+  padding: 10px;
+}
+
+.two-columns > div:first-child {
+  border-right: 1px solid #cccccc;
+}
+
+.error {
+  display: none;
+  color: red;
+}

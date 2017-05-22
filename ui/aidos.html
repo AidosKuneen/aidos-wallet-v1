@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Aidos Kuneen Wallet</title>
+  <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="bower_components/clipboard/dist/clipboard.min.js"></script>
+  <script type="text/javascript" src="bower_components/jquery-qrcode/dist/jquery.qrcode.min.js"></script>
+  <script type="text/javascript" src="bower_components/remodal/dist/remodal.min.js"></script>
+  <script type="text/javascript" src="bower_components/toastr/toastr.js"></script>
+  <script type="text/javascript" src="bower_components/async/dist/async.min.js"></script>
+  <script type="text/javascript" src="aidos.lib.js/dist/aidos.js"></script>
+  <script type="text/javascript" src="js/ui.init.js"></script>
+  <script type="text/javascript" src="js/ui.addresses.js"></script>
+  <script type="text/javascript" src="js/ui.animation.js"></script>
+  <script type="text/javascript" src="js/ui.app.js"></script>
+  <script type="text/javascript" src="js/ui.help.js"></script>
+  <script type="text/javascript" src="js/ui.history.js"></script>
+  <script type="text/javascript" src="js/other/loading-btn.js"></script>
+  <script type="text/javascript" src="js/ui.login.js"></script>
+  <script type="text/javascript" src="js/ui.modals.js"></script>
+  <script type="text/javascript" src="js/ui.transfers.js"></script>
+  <script type="text/javascript" src="js/ui.url.js"></script>
+  <script type="text/javascript" src="js/ui.update.js"></script>
+  <script type="text/javascript" src="js/ui.utils.js"></script>
+  <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="bower_components/remodal/dist/remodal.css" />
+  <link rel="stylesheet" href="bower_components/toastr/toastr.css" />
+  <link rel="stylesheet" href="css/remodal-theme.css" />
+  <link rel="stylesheet" href="css/loading-btn.css" />
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/uikit.min.css">
+  <link rel="stylesheet" href="css/components/progress.css">
+  <link rel="stylesheet" href="css/components/accordion.css">
+  <script src="js/uikit.min.js"></script>
+  <script src="js/components/accordion.js"></script>
+  <script src="js/ui.aidos.js"></script>
+
+</head>
+
+<body>
+  <div id="menu" class="receive_page wallet_page transaction_page statistics_page settings_page send_page">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-3 left">
+        <img src="images/person.png" />
+      </div>
+      <div class="uk-width-medium-2-3 right alignleft">
+        <div id="summary">
+          <!-- <div id="id">ID: F0unD4710N</div> -->
+          <div id="adk"><b> <div id="available-balance" class="show-closed"></div> </b></div>
+        </div>
+      </div>
+      <div class="uk-width-medium-1-1 nav">
+        <ul>
+          <a href="#" onclick="return false" class="href_wallet">
+            <li><span class="icon icon-wallet"></span>
+              <p>My Wallet</p>
+            </li>
+          </a>
+          <a href="#" onclick="return false" class="href_send">
+            <li><span class="icon icon-send"></span>
+              <p>Send</p>
+            </li>
+          </a>
+          <a href="#" onclick="return false" class="href_receive">
+            <li><span class="icon icon-receive"></span>
+              <p>Receive</p>
+            </li>
+          </a>
+          <a href="#" onclick="return false" class="href_transaction">
+            <li>
+              <span class="icon icon-transaction"></span>
+              <p>Transactions</p>
+            </li>
+          </a>
+          <!--
+          <a href="#" onclick="return false" class="href_settings">
+            <li>
+              <div class="icon icon-settings"></div>
+              <p>Settings</p>
+            </li>
+          </a>
+          <a href="#" onclick="return false" class="href_statistics">
+            <li>
+              <div class="icon icon-statistics"></div>
+              <p>Statistics</p>
+            </li>
+          </a>
+          -->
+        </ul>
+      </div>
+      <div class="uk-width-medium-1-1 logout">
+        <a href="#" onclick="return false" class="href_main">LOGOUT</a>
+      </div>
+    </div>
+    <div id="half-circle">
+      <p><span>|||</span></p>
+    </div>
+  </div>
+
+  <header class="uk-container-expand">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-2 left">
+        <h1>Aidos Kuneen <span>(ADK)</span></h1><i>Hades helmet of invisibility</i></div>
+      <div class="uk-width-medium-1-2 right">
+        <p class="main_page"><a href="http://www.aidoskuneen.com">www.aidoskuneen.com</a></p>
+        <div class="wallet_page  top-buttons">
+          <a href="#" class="" onclick="return false"><button class="uk-button uk-width-1-4 green">Overview</button></a><br
+          />
+          <a href="#" class="href_transaction" onclick="return false"><button class="uk-button uk-width-1-4 grey">History</button></a>
+        </div>
+        <div class="transaction_page  settings_page top-buttons">
+          <a href="#" class="href_wallet" onclick="return false"><button class="uk-button uk-width-1-4 grey ">Overview</button></a><br
+          />
+          <a href="#" class="" onclick="return false"><button class="uk-button uk-width-1-4 green">History</button></a>
+        </div>
+        <div class="statistics_page top-buttons">
+          <a href="#"><button class="uk-button uk-width-1-4 green">EUR</button></a><br />
+          <a href="#"><button class="uk-button uk-width-1-4 grey">USD</button></a>
+        </div>
+        <div class="send_page top-buttons">
+          <a href="#" class="" onclick="return false"><button class="uk-button uk-width-1-4 grey">Send</button></a><br />
+          <a href="#" class="href_receive" onclick="return false"><button class="uk-button uk-width-1-4 green">Receive</button></a>
+        </div>
+        <div class="receive_page top-buttons">
+          <a href="#" class="href_send" onclick="return false"><button class="uk-button uk-width-1-4 green">Send</button></a><br
+          />
+          <a href="#" class="" onclick="return false"><button class="uk-button uk-width-1-4 grey">Receive</button></a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="main_page">
+    <div class="uk-container-expand">
+      <div class="uk-grid">
+        <div class="uk-width-medium-1-2 logo">
+          <img src="images/logo-min.png" />
+        </div>
+        <div class="uk-width-medium-1-2 login">
+          <div class="uk-form">
+            <fieldset id="login1">
+              <input id="login-password" type="password" placeholder="Seed / Password"><br />
+              <button id="login-btn" class="btn uk-button green uk-margin-small-top" data-initial="LOGIN" data-loading="LOGGING IN..."
+                data-bar-timeout="50" data-auto-reset="1">LOGIN</button><br />
+
+              <!-- <button class="uk-button grey">Password?</button> -->
+              <button id="register" class="uk-button ">Register</button>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wallet_page uk-container-expand">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-2 logo">
+        <img src="images/logo-min.png" />
+      </div>
+      <div class="uk-width-medium-1-2">
+        <div class="data">
+          <h4>Welcome back!</h4>
+          <!-- <div class="data-buttons">
+            <button class="uk-button uk-width-medium-1-6 active">Weekly</button>
+            <button class="uk-button uk-width-medium-1-6">Monthly</button>
+            <button class="uk-button uk-width-medium-1-6">All</button>
+          </div> -->
+          <div class="lbl-wallet">My Wallet</div>
+          <div class="uk-grid">
+            <!-- <div class="uk-width-medium-1-3">??? <br /> <span class="sent">Sent</span></div> -->
+            <div class="uk-width-medium-1-1">
+              <div id="available-balance" class="show-closed"></div> <br /> <span class="available">Available</span>
+            </div>
+            <!--
+            <div class="uk-width-medium-1-3">
+              <div class="uk-width-medium-1-3">??? <br /> <span class="received">Received</span></div>
+            </div>
+            -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="transaction_page uk-container-expand">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-2 transaction-field logo">
+        <img src="images/logo-min.png" />
+        <!--
+        <div class="transaction uk-form-stacked">
+          <label class="uk-form-label">Search transaction</label>
+          <div class="uk-form-controls">
+            <input class="uk-input uk-width-medium-1-2" id="form-stacked-text" type="text" placeholder="">
+          </div>
+          <div class="download">
+            <a href="#">DOWNLOAD</a>
+          </div>
+        </div>
+        -->
+      </div>
+      <div class="uk-width-medium-1-2">
+        <div class="data">
+          <h4>&nbsp;</h4>
+          <!--
+          <div class="data-buttons">
+            <button class="uk-button uk-width-medium-1-6 active">Past month</button>
+            <button class="uk-button uk-width-medium-1-6">Past week</button>
+            <button class="uk-button uk-width-medium-1-6">All</button>
+          </div>
+          -->
+          <div class="lbl-wallet">Transactions</div>
+          <div id="history-stack" class="uk-grid">
+            <div class="transfers transaction-box">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statistics_page uk-container-expand">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-2 center">
+        <div class="data">
+          <h4>&nbsp;</h4>
+          <div class="data-buttons">
+            <button class="uk-button uk-width-medium-1-6 active">Past day</button>
+            <button class="uk-button uk-width-medium-1-6">Past week</button>
+            <button class="uk-button uk-width-medium-1-6">All</button>
+          </div>
+          <div class="lbl-wallet">Statistics</div>
+          <div class="uk-grid stat-grid">
+            <div class="uk-width-medium-1-3">19023 <br /> <span class="sent">Connecting Nods</span></div>
+            <div class="uk-width-medium-1-3">1 <span class="light-green">ADK</span> = 7,22 <span class="light-green">EUR</span> <br /> <span class="available">Exchange Rate</span></div>
+            <div class="uk-width-medium-1-3">22430 <br /> <span class="received">Received</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings_page uk-container-expand">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-1">
+        <div class="data">
+          <div class="lbl-receive uk-width-medium-1-4">Settings</div>
+        </div>
+      </div>
+
+      <div class="uk-width-medium-2-3 center">
+        <div class="settings-menu">
+          <ul class="uk-nav uk-nav-parent-icon transaction-nav" data-uk-nav>
+            <li class="uk-parent set-menu">
+              <a href="#">Currency</a>
+              <ul class="uk-nav-sub">
+                <li><a href="#">...</a></li>
+                <li><a href="#">...</a></li>
+              </ul>
+            </li>
+            <div class="divider"></div>
+            <li class="uk-parent set-menu"><a>Send Usage Data</a>
+              <label class="switch ab-right">
+								<input type="checkbox">
+								<div class="slider round"></div>
+							</label>
+            </li>
+            <li class="uk-parent set-menu"><a>Allow Webcam</a>
+              <label class="switch ab-right">
+								<input type="checkbox">
+								<div class="slider round"></div>
+							</label>
+            </li>
+            <li class="uk-parent set-menu"><a>Allow Notifications</a>
+              <label class="switch ab-right">
+								<input type="checkbox">
+								<div class="slider round"></div>
+							</label>
+            </li>
+            <li class="uk-parent set-menu">
+              <a href="#">Private Policy</a>
+              <ul class="uk-nav-sub">
+                <li><a href="#">...</a></li>
+                <li><a href="#">...</a></li>
+              </ul>
+            </li>
+            <li class="uk-parent set-menu">
+              <a href="#">About Aidos</a>
+              <ul class="uk-nav-sub">
+                <li><a href="#">...</a></li>
+                <li><a href="#">...</a></li>
+              </ul>
+            </li>
+            <li class="uk-parent set-menu">
+              <a href="#">FAQ</a>
+              <ul class="uk-nav-sub">
+                <li><a href="#">...</a></li>
+                <li><a href="#">...</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="send_page uk-container-expand">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-2 logo">
+        <img src="images/logo-min.png" />
+      </div>
+      <div class="uk-width-medium-1-2">
+        <div class="data">
+          <!--
+          <div class="data-buttons">
+            <a href="#" class="send_page" onclick="return false"><button class="uk-button uk-width-medium-1-6 active">Amount</button></a>
+            <a href="#" class="description_page" onclick="return false"><button class="uk-button uk-width-medium-1-6">Description</button></a>
+          </div>
+          -->
+          <div class="lbl-receive">Send</div>
+          <div id="transfer-stack" class="transaction uk-form-stacked">
+            <div class="transaction uk-form-stacked">
+              <label class="uk-form-label">Enter transaction’s description 
+                <br><span>(optional, you can use only less or equal 81 upper case characters A to Z)</span></label>
+              <textarea name="textarea" id="transfer-tag" class="description-box uk-width-medium-1-2"></textarea>
+            </div>
+            <label class="uk-form-label">Enter Recipient Address</label>
+            <div class="uk-form-controls">
+              <input class="uk-input uk-width-medium-1-2" id="transfer-address" type="text" placeholder="RGVOWCDJAGSO9TNLBBPUVYE9KHBOAZNVFRVKVYYCHRKQRKRNKGGWBF9WCRJVROKLVKWZUMBABVJGAALWUQNXFPRSPG">
+            </div>
+            <label class="uk-form-label">Enter Amount (ADK)</label>
+            <div class="uk-form-controls">
+              <input class="uk-input uk-width-medium-1-2" id="transfer-amount" type="text" placeholder="0.00">
+              <div class="transaction-available">Available:
+                <div id="available-balance-always" class="show-closed inline"></div>
+              </div>
+              <button type="button" class="btn uk-button uk-width-1-2 green" id="transfer-btn" data-initial="Send" data-loading="Sending...">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="generate-address-stack" class="receive_page uk-container-expand">
+    <div class="uk-grid">
+      <div class="uk-width-medium-1-2">
+        <div id="generate-address-qr-code" class="padded address-qr"></div>
+      </div>
+      <div class="uk-width-medium-1-2">
+        <div class="data">
+          <div class="lbl-receive">Receive</div>
+          <form class="transaction uk-form-stacked">
+            <label class="uk-form-label">Address generated</label>
+            <div class="uk-form-controls">
+              <p id="generate-address-result" class="padded address clipboard">OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMQQQQQQQQQQQQQQQQQQQQQ</p>
+            </div>
+            <div class="uk-form-controls">
+              <button id="generate-address-btn" type="button" class="btn uk-button uk-width-1-3 green" data-initial="Generate" data-loading="Generating...">GENERATE</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bundle-details" class="uk-modal">
+    <div class="uk-modal-dialog transaction-window">
+      <a class="uk-modal-close uk-close"></a>
+      <h5>Bundle Details</h5>
+      <div class="modal-transaction">
+        <div class="uk-modal-header">
+          <p><strong>Tx Hash: </strong><a href="#" id="bd-hash"></a></p>
+        </div>
+        <div class="address">Addresses</div>
+        <div class="uk-modal-content">
+          <div id="send_left" class="uk-width-1-2">
+          </div>
+
+          <div id="recv_right" class="uk-width-1-2">
+          </div>
+        </div>
+        <div class="uk-modal-footer">
+          <button class="unconfirmed uk-button-danger">UNCONFIRMED</button>
+          <button class="confirmed uk-button-success">CONFIRMED</button>
+          <button id="rebroadcast-btn" class="btn" data-initial="Re-send this Bundle" data-loading="SENDING..." data-bar-timeout="50"
+            data-auto-reset="1">Re-send this Bundle</button>
+          <button id="replay-btn" class="btn" data-initial="Re-send ADK(DANGER)" data-loading="SENDING..." data-bar-timeout="50" data-auto-reset="1">Re-send ADK(DANGER)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="generated-seed-modal" class="modal" data-remodal-id="generated-seed">
+    <button data-remodal-action="close" class="remodal-close"></button>
+    <h3>Click below to copy the generated seed !</h3>
+    <div class="contents"></div>
+  </div>
+
+  <div id="help" class="uk-modal">
+    <div class="uk-modal-dialog">
+      <a class="uk-modal-close uk-close"></a>
+      <h2 class="uk-modal-header">FAQ</h2>
+      <div class="uk-accordion" data-uk-accordion="{'showfirst':false}">
+        <div class="uk-accordion-title">Register a new account</div>
+        <div class="uk-accordion-content">
+          To register a new account generate a seed via Register on the login screen. If you already generated a seed before you can
+          login with it and access your account.<br /> A seed can be seen like a password that is used to access
+          your account, and therefore grant access to your Aidos coins. Never share your seed with anyone and store it safely,
+          because if you lose your seed you lose access to your Aidos coins.
+        </div>
+        <div class="uk-accordion-title">Denominations</div>
+        <div class="uk-accordion-content">
+          One Aidos or one ADK (1 ADK) is the base currency unit.<br /> While the total amount of Aidos is concluded to 25
+          Million, the smallest amount of Aidos is 0.000 000 01 ADK. The wallet uses three metric prefixes to facilitate
+          usage: <br />
+          <p>
+            <table>
+              <tr>
+                <td>1'000'000</td>
+                <td>&nbsp;
+                  <td>
+                    <td> ADK </td>
+                    <td> = 1 M ADK (mega)</td>
+              </tr>
+              <tr>
+                <td>0.001</td>
+                <td>&nbsp;
+                  <td>
+                    <td> ADK </td>
+                    <td> = 1 m ADK (milli)</td>
+              </tr>
+              <tr>
+                <td>0.000001</td>
+                <td>&nbsp;
+                  <td>
+                    <td> ADK </td>
+                    <td> = 1 u ADK (micro)</td>
+              </tr>
+            </table>
+          </p>
+          <p>
+            You might also just click on any amount that is prefixed to display the non-prefixed amount instead.
+          </p>
+        </div>
+        <div class="uk-accordion-title">Why does my wallet / computer seem to be stuck when I generate an address / make a transaction?</div>
+        <div class="uk-accordion-content">
+          In both cases your CPU carries out an amount of Proof-of-Work, which is compute-intensive. This means that the time it takes
+          for those actions depend greatly on your computing power. We advice to be patient and grab a drink in the meantime.
+        </div>
+        <div class="uk-accordion-title">Can I send transactions immediately one after another?</div>
+        <div class="uk-accordion-content">
+          In order to prevent double-spending, you should only make a new transfer after all of your previous transactions have been
+          confirmed.
+          <br /> If you don't follow this advice, you will double-spent the inputs from your previous transaction, as inputs
+          are choosen deterministically. Thus those new transactions won't get confirmed as they are seen as double-spents.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="terms" class="uk-modal">
+    <div class="uk-modal-dialog">
+      <a class="uk-modal-close uk-close"></a>
+      <h2 class="uk-modal-header">Terms &amp; Agreement</h2>
+      PLEASE READ THESE TERMS & AGREEMENTS CAREFULLY. BY USING THIS SOFTWARE, YOU AGREE TO BE BOUND BY THESE TERMS OF SERVICE AND ALL TERMS INCORPORATED BY REFERENCE. IF YOU DO NOT AGREE TO THESE TERMS DO NOT ACCESS OR USE THIS SOFTWARE.<br />
+	  <br />
+	  Aidos Kuneen is open-souce software that is licensed under the GPLv3. See <a href="https://github.com/AidosKuneen/aidos-wallet/blob/master/LICENSE">License</a>.<br />
+	  By the use of this Wallet you agree that the Aidos Foundation & Developers are under no circumstances liable for any loss or injury suffered by any kind of errors including keyboard input errors by the user.<br />
+	  <br />
+	  AIDOS FOUNDATION & DEVELOPERS SHALL HAVE NO LIABILITY FOR ANY DAMAGES OF ANY KIND (INCLUDING WITHOUT LIMITATION INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, OR TORT DAMAGES, OR LOST COINS) IN CONNECTION WITH YOUR USE OF THE SOFTWARE.
+    </div>
+  </div>
+</body>
+
+
+</html>

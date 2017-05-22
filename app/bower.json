@@ -1,0 +1,10 @@
+{
+  "name": "aidos-app",
+  "authors": [
+     "Aidos Developers <info@aidoskuneen.com>"
+  ],
+  "homepage": "",
+  "dependencies": {
+    "tingle": "^0.7.0"
+  }
+}

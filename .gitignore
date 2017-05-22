@@ -1,0 +1,8 @@
+node_modules
+app/bower_components
+ui/bower_components
+npm-debug.log
+ari/*
+out/*
+aidos
+/.project
