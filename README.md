@@ -11,7 +11,7 @@ This repository contains the desktop wallet for AidosKuneen.
 
 ## Install
 
-These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Aidoskuneen](http://Aidoskuneen.com/wallet).
+These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/AidosKuneen/aidos-wallet/releases).
 
 ## Requirements
 
@@ -50,8 +50,6 @@ If you want to package the wallet you will need:
   ```
   npm install -g electron-builder
   ```
-
- see  [here](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build) for more infomation.
 
 2. Optionally [Docker](https://www.docker.com) (In case you want to build for other platforms on Windows) 
 
@@ -93,6 +91,6 @@ If you want to package the wallet you will need:
 
  5. After that you can find the compiled binaries in the `out` dir.
  
-##LICENSE
+## LICENSE
 
 [GNU General Public License v3.0](https://github.com/AidosKuneen/aidos-wallet/blob/master/LICENSE)
