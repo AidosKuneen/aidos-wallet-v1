@@ -22,7 +22,7 @@ test: off
 artifacts:
 
   # pushing a single file
-   - path: out\Aidos Wallet Setup *.exe
+   - path: out\*.exe
 
 deploy:
   release: $(appveyor_repo_tag_name)
@@ -30,7 +30,7 @@ deploy:
   provider: GitHub
   auth_token:
       secure: 3iQcaZ+ekUfV7qNqpOzlT1mY/pT4mhoNxxKsySYB643/Y6QWaPEEHqiOzHtQh+6k
-  artifact: /out\\Aidos Wallet Setup .*\.exe/            # upload all NuGet packages to release assets
+  artifact: /.*\.exe/            # upload all NuGet packages to release assets
   draft: false
   prerelease: false
   on:
