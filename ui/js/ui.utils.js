@@ -89,6 +89,8 @@ var UI = (function (UI, $, undefined) {
     var l = 0;
     if (commaIndex != -1){
     	l = commaIndex-1
+    } else {
+    	l = splitValue.length-1
     }
     for (var i = l; i >= 0; i--) {
     	if (i < commaIndex-1 && i % 3 == 0) {
@@ -121,11 +123,21 @@ var UI = (function (UI, $, undefined) {
 
     return "<span class='clipboard' title='" + text + "' data-clipboard-text='" + text + "'" + (id ? " id='" + id + "'" : "") + ">" + text + "</span>";
   }
+  
+  function addZero(i) {
+	    if (i < 10) {
+	        i = "0" + i;
+	    }
+	    return i;
+  }
+
 
   UI.formatDate = function (timestamp, full) {
     var date = new Date(timestamp * 1000);
-
-    return ("0" + date.getDate()).substr(-2) + "/" + ("0" + (date.getMonth() + 1)).substr(-2) + (full ? "/" + date.getFullYear() : "") + " " + date.getHours() + ":" + date.getMinutes();
+    var h = addZero(date.getHours());
+    var m = addZero(date.getMinutes());
+    
+    return ("0" + date.getDate()).substr(-2) + "/" + ("0" + (date.getMonth() + 1)).substr(-2) + (full ? "/" + date.getFullYear() : "") + " " + h + ":" + m;
   }
 
   UI.notify = function (type, message, options) {
