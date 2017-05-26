@@ -38,6 +38,16 @@ before_install:
 
 install:
   - npm install
+  - pushd ccurl
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        gcc -shared -o libccurl.so pow_sse2.c -O3  -fPIC;
+        cp libccurl.so lin64/;
+    fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        gcc -dynamiclib -o libccurl.dylib pow_sse2.c;
+        cp libccurl.dylib mac/;
+    fi
+  - popd
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run compile:lin; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run compile:mac; fi
   - find out
