@@ -12,9 +12,8 @@ install:
   - npm install electron-builder
   - npm install
   - cd ccurl
-  - dir C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64
-  - where gcc
   - C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin\gcc  pow_sse2.c -O3 -static -lpthread -msse2 -shared -o libccurl.dll
+  - mkdir win64
   - copy libccurl.dll win64\
   - del libccurl.dll
   - cd ..
