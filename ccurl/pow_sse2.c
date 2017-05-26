@@ -381,7 +381,7 @@ void* pwork_(void* p)
 
 int pwork(char tx[], int mwm, char nonce[])
 {
-    int countSSE = 0;
+    int countSSE = 0, i = 0;
     char trits[TX_LENGTH * 3] = { 0 }, mid[STATE_LENGTH] = { 0 };
 
     tx2trit(tx, trits);
@@ -392,7 +392,7 @@ int pwork(char tx[], int mwm, char nonce[])
 
     pthread_t* thread = (pthread_t*)calloc(sizeof(pthread_t), procs);
     PARAM* p = (PARAM*)calloc(sizeof(PARAM), procs);
-    for (int i = 0; i < procs; i++) {
+    for (i = 0; i < procs; i++) {
         p[i].mid = mid;
         p[i].mwm = mwm;
         p[i].n = i;
@@ -403,7 +403,7 @@ int pwork(char tx[], int mwm, char nonce[])
         }
     }
     int* r = NULL;
-    for (int i = 0; i < procs; i++) {
+    for (i = 0; i < procs; i++) {
         int ret = pthread_join(thread[i], (void**)&r);
         if (ret != 0) {
             fprintf(stderr, "can not join thread\n");
