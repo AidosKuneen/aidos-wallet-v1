@@ -56,6 +56,7 @@ var App = (function (App, undefined) {
   var isDevelopment = String(process.env.NODE_ENV).trim() === "development";
   var didCheckForUpdates = false;
   var appVersion = require("../../package.json").version;
+  var appName = require("../../package.json").name;
   var isLookingAtServerLog = false;
   var is64BitOS = 64;
   var rendererPid = null;
@@ -64,7 +65,7 @@ var App = (function (App, undefined) {
   var ariVersion = "";
   var lastError = "";
 
-  var isTestNet = String(appVersion).match(/\-testnet$/) != null;
+  var isTestNet = String(appName).match(/\-Testnet$/) != null;
 
   App.uiIsReady = false;
   App.uiIsInitialized = false;
@@ -147,7 +148,7 @@ var App = (function (App, undefined) {
         settings.isFirstRun = 1;
       }
       if (!settings.hasOwnProperty("port")) {
-        settings.port = (isTestNet ? 14999 : 14265);
+        settings.port = (isTestNet ? 15777 : 14265);
       }
       if (!settings.hasOwnProperty("depth")) {
         settings.depth = 3;
@@ -157,13 +158,13 @@ var App = (function (App, undefined) {
       }
       if (!isTestNet && settings.minWeightMagnitude < 18) {
         settings.minWeightMagnitude = 18;
-      } else if (isTestNet && settings.minWeightMagnitude < 13) {
-        settings.minWeightMagnitude = 13;
+      } else if (isTestNet && settings.minWeightMagnitude < 10) {
+        settings.minWeightMagnitude = 10;
       }
     } catch (err) {
       console.log("Error reading settings:");
       console.log(err);
-      settings = { bounds: { width: 1300, height: 850 }, checkForUpdates: 1, lightWallet: 1, lastUpdateCheck: 0, showStatusBar: 0, isFirstRun: 1, port: (isTestNet ? 14999 : 14265), nodes: [] };
+      settings = { bounds: { width: 1300, height: 850 }, checkForUpdates: 1, lightWallet: 1, lastUpdateCheck: 0, showStatusBar: 0, isFirstRun: 1, port: (isTestNet ? 15777 : 14265), nodes: [] };
     }
 
     try {
@@ -1804,7 +1805,7 @@ var App = (function (App, undefined) {
       _isTestNet = isTestNet;
     }
 
-    var title = "Aidos Wallet " + String(appVersion.replace("-testnet", "")).escapeHTML() + (_isTestNet ? " - Testnet" : "") + (ariVersion ? " - Aidos " + String(ariVersion).escapeHTML() : "");
+    var title = "Aidos Wallet " + String(appVersion.replace("-testnet", "")).escapeHTML() + (_isTestNet ? " - Testnet" : "") + (ariVersion ? " - ARI " + String(ariVersion).escapeHTML() : "");
 
     try {
       if (win) {

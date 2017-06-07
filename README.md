@@ -91,6 +91,10 @@ If you want to package the wallet you will need:
 
  5. After that you can find the compiled binaries in the `out` dir.
  
+## Testnet
+
+To use the Wallet for the Testnet, rename package.testnet.json to package.json and follow the above instructions to create a runnable version. Make sure you are connecting to a Server that uses the ARI Testnet. (Otherwise your connection will be refused as the Test- and Mainnet use different API ports)
+ 
 ## LICENSE
 
 [GNU General Public License v3.0](https://github.com/AidosKuneen/aidos-wallet/blob/master/LICENSE)

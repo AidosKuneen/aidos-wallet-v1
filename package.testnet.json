@@ -1,0 +1,88 @@
+{
+  "name": "Aidos-Testnet",
+  "productName": "Aidos Wallet Testnet",
+  "description": "Aidos Wallet Testnet",
+  "version": "1.0.0",
+  "license": "GPL-3.0",
+  "main": "app/js/main.js",
+  "scripts": {
+    "postinstall": "install-app-deps && cd app && bower install && cd ../ui && bower install",
+    "start": "export NODE_ENV=development || set NODE_ENV=development && electron app/js/main.js",
+    "precompile": "rimraf out/*",
+    "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && build --win --mac --linux --x64 --ia32",
+    "compile:lin": "build --linux --x64 --ia32",
+    "compile:mac": "export CSC_IDENTITY_AUTO_DISCOVERY=false && build --mac --x64",
+    "compile:win": "build --win --x64 --ia32",
+    "prepublish": "rimraf out/*",
+    "publish": "export CSC_IDENTITY_AUTO_DISCOVERY=false && build --win --mac --linux --x64 --ia32 --publish always",
+    "publish:lin": "build --linux --x64 --ia32 --publish always",
+    "publish:mac": "export CSC_IDENTITY_AUTO_DISCOVERY=false && build --mac --x64 --publish always",
+    "publish:win": "build --win --x64 --ia32 --publish always"
+  },
+  "author": "Aidos Developers <info@aidoskuneen.com>",
+  "homepage": "http://aidoskuneen.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AidosKuneen/aidos-wallet"
+  },
+  "dependencies": {
+    "ffi": "^2.2.0",
+    "fs-extra": "^1.0.0",
+    "glob": "^7.1.1",
+    "pidusage": "^1.1.0"
+  },
+  "devDependencies": {
+    "electron": "^1.4.14",
+    "electron-builder": "^11.5.0",
+    "rimraf": "^2.5.4"
+  },
+  "build": {
+    "directories": {
+      "buildResources": "build",
+      "output": "out"
+    },
+    "appId": "com.aidoskuneen.wallet",
+    "category": "public.app-category.developer-tools",
+    "extraResources": [
+      "ccurl/**/*",
+      "ui/**/*"
+    ],
+    "protocols": [
+      {
+        "name": "Aidos URL Scheme",
+        "schemes": [
+          "adk"
+        ]
+      }
+    ],
+    "dmg": {
+      "iconSize": 125,
+      "contents": [
+        {
+          "x": 235,
+          "y": 290,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 235,
+          "y": 20,
+          "type": "file"
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "icon":"/",
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "tar.gz"
+      ],
+      "packageUrl": "http://aidoskuneen.com"
+    }
+  }
+}

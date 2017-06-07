@@ -395,7 +395,7 @@ var UI = (function (UI, undefined) {
         }
       }
       content = "<h3>Enter Server Address: </h3>" +
-        "<input class='cfg' maxlength='28' type='text' id='server_config_host' placeholder='localhost' value='" + host + "' />" +
+        "<input class='cfg' maxlength='32' type='text' id='server_config_host' placeholder='localhost' value='" + host + "' />" +
         "<botLabel>(without 'http://' and port number)</botLabel>"
     }
     modal.setContent(content);
@@ -416,12 +416,12 @@ var UI = (function (UI, undefined) {
         }
 
         config.lightWalletHost = "http://" + res;
-        config.lightWalletPort = 14266;//res[2];
-        config.minWeightMagnitude = 18;//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        config.lightWalletPort = configuration.testNet ? 15555 : 14266;//res[2];
+        config.minWeightMagnitude = configuration.testNet ? "10" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
       } else {
-        config.port = 14266;//parseInt(document.getElementById("server_config_port").value, 10);
+        config.port = configuration.testNet ? 15555 : 14266;//parseInt(document.getElementById("server_config_port").value, 10);
         config.depth = parseInt(document.getElementById("server_config_depth").value, 10);
-        config.minWeightMagnitude = 18;//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        config.minWeightMagnitude = configuration.testNet ? "10" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
         config.nodes = document.getElementById("server_config_peers").value;
       }
 
