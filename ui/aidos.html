@@ -456,6 +456,12 @@
           <br /> If you don't follow this advice, you will double-spent the inputs from your previous transaction, as inputs
           are choosen deterministically. Thus those new transactions won't get confirmed as they are seen as double-spents.
         </div>
+        <div class="uk-accordion-title">Can I re-use addresses?</div>
+        <div class="uk-accordion-content">
+		It is safe to use an address for receiving as long it wasn't used for any outgoing transactions.<br />
+		To put it in a more simple way: After you sent a transaction with a specific address as input, you should never use that address to receive tokens again.
+		This is because Aidos uses Winternitz one-time signatures which degrade security exponentially after each reuse.
+        </div>
       </div>
     </div>
   </div>
