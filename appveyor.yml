@@ -11,11 +11,17 @@ install:
   - npm install bower
   - npm install electron-builder
   - npm install
+  - set Path2=%Path%
   - set Path=%Path%;C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin\
   - cd ccurl
   - gcc  pow_sse2.c -O3 -static -lpthread -msse2 -shared -o libccurl.dll
   - if not exist "win64" mkdir win64
   - copy libccurl.dll win64\
+  - del libccurl.dll
+  - set Path=%Path2%;C:\MinGW\bin
+  - gcc  pow_sse2.c -O3 -static -lpthread -msse2 -shared -o libccurl.dll
+  - if not exist "win32" mkdir win32
+  - copy libccurl.dll win32\
   - del libccurl.dll
   - cd ..
 
@@ -36,9 +42,9 @@ deploy:
   provider: GitHub
   auth_token:
       secure: 3iQcaZ+ekUfV7qNqpOzlT1mY/pT4mhoNxxKsySYB643/Y6QWaPEEHqiOzHtQh+6k
-  artifact: /.*\.exe/            # upload all NuGet packages to release assets
+  artifact: /.*\.exe/            
   draft: false
   prerelease: false
   on:
-    appveyor_repo_tag: true        # deploy on tag push only
+    appveyor_repo_tag: true        
  

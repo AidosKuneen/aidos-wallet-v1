@@ -99,11 +99,10 @@ int getCpuNum()
 #if defined(__linux) || defined(__APPLE__)
     // for linux
     return sysconf(_SC_NPROCESSORS_ONLN);
-#elif defined(__MINGW64__)
+#elif defined(__MINGW64__) || defined(__MINGW32__)
     // for windows and wine
     SYSTEM_INFO info;
     GetSystemInfo(&info);
-
     return info.dwNumberOfProcessors;
 #endif
 }
@@ -388,7 +387,9 @@ long long int pwork(char tx[], int mwm, char nonce[])
     tx2trit(tx, trits);
     absorb(mid, trits, TX_LENGTH * 3 - HASH_LENGTH);
     int procs = getCpuNum();
-    procs--;
+    if (procs>1){
+        procs--;
+    }
     fprintf(stderr, "core num:%d\n", procs);
 
     pthread_t* thread = (pthread_t*)calloc(sizeof(pthread_t), procs);
@@ -464,7 +465,7 @@ void test()
         fprintf(stderr, "hash not match %s\n", hash);
     }
 
-    int m = 18;
+    int m = 15;
     time_t start = time(NULL);
     long long int cnt = pwork(tx, m, nonce);
     time_t end = time(NULL);

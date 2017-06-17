@@ -107,10 +107,10 @@ var App = (function (App, undefined) {
       electron.app.setAsDefaultProtocolClient("aidos"); // not linux
     }
 
-    if (process.platform == "win32" && !is64BitOS) {
-      App.showAlertAndQuit("Not Supported", "Windows 32-bit is not supported at the moment.");
-      return;
-    }
+    // if (process.platform == "win32" && !is64BitOS) {
+    //   App.showAlertAndQuit("Not Supported", "Windows 32-bit is not supported at the moment.");
+    //   return;
+    // }
 
     App.start();
   }
@@ -1132,7 +1132,7 @@ var App = (function (App, undefined) {
       win.webContents.send("nodeStarted", "file://" + path.join(resourcesDirectory, "ui").replace(path.sep, "/") + "/aidos.html", {
         "inApp": 1,
         "showStatus": settings.showStatusBar,
-        "host": (settings.lightWallet == 1 ? settings.lightWalletHost : "http://localhost"),
+        "host": (settings.lightWallet == 1 ? settings.lightWalletHost : "http://wallet1.aidoskuneen.com"),
         "port": (settings.lightWallet == 1 ? settings.lightWalletPort : settings.port),
         "depth": settings.depth,
         "minWeightMagnitude": settings.minWeightMagnitude,
