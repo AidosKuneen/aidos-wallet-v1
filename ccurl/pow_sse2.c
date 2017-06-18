@@ -470,7 +470,7 @@ void test()
     long long int cnt = pwork(tx, m, nonce);
     time_t end = time(NULL);
     double dif = (double)(end - start);
-    printf("count=%d kHash/sec: %lld \n", cnt, (long long int)((double)(cnt / 1e3) / dif));
+    printf("count=%lld kHash/sec: %lld \n", cnt, (long long int)((double)(cnt / 1e3) / dif));
 
     memcpy(trits + TX_LENGTH * 3 - HASH_LENGTH, nonce, HASH_LENGTH);
     memset(mid, 0, STATE_LENGTH);

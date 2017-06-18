@@ -153,6 +153,12 @@ var App = (function (App, undefined) {
       if (!settings.hasOwnProperty("depth")) {
         settings.depth = 3;
       }
+      if (!settings.hasOwnProperty("lightWalletHost")) {
+        settings.lightWalletHost = "http://wallet1.aidoskuneen.com";
+      }
+      if (!settings.hasOwnProperty("lightWalletPort")) {
+        settings.lightWalletPort = (isTestNet ? 15777 : 14266);
+      }
       if (!settings.hasOwnProperty("minWeightMagnitude")) {
         settings.minWeightMagnitude = 18;
       }
@@ -164,7 +170,7 @@ var App = (function (App, undefined) {
     } catch (err) {
       console.log("Error reading settings:");
       console.log(err);
-      settings = { bounds: { width: 1300, height: 850 }, checkForUpdates: 1, lightWallet: 1, lastUpdateCheck: 0, showStatusBar: 0, isFirstRun: 1, port: (isTestNet ? 15777 : 14265), nodes: [] };
+      settings = { bounds: { width: 1300, height: 850 },lightWalletHost:"http://wallet1.aidoskuneen.com",lightWalletPort:(isTestNet ? 15777 : 14266), checkForUpdates: 1, lightWallet: 1, lastUpdateCheck: 0, showStatusBar: 0, isFirstRun: 1, port: (isTestNet ? 15777 : 14266), nodes: [] };
     }
 
     try {
