@@ -157,7 +157,7 @@ var App = (function (App, undefined) {
         settings.lightWalletHost = "http://wallet1.aidoskuneen.com";
       }
       if (!settings.hasOwnProperty("lightWalletPort")) {
-        settings.lightWalletPort = (isTestNet ? 15777 : 14266);
+        settings.lightWalletPort = (isTestNet ? 15555 : 14266);
       }
       if (!settings.hasOwnProperty("minWeightMagnitude")) {
         settings.minWeightMagnitude = 18;
@@ -170,7 +170,7 @@ var App = (function (App, undefined) {
     } catch (err) {
       console.log("Error reading settings:");
       console.log(err);
-      settings = { bounds: { width: 1300, height: 850 },lightWalletHost:"http://wallet1.aidoskuneen.com",lightWalletPort:(isTestNet ? 15777 : 14266), checkForUpdates: 1, lightWallet: 1, lastUpdateCheck: 0, showStatusBar: 0, isFirstRun: 1, port: (isTestNet ? 15777 : 14266), nodes: [] };
+      settings = { bounds: { width: 1300, height: 850 },lightWalletHost:"http://wallet1.aidoskuneen.com",lightWalletPort:(isTestNet ? 15777 : 14266), checkForUpdates: 1, lightWallet: 1, lastUpdateCheck: 0, showStatusBar: 0, isFirstRun: 1, port: (isTestNet ? 15777 : 14265), nodes: [] };
     }
 
     try {
@@ -1138,7 +1138,7 @@ var App = (function (App, undefined) {
       win.webContents.send("nodeStarted", "file://" + path.join(resourcesDirectory, "ui").replace(path.sep, "/") + "/aidos.html", {
         "inApp": 1,
         "showStatus": settings.showStatusBar,
-        "host": (settings.lightWallet == 1 ? settings.lightWalletHost : "http://wallet1.aidoskuneen.com"),
+        "host": (settings.lightWallet == 1 ? settings.lightWalletHost : "localhost"),
         "port": (settings.lightWallet == 1 ? settings.lightWalletPort : settings.port),
         "depth": settings.depth,
         "minWeightMagnitude": settings.minWeightMagnitude,
@@ -1618,8 +1618,8 @@ var App = (function (App, undefined) {
 
         if (!isTestNet && settings.minWeightMagnitude < 18) {
           settings.minWeightMagnitude = 18;
-        } else if (isTestNet && settings.minWeightMagnitude < 13) {
-          settings.minWeightMagnitude = 13;
+        } else if (isTestNet && settings.minWeightMagnitude < 10) {
+          settings.minWeightMagnitude = 10;
         }
       }
 
