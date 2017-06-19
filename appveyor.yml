@@ -11,15 +11,15 @@ install:
   - npm install bower
   - npm install electron-builder
   - npm install
-  - set Path2=%Path%
-  - set Path=%Path%;C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin\
   - cd ccurl
-  - gcc  pow_sse2.c -O3 -static -lpthread -msse2 -shared -o libccurl.dll
+  - call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+  - cl libccurl.cpp /LD /O2
   - if not exist "win64" mkdir win64
   - copy libccurl.dll win64\
   - del libccurl.dll
-  - set Path=%Path2%;C:\MinGW\bin
-  - gcc  pow_sse2.c -O3 -static -lpthread -msse2 -shared -o libccurl.dll
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
+  - cl libccurl.cpp /LD /O2
   - if not exist "win32" mkdir win32
   - copy libccurl.dll win32\
   - del libccurl.dll

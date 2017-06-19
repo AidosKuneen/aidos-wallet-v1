@@ -40,13 +40,13 @@ install:
   - npm install
   - pushd ccurl
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        gcc -shared -o libccurl.so pow_sse2.c -O3  -fPIC;
+        gcc -shared -o libccurl.so libccurl.cpp -O3  -fPIC;
         mkdir -p lin64;
         cp libccurl.so lin64/;
         rm libccurl.so;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        gcc -dynamiclib -o libccurl.dylib pow_sse2.c;
+        gcc -dynamiclib -o libccurl.dylib libccurl.cpp;
         mkdir -p mac;
         cp libccurl.dylib mac/;
         rm libccurl.dylib;

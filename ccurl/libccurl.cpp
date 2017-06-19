@@ -25,11 +25,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stddef.h>
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -42,15 +42,17 @@
 #elif defined(__MINGW64__) 
 #include <windows.h>
 #include <winbase.h>
-#elif __WINDOWS
-#include <Windows.h>
+#elif _WIN32
+#include <windows.h>
 #endif
 
 #if defined(_MSC_VER) || defined(__MINGW64__)
 #include <malloc.h>
 #endif /* defined(_MSC_VER) || defined(__MINGW32__) */
 
+#ifndef _MSC_VER
 #include <pthread.h>
+#endif
 
 #define HBITS 0xFFFFFFFFFFFFFFFFuLL
 #define LBITS 0x0000000000000000uLL
@@ -82,24 +84,29 @@
 #define HIGH41 0xFFFFFFFFFFFFFFFFuLL //0b1111111111111111111111111111111111111111111111111111111111111111
 
 #ifndef EXPORT
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_MSC_VER)
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
 #endif
 
-EXPORT void ccurl_pow_finalize();
-EXPORT void ccurl_pow_interrupt();
-EXPORT char* ccurl_pow(char* trytes, int minWeightMagnitude);
-
+#ifdef __cplusplus
+extern "C"{
+#endif
+    EXPORT void ccurl_pow_finalize();
+    EXPORT void ccurl_pow_interrupt();
+    EXPORT char* ccurl_pow(char* trytes, int minWeightMagnitude);
+#ifdef __cplusplus
+}
+#endif
 
 int getCpuNum()
 {
 #if defined(__linux) || defined(__APPLE__)
     // for linux
     return sysconf(_SC_NPROCESSORS_ONLN);
-#elif defined(__MINGW64__) || defined(__MINGW32__)
+#elif defined(__MINGW64__) || defined(__MINGW32__) || defined(_MSC_VER)
     // for windows and wine
     SYSTEM_INFO info;
     GetSystemInfo(&info);
@@ -193,7 +200,8 @@ void absorb(char state[], char in[], int size)
 void transform64(__m128i* lmid, __m128i* hmid)
 {
     int j, r, t1, t2;
-    __m128i alpha, beta, gamma, delta;
+      __m128i one = _mm_set_epi64x(HBITS, HBITS);
+    __m128i alpha, beta, gamma, delta,nalpha;
     __m128i *lto = lmid + STATE_LENGTH, *hto = hmid + STATE_LENGTH;
     __m128i *lfrom = lmid, *hfrom = hmid;
     for (r = 0; r < 26; r++) {
@@ -204,10 +212,12 @@ void transform64(__m128i* lmid, __m128i* hmid)
             alpha = lfrom[t1];
             beta = hfrom[t1];
             gamma = hfrom[t2];
-            delta = (alpha | (~gamma)) & (lfrom[t2] ^ beta);
+            //(alpha | (~gamma)) & (lfrom[t2] ^ beta);
+            nalpha = _mm_andnot_si128(alpha,gamma);
+            delta =  _mm_andnot_si128(nalpha, _mm_xor_si128(lfrom[t2],beta)); 
 
-            lto[j] = ~delta;
-            hto[j] = (alpha ^ gamma) | delta;
+            lto[j] = _mm_andnot_si128(delta,one);  //~delta;
+            hto[j] = _mm_or_si128(_mm_xor_si128(alpha,gamma),delta); //(alpha ^ gamma) | delta;
         }
         __m128i *lswap = lfrom, *hswap = hfrom;
         lfrom = lto;
@@ -222,22 +232,24 @@ void transform64(__m128i* lmid, __m128i* hmid)
         alpha = lfrom[t1];
         beta = hfrom[t1];
         gamma = hfrom[t2];
-        delta = (alpha | (~gamma)) & (lfrom[t2] ^ beta);
-
-        lto[j] = ~delta;
-        hto[j] = (alpha ^ gamma) | delta;
-    }
+        nalpha = _mm_andnot_si128(alpha,gamma);
+        delta =  _mm_andnot_si128(nalpha, _mm_xor_si128(lfrom[t2],beta)); 
+        lto[j] = _mm_andnot_si128(delta,one);  //~delta;
+            hto[j] = _mm_or_si128(_mm_xor_si128(alpha,gamma),delta); //(alpha ^ gamma) | delta;
+     }
 }
 
 int incr(__m128i* mid_low, __m128i* mid_high)
 {
     int i;
     __m128i carry;
-    for (i = 5; i < HASH_LENGTH && (i == 5 || carry[0]); i++) {
+    alignas(16) unsigned long long c[2]={0};
+    for (i = 5; i < HASH_LENGTH && (i == 5 || c[0] ); i++) {
         __m128i low = mid_low[i], high = mid_high[i];
-        mid_low[i] = high ^ low;
+        mid_low[i] = _mm_xor_si128(high,low);
         mid_high[i] = low;
-        carry = high & (~low);
+        carry = _mm_andnot_si128(low,high);
+       _mm_store_si128 ((__m128i*)c,carry);
     }
     return i == HASH_LENGTH;
 }
@@ -245,13 +257,17 @@ int incr(__m128i* mid_low, __m128i* mid_high)
 void seri(__m128i* low, __m128i* high, int n, char* r)
 {
     int i = 0, index = 0;
+    alignas(16) unsigned long long c[2]={0};
+
     if (n > 63) {
         n -= 64;
         index = 1;
     }
     for (i = 0; i < HASH_LENGTH; i++) {
-        unsigned long long ll = (low[i][index] >> n) & 1;
-        unsigned long long hh = (high[i][index] >> n) & 1;
+       _mm_store_si128 ((__m128i*)c,low[i]);
+        unsigned long long ll = (c[index] >> n) & 1;
+       _mm_store_si128 ((__m128i*)c,high[i]);
+        unsigned long long hh = (c[index] >> n) & 1;
         if (hh == 0 && ll == 1) {
             r[i] = -1;
         }
@@ -267,19 +283,23 @@ void seri(__m128i* low, __m128i* high, int n, char* r)
 int check(__m128i* l, __m128i* h, int m)
 {
     int i, j; //omit init for speed
+    alignas(16) unsigned long long c[2]={0};
 
     __m128i nonce_probe = _mm_set_epi64x(HBITS, HBITS);
     for (i = HASH_LENGTH - m; i < HASH_LENGTH; i++) {
-        nonce_probe &= ~(l[i] ^ h[i]);
-        if (nonce_probe[0] == LBITS && nonce_probe[1] == LBITS) {
+         nonce_probe =  _mm_andnot_si128(_mm_xor_si128(l[i],h[i]),nonce_probe); 
+        _mm_store_si128 ((__m128i*)c,nonce_probe);
+        if (c[0] == LBITS && c[1] == LBITS) {
             return -1;
         }
     }
-    for (j = 0; j < 2; j++) {
-        for (i = 0; i < 64; i++) {
-            if ((nonce_probe[j] >> i) & 1) {
-                return i + j * 64;
-            }
+     _mm_store_si128 ((__m128i*)c,nonce_probe);
+    for (i = 0; i < 64; i++) {
+        if ((c[0] >> i) & 1) {
+            return i + 0 * 64;
+        }
+        if ((c[1] >> i) & 1) {
+            return i + 1 * 64;
         }
     }
     return -2;
@@ -329,17 +349,21 @@ void para(char in[], __m128i l[], __m128i h[])
     }
 }
 
+
+
 void incrN128(int n, __m128i* mid_low, __m128i* mid_high)
 {
     int i, j;
+    alignas(16) unsigned long long c[2]={1,1};
+    __m128i carry;
     for (j = 0; j < n; j++) {
-        __m128i carry;
         carry = _mm_set_epi64x(HBITS, HBITS);
-        for (i = HASH_LENGTH - 7; i < HASH_LENGTH && carry[0]; i++) {
+        for (i = HASH_LENGTH - 7; i < HASH_LENGTH && c[0] ; i++) {
             __m128i low = mid_low[i], high = mid_high[i];
-            mid_low[i] = high ^ low;
+            mid_low[i] = _mm_xor_si128(high,low);
             mid_high[i] = low;
-            carry = high & (~low);
+            carry = _mm_andnot_si128(low,high);
+            _mm_store_si128 ((__m128i*)c,carry);
         }
     }
 }
@@ -388,29 +412,47 @@ long long int pwork(char tx[], int mwm, char nonce[])
     absorb(mid, trits, TX_LENGTH * 3 - HASH_LENGTH);
     int procs = getCpuNum();
     if (procs>1){
-        procs--;
+        // procs--;
     }
     fprintf(stderr, "core num:%d\n", procs);
-
+#ifdef _MSC_VER
+    HANDLE *thread = (HANDLE*)calloc(sizeof(HANDLE), procs);
+#else
     pthread_t* thread = (pthread_t*)calloc(sizeof(pthread_t), procs);
+#endif
     PARAM* p = (PARAM*)calloc(sizeof(PARAM), procs);
     for (i = 0; i < procs; i++) {
         p[i].mid = mid;
         p[i].mwm = mwm;
         p[i].n = i;
+#ifdef _MSC_VER
+        unsigned int id=0;
+        thread[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)pwork_, (LPVOID)&p[i],0, (LPDWORD)&id); 
+        if (thread[i]==NULL) {
+#else
         int ret = pthread_create(&thread[i], NULL, pwork_, &p[i]);
         if (ret != 0) {
+#endif
             fprintf(stderr, "can not create thread\n");
             exit(EXIT_FAILURE);
         }
     }
     long long int* r = NULL;
     for (i = 0; i < procs; i++) {
+#ifdef _WIN32
+        int ret = WaitForSingleObject( thread[i], INFINITE );
+        if (ret == WAIT_FAILED) {
+            fprintf(stderr, "can not join thread\n");
+            exit(EXIT_FAILURE);
+        }
+        GetExitCodeThread(thread[i],(LPDWORD)&r);
+#else
         int ret = pthread_join(thread[i], (void**)&r);
         if (ret != 0) {
             fprintf(stderr, "can not join thread\n");
             exit(EXIT_FAILURE);
         }
+#endif
         if ((*r) >= 0) {
             memcpy(nonce, p[i].nonce, HASH_LENGTH);
             countSSE += (*r);
