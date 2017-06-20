@@ -282,7 +282,7 @@ void seri(__m128i* low, __m128i* high, int n, char* r)
 
 int check(__m128i* l, __m128i* h, int m)
 {
-    int i, j; //omit init for speed
+    int i; //omit init for speed
     alignas(16) unsigned long long c[2]={0};
 
     __m128i nonce_probe = _mm_set_epi64x(HBITS, HBITS);
@@ -373,6 +373,7 @@ typedef struct param {
     int mwm;
     char nonce[HASH_LENGTH];
     int n;
+    long long int count;
 } PARAM;
 
 void* pwork_(void* p)
@@ -393,13 +394,11 @@ void* pwork_(void* p)
     hmid[4] = _mm_set_epi64x(HIGH40, HIGH41);
 
     incrN128(par->n, lmid, hmid);
-    long long int r = loop_cpu(lmid, hmid, par->mwm, par->nonce);
-    if (r >= 0) {
+    par->count = loop_cpu(lmid, hmid, par->mwm, par->nonce);
+    if (par->count >= 0) {
         stop = 1;
     }
-    long long int* rr = (long long int*)malloc(sizeof(long long int));
-    (*rr) = r;
-    return rr;
+    return NULL;
 }
 
 long long int pwork(char tx[], int mwm, char nonce[])
@@ -437,30 +436,24 @@ long long int pwork(char tx[], int mwm, char nonce[])
             exit(EXIT_FAILURE);
         }
     }
-    long long int* r = NULL;
     for (i = 0; i < procs; i++) {
 #ifdef _WIN32
         int ret = WaitForSingleObject( thread[i], INFINITE );
         if (ret == WAIT_FAILED) {
-            fprintf(stderr, "can not join thread\n");
-            exit(EXIT_FAILURE);
-        }
-        GetExitCodeThread(thread[i],(LPDWORD)&r);
 #else
-        int ret = pthread_join(thread[i], (void**)&r);
+        int ret = pthread_join(thread[i], NULL);
         if (ret != 0) {
+#endif
             fprintf(stderr, "can not join thread\n");
             exit(EXIT_FAILURE);
         }
-#endif
-        if ((*r) >= 0) {
+        if (p[i].count >= 0) {
             memcpy(nonce, p[i].nonce, HASH_LENGTH);
-            countSSE += (*r);
+            countSSE += p[i].count;
         }
         else {
-            countSSE += -(*r) + 1;
+            countSSE += -p[i].count + 1;
         }
-        free(r);
     }
     free(thread);
     free(p);
