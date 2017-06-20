@@ -15,6 +15,8 @@ This repository contains the desktop wallet for AidosKuneen.
 * Windows 64bit and 32bit
 * MacOS 64bit
 
+Linux 32bit and MacOS 32bit is NOT supported.
+
 ## Install
 
 These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/AidosKuneen/aidos-wallet/releases).
