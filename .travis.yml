@@ -5,7 +5,7 @@ os:
 
 sudo: required
 dist: trusty
-
+group: edge
 
 cache:
   directories:
