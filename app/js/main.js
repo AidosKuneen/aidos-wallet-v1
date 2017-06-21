@@ -164,8 +164,8 @@ var App = (function (App, undefined) {
       }
       if (!isTestNet && settings.minWeightMagnitude < 18) {
         settings.minWeightMagnitude = 18;
-      } else if (isTestNet && settings.minWeightMagnitude < 10) {
-        settings.minWeightMagnitude = 10;
+      } else if (isTestNet && settings.minWeightMagnitude < 13) {
+        settings.minWeightMagnitude = 13;
       }
     } catch (err) {
       console.log("Error reading settings:");
@@ -1618,8 +1618,8 @@ var App = (function (App, undefined) {
 
         if (!isTestNet && settings.minWeightMagnitude < 18) {
           settings.minWeightMagnitude = 18;
-        } else if (isTestNet && settings.minWeightMagnitude < 10) {
-          settings.minWeightMagnitude = 10;
+        } else if (isTestNet && settings.minWeightMagnitude < 13) {
+          settings.minWeightMagnitude = 13;
         }
       }
 

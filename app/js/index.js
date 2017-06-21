@@ -417,11 +417,11 @@ var UI = (function (UI, undefined) {
 
         config.lightWalletHost = "http://" + res;
         config.lightWalletPort = configuration.testNet ? 15555 : 14266;//res[2];
-        config.minWeightMagnitude = configuration.testNet ? "10" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        config.minWeightMagnitude = configuration.testNet ? "13" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
       } else {
         config.port = configuration.testNet ? 15555 : 14266;//parseInt(document.getElementById("server_config_port").value, 10);
         config.depth = parseInt(document.getElementById("server_config_depth").value, 10);
-        config.minWeightMagnitude = configuration.testNet ? "10" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        config.minWeightMagnitude = configuration.testNet ? "13" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
         config.nodes = document.getElementById("server_config_peers").value;
       }
 

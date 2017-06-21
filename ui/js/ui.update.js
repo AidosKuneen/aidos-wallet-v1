@@ -90,8 +90,8 @@ var UI = (function(UI, $, undefined) {
       UI.initialConnection = true;
       if (connection.nodeInfo.appName.match(/testnet/i)) {
         connection.testNet = true;
-        if (connection.minWeightMagnitude < 10) {
-          connection.minWeightMagnitude = 10;
+        if (connection.minWeightMagnitude < 13) {
+          connection.minWeightMagnitude = 13;
         }
       } else if (connection.minWeightMagnitude < 18) {
         connection.minWeightMagnitude = 18;
