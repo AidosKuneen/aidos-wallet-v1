@@ -40,6 +40,8 @@ before_install:
 install:
   - npm install
   - pushd ccurl
+  - rm mac/libccurl.dylib
+  - rm lin64/libccurl.so
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         echo "in linux";
         gcc -shared -o libccurl.so libccurl.cpp -O3 -lpthread -fPIC -std=c++11;
