@@ -42,14 +42,14 @@ install:
   - pushd ccurl
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         echo "in linux";
-        gcc -shared -o libccurl.so libccurl.cpp -O3  -fPIC -std=c++11;
+        gcc -shared -o libccurl.so libccurl.cpp -O3 -lpthread -fPIC -std=c++11;
         mkdir -p lin64;
         cp libccurl.so lin64/;
         rm libccurl.so;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         echo "in osx";
-        gcc -dynamiclib -o libccurl.dylib libccurl.cpp -O3 -std=c++11;
+        gcc -dynamiclib -o libccurl.dylib libccurl.cpp -O3 -lpthread -std=c++11;
         mkdir -p mac;
         cp libccurl.dylib mac/;
         rm libccurl.dylib;
