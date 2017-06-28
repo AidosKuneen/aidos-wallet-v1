@@ -26,6 +26,7 @@ addons:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+       echo "in osx";
        git clone https://github.com/creationix/nvm.git /tmp/.nvm;
        source /tmp/.nvm/nvm.sh;
     fi
@@ -40,12 +41,14 @@ install:
   - npm install
   - pushd ccurl
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        echo "in linux";
         gcc -shared -o libccurl.so libccurl.cpp -O3  -fPIC -std=c++11;
         mkdir -p lin64;
         cp libccurl.so lin64/;
         rm libccurl.so;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        echo "in osx";
         gcc -dynamiclib -o libccurl.dylib libccurl.cpp -O3 -std=c++11;
         mkdir -p mac;
         cp libccurl.dylib mac/;
