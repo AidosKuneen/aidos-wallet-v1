@@ -91,12 +91,19 @@
 #endif
 #endif
 
+typedef struct{
+    int corenum;
+    long long count;
+    long long time;
+    char * trytes;
+} RESULT;
+
 #ifdef __cplusplus
 extern "C"{
 #endif
     EXPORT void ccurl_pow_finalize();
     EXPORT void ccurl_pow_interrupt();
-    EXPORT char* ccurl_pow(char* trytes, int minWeightMagnitude);
+    EXPORT char* ccurl_pow(char* trytes, int minWeightMagnitude, RESULT *result);
 #ifdef __cplusplus
 }
 #endif
@@ -471,20 +478,25 @@ EXPORT void ccurl_pow_interrupt()
         stop = 1;
 }
 
-EXPORT char* ccurl_pow(char* trytes, int minWeightMagnitude)
+
+
+EXPORT char* ccurl_pow(char* trytes, int minWeightMagnitude, RESULT *result)
 {
     stop = 0;
     running = 1;
-    //memory leak ,but we follow specification of iota wallet.
-    char* tx_tryte = (char*)calloc(TX_LENGTH + 1, 1);
     char nonce_tryte[HASH_LENGTH / 3 + 1] = { 0 }, nonce_trit[HASH_LENGTH] = { 0 };
 
-    pwork(trytes, minWeightMagnitude, nonce_trit);
+    time_t start = time(NULL);
+    result->count = pwork(trytes, minWeightMagnitude, nonce_trit);
+    time_t end = time(NULL);
+    result->time = end - start;
+   
     hash2tryte(nonce_trit, nonce_tryte);
-    memcpy(tx_tryte, trytes, TX_LENGTH);
-    memcpy(tx_tryte + TX_LENGTH - HASH_LENGTH / 3, nonce_tryte, HASH_LENGTH / 3);
+    memcpy(result->trytes, trytes, TX_LENGTH);
+    memcpy(result->trytes + TX_LENGTH - HASH_LENGTH / 3, nonce_tryte, HASH_LENGTH / 3);
     running = 0;
-    return tx_tryte;
+    result->corenum = getCpuNum();
+    return result->trytes;
 }
 
 void test()

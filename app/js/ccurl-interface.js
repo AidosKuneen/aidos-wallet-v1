@@ -1,7 +1,18 @@
 var ffi = require('ffi');
+var struct = require('ref-struct');
+var ref = require('ref');
+
 var isInitialized = false;
 
-var ccurlProvider = function(ccurlPath) {
+var result = struct({
+    'corenum': 'int',
+    'count': 'long long',
+    'time': 'long long',
+    'trytes': 'string'
+});
+
+
+var ccurlProvider = function (ccurlPath) {
     if (!ccurlPath) {
         console.log("ccurl-interface: no path supplied, returning");
         return false;
@@ -9,12 +20,14 @@ var ccurlProvider = function(ccurlPath) {
 
     var fullPath = ccurlPath + '/libccurl';
 
+
+
     try {
         // Define libccurl to be used for finding the nonce
         var libccurl = ffi.Library(fullPath, {
-            ccurl_pow : [ 'string', [ 'string', 'int'] ],
-            ccurl_pow_finalize : [ 'void', [] ],
-            ccurl_pow_interrupt: [ 'void', [] ]
+            ccurl_pow: ['string', ['string', 'int', ref.refType(result)]],
+            ccurl_pow_finalize: ['void', []],
+            ccurl_pow_interrupt: ['void', []]
         });
 
         // Check to make sure the functions are available
@@ -29,19 +42,19 @@ var ccurlProvider = function(ccurlPath) {
     }
 }
 
-var ccurlFinalize = function(libccurl) {
+var ccurlFinalize = function (libccurl) {
     if (isInitialized) {
         try {
             if (libccurl && libccurl.hasOwnProperty("ccurl_pow_finalize")) {
                 libccurl.ccurl_pow_finalize();
             }
-        } catch (err) {
+        } catch (err) {
             console.log(err);
         }
     }
 }
 
-var ccurlInterrupt = function(libccurl) {
+var ccurlInterrupt = function (libccurl) {
     if (isInitialized) {
         try {
             if (libccurl && libccurl.hasOwnProperty("ccurl_pow_interrupt")) {
@@ -53,12 +66,12 @@ var ccurlInterrupt = function(libccurl) {
     }
 }
 
-var ccurlInterruptAndFinalize = function(libccurl) {
+var ccurlInterruptAndFinalize = function (libccurl) {
     ccurlInterrupt(libccurl);
     ccurlFinalize(libccurl);
 }
 
-var ccurlHashing = function(libccurl, trunkTransaction, branchTransaction, minWeightMagnitude, trytes, callback) {
+var ccurlHashing = function (libccurl, trunkTransaction, branchTransaction, minWeightMagnitude, trytes, callback) {
     if (!libccurl.hasOwnProperty("ccurl_pow")) {
         return callback(new Error("Hashing not available"));
     }
@@ -95,7 +108,7 @@ var ccurlHashing = function(libccurl, trunkTransaction, branchTransaction, minWe
 
     function loopTrytes() {
 
-        getBundleTrytes(trytes[i], function(error) {
+        getBundleTrytes(trytes[i], function (error) {
 
             if (error) {
 
@@ -126,6 +139,12 @@ var ccurlHashing = function(libccurl, trunkTransaction, branchTransaction, minWe
         // IF there is a bundle, chain  the bundle transactions via
         // trunkTransaction together
 
+
+        var resultObj = new result();
+        var buf = new Buffer(thisTrytes.length + 1);
+        buf.fill(0);
+        resultObj.trytes = buf;
+
         // If this is the first transaction, to be processed
         // Make sure that it's the last in the bundle and then
         // assign it the supplied trunk and branch transactions
@@ -144,15 +163,27 @@ var ccurlHashing = function(libccurl, trunkTransaction, branchTransaction, minWe
             var newTrytes = aidos.utils.transactionTrytes(txObject);
 
             // cCurl updates the nonce as well as the transaction hash
-            libccurl.ccurl_pow.async(newTrytes, minWeightMagnitude, function(error, returnedTrytes) {
+            libccurl.ccurl_pow.async(newTrytes, minWeightMagnitude, resultObj.ref(), function (error, returnedTrytes) {
 
                 if (error) {
                     return callback(error);
                 } else if (returnedTrytes == null) {
                     return callback("Interrupted");
                 }
+                console.log("corenum:" + resultObj.corenum);
+                console.log("count:" + resultObj.count);
+                console.log("time:" + resultObj.time);
+                var spd = (resultObj.count / 1e3) / resultObj.time;
+                console.log(spd + " kH/sec");
+                var newTxObject = aidos.utils.transactionObject(returnedTrytes);
 
-                var newTxObject= aidos.utils.transactionObject(returnedTrytes);
+                for (var i = 0; i < minWeightMagnitude / 3; i++) {
+                    if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
+                        console.log(returnedTrytes);
+                        console.log(newTrytes);
+                        return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
+                    }
+                }
 
                 // Assign the previousTxHash to this tx
                 var txHash = newTxObject.hash;
@@ -175,15 +206,27 @@ var ccurlHashing = function(libccurl, trunkTransaction, branchTransaction, minWe
             var newTrytes = aidos.utils.transactionTrytes(txObject);
 
             // cCurl updates the nonce as well as the transaction hash
-            libccurl.ccurl_pow.async(newTrytes, minWeightMagnitude, function(error, returnedTrytes) {
+            libccurl.ccurl_pow.async(newTrytes, minWeightMagnitude, resultObj.ref(), function (error, returnedTrytes) {
 
                 if (error) {
                     return callback(error);
                 } else if (returnedTrytes == null) {
                     return callback("Interrupted");
                 }
+                console.log("corenum:" + resultObj.corenum);
+                console.log("count:" + resultObj.count);
+                console.log("time:" + resultObj.time);
+                var spd = (resultObj.count / 1e3) / resultObj.time;
+                console.log(spd + " kH/sec");
+                var newTxObject = aidos.utils.transactionObject(returnedTrytes);
 
-                var newTxObject= aidos.utils.transactionObject(returnedTrytes);
+                for (var i = 0; i < minWeightMagnitude / 3; i++) {
+                    if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
+                        console.log(returnedTrytes);
+                        console.log(newTrytes);
+                        return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
+                    }
+                }
 
                 // Assign the previousTxHash to this tx
                 var txHash = newTxObject.hash;
