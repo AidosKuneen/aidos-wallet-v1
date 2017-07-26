@@ -177,10 +177,14 @@ var ccurlHashing = function (libccurl, trunkTransaction, branchTransaction, minW
                 console.log(spd + " kH/sec");
                 var newTxObject = aidos.utils.transactionObject(returnedTrytes);
 
-                for (var i = 0; i < minWeightMagnitude / 3; i++) {
+                for (var i = 0; i < Math.floor(minWeightMagnitude / 3); i++) {
                     if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
                         console.log(returnedTrytes);
                         console.log(newTrytes);
+                        console.log(newTxObject.hash);
+                        console.log(minWeightMagnitude);
+                        console.log(i);
+                        console.log(newTxObject.hash.length - 1 - i);
                         return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
                     }
                 }
@@ -220,10 +224,14 @@ var ccurlHashing = function (libccurl, trunkTransaction, branchTransaction, minW
                 console.log(spd + " kH/sec");
                 var newTxObject = aidos.utils.transactionObject(returnedTrytes);
 
-                for (var i = 0; i < minWeightMagnitude / 3; i++) {
+                for (var i = 0; i < Math.floor(minWeightMagnitude / 3); i++) {
                     if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
                         console.log(returnedTrytes);
                         console.log(newTrytes);
+                        console.log(newTxObject.hash);
+                        console.log(minWeightMagnitude);
+                        console.log(i);
+                        console.log(newTxObject.hash.length - 1 - i);
                         return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
                     }
                 }

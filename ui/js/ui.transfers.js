@@ -48,7 +48,7 @@ var UI = (function(UI, $, undefined) {
         }
 
         var floatValue = parseFloat($("#transfer-amount").val());
-        var amount = floatValue * multi;
+        var amount = Math.round(floatValue * multi);
 
         if (!amount) {
           throw "Amount cannot be zero";
