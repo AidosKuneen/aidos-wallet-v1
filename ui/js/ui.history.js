@@ -178,21 +178,41 @@ var UI = (function(UI, $, undefined) {
       });
 
       var categorizedTransfers = aidos.utils.categorizeTransfers(connection.accountData.transfers, connection.accountData.addresses);
+      var addresses = connection.accountData.addresses;
 
       $.each(connection.accountData.transfers.reverse(), function(i, bundle) {
         var persistence = bundle[0].persistence ? bundle[0].persistence : false;
         var isSent = false;
+        var index = [];
         $.each(categorizedTransfers.sent, function(i, sentBundle) {
           if (sentBundle[0].hash == bundle[0].hash) {
             isSent = true;
             return false;
           }
         });
-
+        
+        // if !isSent check for address and amount to display, because it's possible that a bundle has multiple tx that go to different accounts
+        if (!isSent && bundle.length > 3){
+        	addresses.forEach(function(address) {
+            	bundle.forEach(function(tx, i) {
+            	    if (address == tx.address){
+            	    	//found address for seed, save bundle index
+            	    	index.push(i);
+            	    }
+            	});
+        	});
+        }
         transfersHtml += "<div class='single-transaction show-bundle' data-hash='" + String(bundle[0].hash).escapeHTML() + "' data-type='" + (isSent ? "spending" : "receiving") + "' data-persistence='" + persistence*1 + "'>";
-        transfersHtml+='<span class="'+ (isSent ? "send" : "receive") +'"></span><p>';
-        transfersHtml += "<p>" + UI.formatAmount((isSent ? "-":"") + bundle[0].value) + "("+(persistence ? "Confirmed" : "Pending") +")</p></br>";
-        transfersHtml += '<p class="address">'+(bundle[0].address ? aidos.utils.addChecksum(bundle[0].address) : "-")+"</p><br />";
+        transfersHtml +='<span class="'+ (isSent ? "send" : "receive") +'"></span><p>';
+        if (index.length > 0){
+	        index.forEach(function(i) {
+	        	transfersHtml += "<p>" + UI.formatAmount((isSent ? "-":"") + bundle[i].value) + " ("+(persistence ? "Confirmed" : "Pending") +")</p></br>";
+	        	transfersHtml += '<p class="address">'+(bundle[i].address ? aidos.utils.addChecksum(bundle[i].address) : "-")+"</p><br />";
+	        });
+        } else {
+        	transfersHtml += "<p>" + UI.formatAmount((isSent ? "-":"") + bundle[0].value) + " ("+(persistence ? "Confirmed" : "Pending") +")</p></br>";
+        	transfersHtml += '<p class="address">'+(bundle[0].address ? aidos.utils.addChecksum(bundle[0].address) : "-")+"</p><br />";
+        }
         transfersHtml += '<p class="date">' + (bundle[0].timestamp != "0" ? UI.formatDate(bundle[0].timestamp, true) : "Genesis")+"</p>";
         transfersHtml += '<a href="#" onclick="return false" class="details">View Bundle</a>';
         transfersHtml += '</div>';

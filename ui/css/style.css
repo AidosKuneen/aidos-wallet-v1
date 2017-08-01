@@ -643,9 +643,10 @@ input:checked + .slider:before {
 .single-transaction {
 	position: relative;
 	width: 100%;
-	height: 50px;
+	height: auto;
 	background-color: #E9EAE8;
 	border-bottom: 1px solid #d3d3d3;
+	padding-bottom: 8px;
 }
 
 
