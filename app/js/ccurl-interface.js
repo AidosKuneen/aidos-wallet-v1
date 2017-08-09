@@ -177,17 +177,17 @@ var ccurlHashing = function (libccurl, trunkTransaction, branchTransaction, minW
                 console.log(spd + " kH/sec");
                 var newTxObject = aidos.utils.transactionObject(returnedTrytes);
 
-                for (var i = 0; i < Math.floor(minWeightMagnitude / 3); i++) {
-                    if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
-                        console.log(returnedTrytes);
-                        console.log(newTrytes);
-                        console.log(newTxObject.hash);
-                        console.log(minWeightMagnitude);
-                        console.log(i);
-                        console.log(newTxObject.hash.length - 1 - i);
-                        return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
-                    }
-                }
+                // for (var i = 0; i < Math.floor(minWeightMagnitude / 3); i++) {
+                //     if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
+                //         console.log(returnedTrytes);
+                //         console.log(newTrytes);
+                //         console.log(newTxObject.hash);
+                //         console.log(minWeightMagnitude);
+                //         console.log(i);
+                //         console.log(newTxObject.hash.length - 1 - i);
+                //         return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
+                //     }
+                // }
 
                 // Assign the previousTxHash to this tx
                 var txHash = newTxObject.hash;
@@ -224,17 +224,17 @@ var ccurlHashing = function (libccurl, trunkTransaction, branchTransaction, minW
                 console.log(spd + " kH/sec");
                 var newTxObject = aidos.utils.transactionObject(returnedTrytes);
 
-                for (var i = 0; i < Math.floor(minWeightMagnitude / 3); i++) {
-                    if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
-                        console.log(returnedTrytes);
-                        console.log(newTrytes);
-                        console.log(newTxObject.hash);
-                        console.log(minWeightMagnitude);
-                        console.log(i);
-                        console.log(newTxObject.hash.length - 1 - i);
-                        return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
-                    }
-                }
+                // for (var i = 0; i < Math.floor(minWeightMagnitude / 3); i++) {
+                //     if (newTxObject.hash.charAt(newTxObject.hash.length - 1 - i) != '9') {
+                //         console.log(returnedTrytes);
+                //         console.log(newTrytes);
+                //         console.log(newTxObject.hash);
+                //         console.log(minWeightMagnitude);
+                //         console.log(i);
+                //         console.log(newTxObject.hash.length - 1 - i);
+                //         return callback("failed to PoW. Keep the wallet as it is and please consult with the developer in Aidos Slack!");
+                //     }
+                // }
 
                 // Assign the previousTxHash to this tx
                 var txHash = newTxObject.hash;
