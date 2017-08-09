@@ -73,7 +73,7 @@ deploy:
       - out/Aidos-*-x86_64.AppImage
       - out/Aidos-*.tar.gz
       - out/Aidos_*_amd64.deb
-#      - out/Aidos-*.rpm
+      - out/Aidos-*.rpm
     skip_cleanup: true
     file_glob: true
     on:
