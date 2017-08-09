@@ -79,7 +79,7 @@
       "target": [
         "AppImage",
         "deb",
-        "rpm",
+//        "rpm",
         "tar.gz"
       ],
       "packageUrl": "http://aidoskuneen.com"
