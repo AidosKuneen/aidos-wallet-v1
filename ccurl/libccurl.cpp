@@ -44,6 +44,7 @@
 #include <winbase.h>
 #elif _WIN32
 #include <windows.h>
+#include <process.h> 
 #endif
 
 #if defined(_MSC_VER) || defined(__MINGW64__)
@@ -383,7 +384,11 @@ typedef struct param {
     long long int count;
 } PARAM;
 
-void* pwork_(void* p)
+#ifdef _WIN32
+unsigned __stdcall  pwork_(void* p)
+#else
+void *pwork_(void* p)
+#endif
 {
     PARAM* par = (PARAM*)(p);
     __m128i lmid[STATE_LENGTH], hmid[STATE_LENGTH];
@@ -405,7 +410,11 @@ void* pwork_(void* p)
     if (par->count >= 0) {
         stop = 1;
     }
+#ifdef _WIN32
+    return 0;
+#else
     return NULL;
+#endif
 }
 
 long long int pwork(char tx[], int mwm, char nonce[])
@@ -421,7 +430,7 @@ long long int pwork(char tx[], int mwm, char nonce[])
         // procs--;
     }
     fprintf(stderr, "core num:%d\n", procs);
-#ifdef _MSC_VER
+#ifdef _WIN32
     HANDLE *thread = (HANDLE*)calloc(sizeof(HANDLE), procs);
 #else
     pthread_t* thread = (pthread_t*)calloc(sizeof(pthread_t), procs);
@@ -431,9 +440,9 @@ long long int pwork(char tx[], int mwm, char nonce[])
         p[i].mid = mid;
         p[i].mwm = mwm;
         p[i].n = i;
-#ifdef _MSC_VER
+#ifdef _WIN32
         unsigned int id=0;
-        thread[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)pwork_, (LPVOID)&p[i],0, (LPDWORD)&id); 
+        thread[i] = (HANDLE)_beginthreadex(NULL, 0, pwork_, (LPVOID)&p[i], 0, NULL);
         if (thread[i]==NULL) {
 #else
         int ret = pthread_create(&thread[i], NULL, pwork_, &p[i]);
@@ -446,6 +455,7 @@ long long int pwork(char tx[], int mwm, char nonce[])
     for (i = 0; i < procs; i++) {
 #ifdef _WIN32
         int ret = WaitForSingleObject( thread[i], INFINITE );
+        CloseHandle(thread[i]);
         if (ret == WAIT_FAILED) {
 #else
         int ret = pthread_join(thread[i], NULL);
