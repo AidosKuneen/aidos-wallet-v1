@@ -25,7 +25,7 @@ install:
   - copy libccurl.dll win64\
   - del libccurl.dll
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
-  - cl libccurl.cpp /LD /O2
+  - cl libccurl.cpp /LD /Ox
   - if not exist "win32" mkdir win32
   - copy libccurl.dll win32\
   - del libccurl.dll
