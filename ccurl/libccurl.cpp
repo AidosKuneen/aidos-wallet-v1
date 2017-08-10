@@ -384,7 +384,7 @@ typedef struct param {
     long long int count;
 } PARAM;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 unsigned __stdcall  pwork_(void* p)
 #else
 void *pwork_(void* p)
@@ -410,7 +410,7 @@ void *pwork_(void* p)
     if (par->count >= 0) {
         stop = 1;
     }
-#ifdef _WIN32
+#ifdef _MSC_VER
     return 0;
 #else
     return NULL;
@@ -430,7 +430,7 @@ long long int pwork(char tx[], int mwm, char nonce[])
         // procs--;
     }
     fprintf(stderr, "core num:%d\n", procs);
-#ifdef _WIN32
+#ifdef _MSC_VER
     HANDLE *thread = (HANDLE*)calloc(sizeof(HANDLE), procs);
 #else
     pthread_t* thread = (pthread_t*)calloc(sizeof(pthread_t), procs);
@@ -440,7 +440,7 @@ long long int pwork(char tx[], int mwm, char nonce[])
         p[i].mid = mid;
         p[i].mwm = mwm;
         p[i].n = i;
-#ifdef _WIN32
+#ifdef _MSC_VER
         unsigned int id=0;
         thread[i] = (HANDLE)_beginthreadex(NULL, 0, pwork_, (LPVOID)&p[i], 0, NULL);
         if (thread[i]==NULL) {
@@ -453,7 +453,7 @@ long long int pwork(char tx[], int mwm, char nonce[])
         }
     }
     for (i = 0; i < procs; i++) {
-#ifdef _WIN32
+#ifdef __MSC_VER
         int ret = WaitForSingleObject( thread[i], INFINITE );
         CloseHandle(thread[i]);
         if (ret == WAIT_FAILED) {
