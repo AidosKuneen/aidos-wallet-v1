@@ -453,7 +453,7 @@ long long int pwork(char tx[], int mwm, char nonce[])
         }
     }
     for (i = 0; i < procs; i++) {
-#ifdef __MSC_VER
+#ifdef _MSC_VER
         int ret = WaitForSingleObject( thread[i], INFINITE );
         CloseHandle(thread[i]);
         if (ret == WAIT_FAILED) {
