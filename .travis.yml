@@ -34,9 +34,9 @@ before_install:
   - nvm install $NODE_VERSION
   - nvm use --delete-prefix $NODE_VERSION
   - node --version
-  - npm install electron
+   - npm install electron@1.6.11
   - npm install bower
-  - npm install electron-builder
+  - npm install electron-builder@11.5.0
 
 install:
   - npm install

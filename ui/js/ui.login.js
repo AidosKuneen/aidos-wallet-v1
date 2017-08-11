@@ -34,6 +34,9 @@ var UI = (function (UI, $, undefined) {
     //don't care if the user has all his characters lowercased, but we do care if he uses mixed case.
     var mixedCase = value.match(/[a-z]/) && value.match(/[A-Z]/);
 
+    if (value.length == 90) {
+      return "This is address, NOT seed.";
+    }
     if (invalidCharacters) {
       return "Your seed contains invalid characters. Only A-Z and the number 9 are accepted." + (value.length > 81 ? " Your seed is also too long." : (value.length < 41 ? " Your seed is also too short." : ""));
     } else if (mixedCase) {
@@ -76,7 +79,6 @@ var UI = (function (UI, $, undefined) {
     });
 
     $("#login-btn").on("click", function (e) {
-      try {
         var seed = $("#login-password").val();
 
         if (!seed) {
@@ -85,14 +87,13 @@ var UI = (function (UI, $, undefined) {
 
         connection.seed = getSeed(seed);
         seedError = checkSeedStrength(seed);
-      } catch (error) {
-        console.log("UI.login: Error");
-        console.log(error);
-        $("#login-btn").loadingError(error);
-        $("#login-password").focus();
-        return;
-      }
-
+        if (seedError){
+          console.log("UI.login: Error");
+          console.log(seedError);
+          $("#login-btn").loadingError(seedError);
+          $("#login-password").focus();
+          return;
+        }
       UI.isLoggingIn = true;
 
       setTimeout(function () {

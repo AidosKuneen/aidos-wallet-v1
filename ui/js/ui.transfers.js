@@ -1,5 +1,6 @@
 var UI = (function(UI, $, undefined) {
   UI.handleTransfers = function() {
+    console.log("handleTransfer");
     $("#transfer-btn").on("click", function(e) {    
       console.log("UI.handleTransfers: Click");
 
