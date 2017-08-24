@@ -81,22 +81,24 @@ var UI = (function (UI, $, undefined) {
     short = short.escapeHTML();
     
     // format value
-    var stringValue = value.toString();
+    var stringValue = value.toFixed(8).replace(/\.?0+$/,"");
     var splitValue = stringValue.split("");
     var commaIndex = stringValue.indexOf(".");
     var formatValue = "";
     
-    var l = 0;
+    var decimals = 0;
     if (commaIndex != -1){
-    	l = commaIndex-1
+    	decimals = commaIndex-1
     } else {
-    	l = splitValue.length-1
+    	decimals = splitValue.length-1
     }
-    for (var i = l; i >= 0; i--) {
-    	if (i < commaIndex-1 && i % 3 == 0) {
+    var split = 0;
+    for (var i = decimals; i >= 0; i--) {
+    	if (split > 0 && split % 3 == 0) {	
     		formatValue = "'" + formatValue;
     	}
     	formatValue = splitValue[i] + formatValue;
+    	split++;
     }
     if (commaIndex == -1){
         formatValue = negative + formatValue + " ADK";
