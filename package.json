@@ -32,7 +32,7 @@
     "pidusage": "^1.1.0"
   },
   "devDependencies": {
-    "electron": "^1.4.14",
+    "electron": "^9.1.0",
     "electron-builder": "^11.5.0",
     "rimraf": "^2.5.4"
   },
