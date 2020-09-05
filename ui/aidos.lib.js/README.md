@@ -1,4 +1,4 @@
-# Aidos Javascript Library
+# Aidos Kuneen Javascript Library
 
 This is the official Javascript library for the Aidos Core. It implements both the API, as well as newly proposed functionality (such as signing, bundles, utilities and conversion).
 
@@ -25,7 +25,7 @@ aidos.api.getNodeInfo();
 ```
 
 Overall, there are currently four subclasses that are accessible from the aidos object:
-- **`api`**: Core API functionality for interacting with the Aidos core. (The available API commands can be seen in the Aidos Reference Implementation)
+- **`api`**: Core API functionality for interacting with the Aidos core. (The available API commands can be seen in the Aidos Kuneen Reference Implementation)
 - **`utils`**: Utility related functions for conversions, validation and so on  
 - **`multisig`**: Functions for creating and signing multi-signature addresses and transactions. (This functionality has not been completely tested yet and will be re-worked)
 - **`validate`**: Validator functions that can help with determining whether the inputs or results that you get are valid.
@@ -845,7 +845,7 @@ aidos.validate.isArrayOfAttachedTrytes(trytesArray)
 
 ### `isUri`
 
-Work in progress. If this is still here while you're reading the documentation, tell either Dominik or someone else from Core to move their asses.
+Work in progress.
 
 #### Input
 ```
