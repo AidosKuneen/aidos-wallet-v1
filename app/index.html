@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <script
+      type="text/javascript"
+      src="../node_modules/jquery/dist/jquery.min.js"
+    ></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../ui/css/uikit.min.css" />
+    <script src="../ui/js/uikit.min.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-   <script type="text/javascript" src="../ui/bower_components/jquery/dist/jquery.min.js"></script>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="../ui/css/uikit.min.css">
-  <script src="../ui/js/uikit.min.js"></script>
-</head>
-
-<body>
-  <webview id="server" src="about:blank" preload="./js/server-ipc.js"></webview>
-  <div id="status-bar">
-    <div id="status-bar-left">
-      <span id="status-bar-solid-milestone"></span>
-      <span id="status-bar-dot-1" style="display:none"> • </span>
-      <span id="status-bar-milestone"></span>
-      <span id="status-bar-dot-2" style="display:none"> • </span>
-      <span id="status-bar-cpu"></span>
+  <body>
+    <webview
+      id="server"
+      src="about:blank"
+      preload="./js/server-ipc.js"
+    ></webview>
+    <div id="status-bar">
+      <div id="status-bar-left">
+        <span id="status-bar-solid-milestone"></span>
+        <span id="status-bar-dot-1" style="display: none"> • </span>
+        <span id="status-bar-milestone"></span>
+        <span id="status-bar-dot-2" style="display: none"> • </span>
+        <span id="status-bar-cpu"></span>
+      </div>
+      <div id="status-bar-right"><span id="status-bar-aidos"></span></div>
     </div>
-    <div id="status-bar-right"><span id="status-bar-aidos"></span></div>
-  </div>
-  <div id="new-user">
-    New user? Read the <strong>FAQ</strong> first!
-  </div>
-</body>
-<script src="bower_components/tingle/dist/tingle.min.js"></script>
-<script type="text/javascript">
-  require("./js/index.js")
-</script>
-
+    <div id="new-user">New user? Read the <strong>FAQ</strong> first!</div>
+  </body>
+  <script src="../node_modules/tingle.js/dist/tingle.min.js"></script>
+  <!-- <script type="text/javascript">
+    require("./js/index.js");
+  </script> -->
 </html>

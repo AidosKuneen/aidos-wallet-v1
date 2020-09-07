@@ -6,7 +6,7 @@
   "license": "GPL-3.0",
   "main": "app/js/main.js",
   "scripts": {
-    "postinstall": "install-app-deps && cd app && bower install && cd ../ui && bower install",
+    "postinstall": "electron-builder install-app-deps",
     "start": "export NODE_ENV=development || set NODE_ENV=development && electron app/js/main.js",
     "precompile": "rimraf out/*",
     "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && build --win --mac --linux --x64 --ia32",
@@ -26,15 +26,23 @@
     "url": "https://github.com/AidosKuneen/aidos-wallet"
   },
   "dependencies": {
-    "ffi": "^2.2.0",
-    "fs-extra": "^1.0.0",
-    "glob": "^7.1.1",
-    "pidusage": "^1.1.0"
+    "async": "^3.2.0",
+    "clipboard": "^2.0.6",
+    "ffi-napi": "^3.0.1",
+    "font-awesome": "^4.7.0",
+    "fs-extra": "^9.0.1",
+    "glob": "^7.1.6",
+    "jquery": "^3.5.1",
+    "jquery-qrcode": "^1.0.0",
+    "pidusage": "^2.0.21",
+    "remodal": "^1.1.1",
+    "tingle.js": "^0.15.3",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
-    "electron": "^1.4.14",
-    "electron-builder": "^11.5.0",
-    "rimraf": "^2.5.4"
+    "electron": "^10.1.1",
+    "electron-builder": "^22.8.0",
+    "rimraf": "^3.0.2"
   },
   "build": {
     "directories": {
@@ -75,7 +83,7 @@
       "target": "nsis"
     },
     "linux": {
-      "icon":"/",
+      "icon": "/",
       "target": [
         "AppImage",
         "deb",
