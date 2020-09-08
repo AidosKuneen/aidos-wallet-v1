@@ -1,4 +1,12 @@
-const { app, BrowserWindow, ipcMain, Menu, protocol } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  protocol,
+  BrowserView,
+  webContents,
+} = require("electron");
 const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
@@ -10,6 +18,7 @@ const pusage = require("pidusage");
 const url = require("url");
 
 let win;
+let view;
 let otherWin;
 let loadingWin;
 let server;
@@ -418,6 +427,7 @@ var App = (function (App, undefined) {
         webPreferences: {
           preload: path.join(__dirname, "index.js"),
         },
+        webviewTag: true,
       });
       win.toggleDevTools({ mode: "undocked" });
       win.setAspectRatio(27 / 16);
@@ -480,6 +490,27 @@ var App = (function (App, undefined) {
     win.webContents.once("did-finish-load", function () {
       App.updateTitle();
     });
+
+    view = new BrowserView({
+      webPreferences: {
+        preload: path.join(__dirname, "server-ipc.js"),
+      },
+    });
+
+    win.setBrowserView(view);
+
+    view.setBounds({
+      x: 0,
+      y: 0,
+      width: windowOptions.width,
+      height: windowOptions.height,
+    });
+
+    // view.webContents.loadURL(
+    //   "file://" +
+    //     path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
+    //     "/aidos.html"
+    // );
 
     App.createMenuBar();
   };
@@ -1263,24 +1294,49 @@ var App = (function (App, undefined) {
         );
       }
 
-      win.webContents.send(
-        "nodeStarted",
-        "file://" +
-          path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
-          "/aidos.html",
-        {
-          inApp: 1,
-          showStatus: settings.showStatusBar,
-          host:
-            settings.lightWallet == 1 ? settings.lightWalletHost : "localhost",
-          port:
-            settings.lightWallet == 1
-              ? settings.lightWalletPort
-              : settings.port,
-          depth: settings.depth,
-          minWeightMagnitude: settings.minWeightMagnitude,
-          ccurlPath: ccurlPath,
-        }
+      // const view = new BrowserView({
+      //   webPreferences: {
+      //     preload: path.join(__dirname, "server-ipc.js"),
+      //   },
+      // });
+
+      // win.setBrowserView(view);
+
+      // view.setBounds({
+      //   x: 0,
+      //   y: 0,
+      //   width: windowOptions.width,
+      //   height: windowOptions.height,
+      // });
+
+      // view.webContents.loadURL(
+      //   "file://" +
+      //     path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
+      //     "/aidos.html"
+      // );
+
+      view.fromWebContents(
+        webContents.send(
+          "nodeStarted",
+          "file://" +
+            path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
+            "/aidos.html",
+          {
+            inApp: 1,
+            showStatus: settings.showStatusBar,
+            host:
+              settings.lightWallet == 1
+                ? settings.lightWalletHost
+                : "localhost",
+            port:
+              settings.lightWallet == 1
+                ? settings.lightWalletPort
+                : settings.port,
+            depth: settings.depth,
+            minWeightMagnitude: settings.minWeightMagnitude,
+            ccurlPath: ccurlPath,
+          }
+        )
       );
     } catch (err) {
       console.log("Error:");
@@ -1615,8 +1671,9 @@ var App = (function (App, undefined) {
         center: true,
         resizable: false,
         webPreferences: {
-          preload: path.join("./", "index.js"),
+          preload: path.join(__dirname, "index.js"),
         },
+        webviewTag: true,
       });
       // otherWin.toggleDevTools({mode: "undocked"});
       otherWin.setFullScreenable(false);

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "start": "export NODE_ENV=development || set NODE_ENV=development && electron .",
+    "start": "export NODE_ENV=development || set NODE_ENV=development && electron app/js/main.js",
     "precompile": "rimraf out/*",
     "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32",
     "compile:lin": "electron-builder build --linux --x64 --ia32",
@@ -56,8 +56,7 @@
     "appId": "com.aidoskuneen.wallet",
     "extraResources": [
       "ccurl/**/*",
-      "ui/**/*",
-      "app/**/*"
+      "ui/**/*"
     ],
     "protocols": [
       {

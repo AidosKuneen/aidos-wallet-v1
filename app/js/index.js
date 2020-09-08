@@ -1,4 +1,11 @@
-const { remote, webFrame, ipcRenderer, shell, clipboard } = require("electron");
+const {
+  remote,
+  webFrame,
+  ipcRenderer,
+  shell,
+  clipboard,
+  BrowserView,
+} = require("electron");
 
 var __entityMap = {
   "&": "&amp;",
@@ -122,14 +129,27 @@ var UI = (function (UI, undefined) {
       return;
     }
 
+    console.log(url);
+
+    // const view = new BrowserView();
+
+    // view.setBounds({
+    //   x: 0,
+    //   y: 0,
+    //   width: windowOptions.width,
+    //   height: windowOptions.height,
+    // });
+
+    // view.webContents.loadURL(url);
+
     webview = document.getElementById("server");
 
-    // console.log(webview);
     webviewIsLoaded = false;
 
-    //webview.loadURL(url);
+    // webview.loadURL(url);
 
-    webview.addEventListener("dom-ready", function () {
+    webview.addEventListener("dom-ready", () => {
+      console.log("webiew dom-ready");
       webview.loadURL(url);
     });
 
@@ -160,9 +180,9 @@ var UI = (function (UI, undefined) {
       return;
     }
 
-    if (remote.getGlobal("hasOtherWin")) {
-      return;
-    }
+    // if (remote.getGlobal("hasOtherWin")) {
+    //   return;
+    // }
 
     if (webview.style.display == "none") {
       webview.style.display = "";
@@ -170,7 +190,11 @@ var UI = (function (UI, undefined) {
 
     webviewIsLoaded = true;
 
-    webview.getWebContents().addListener("context-menu", function (e) {
+    const remoteContent = remote.webContents.fromId(webview.getWebContentsId());
+
+    console.log(remote.webContents.fromId(webview.getWebContentsId()));
+
+    remoteContent.addListener("context-menu", function (e) {
       e.preventDefault();
       e.stopPropagation();
       UI.showContextMenu(e);
