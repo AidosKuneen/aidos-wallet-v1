@@ -51,16 +51,11 @@
     },
     "appId": "com.aidoskuneen.wallet",
     "category": "public.app-category.developer-tools",
-    "extraResources": [
-      "ccurl/**/*",
-      "ui/**/*"
-    ],
+    "extraResources": ["ccurl/**/*", "ui/**/*"],
     "protocols": [
       {
         "name": "Aidos URL Scheme",
-        "schemes": [
-          "adk"
-        ]
+        "schemes": ["adk"]
       }
     ],
     "dmg": {
@@ -84,12 +79,7 @@
     },
     "linux": {
       "icon": "/",
-      "target": [
-        "AppImage",
-        "deb",
-        "rpm",
-        "tar.gz"
-      ],
+      "target": ["AppImage", "deb", "rpm", "tar.gz"],
       "packageUrl": "http://aidoskuneen.com"
     }
   }

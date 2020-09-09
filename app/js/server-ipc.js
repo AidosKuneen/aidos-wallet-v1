@@ -1,4 +1,4 @@
-const ipcRenderer = require("electron");
+const { ipcRenderer } = require("electron");
 var ccurl = false;
 
 //only load for light wallets

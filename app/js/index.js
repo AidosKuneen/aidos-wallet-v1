@@ -1,11 +1,4 @@
-const {
-  remote,
-  webFrame,
-  ipcRenderer,
-  shell,
-  clipboard,
-  BrowserView,
-} = require("electron");
+const { remote, webFrame, ipcRenderer, shell, clipboard } = require("electron");
 
 var __entityMap = {
   "&": "&amp;",
@@ -129,29 +122,15 @@ var UI = (function (UI, undefined) {
       return;
     }
 
-    console.log(url);
-
-    // const view = new BrowserView();
-
-    // view.setBounds({
-    //   x: 0,
-    //   y: 0,
-    //   width: windowOptions.width,
-    //   height: windowOptions.height,
-    // });
-
-    // view.webContents.loadURL(url);
-
     webview = document.getElementById("server");
-
     webviewIsLoaded = false;
 
-    // webview.loadURL(url);
-
-    webview.addEventListener("dom-ready", () => {
-      console.log("webiew dom-ready");
+    const loadPage = () => {
       webview.loadURL(url);
-    });
+      webview.removeEventListener("dom-ready", loadPage);
+    };
+
+    webview.addEventListener("dom-ready", loadPage);
 
     // Prevent window from redirecting to dragged link location (mac)
     webview.addEventListener(
@@ -192,8 +171,6 @@ var UI = (function (UI, undefined) {
 
     const remoteContent = remote.webContents.fromId(webview.getWebContentsId());
 
-    console.log(remote.webContents.fromId(webview.getWebContentsId()));
-
     remoteContent.addListener("context-menu", function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -207,13 +184,11 @@ var UI = (function (UI, undefined) {
     }, 250);
 
     try {
-      webview
-        .getWebContents()
-        .document.body.addEventListener(
-          "contextmenu",
-          UI.showContextMenu,
-          false
-        );
+      remoteContent.document.body.addEventListener(
+        "contextmenu",
+        UI.showContextMenu,
+        false
+      );
     } catch (err) {}
   };
 

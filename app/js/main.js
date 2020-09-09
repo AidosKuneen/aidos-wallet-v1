@@ -4,25 +4,22 @@ const {
   ipcMain,
   Menu,
   protocol,
-  BrowserView,
-  webContents,
+  shell,
 } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
 const autoUpdater = app.autoUpdater;
-const powerSaveBlocker = app.powerSaveBlocker;
-const shell = app.shell;
-const clipboard = app.clipboard;
-const pusage = require("pidusage");
+//const powerSaveBlocker = app.powerSaveBlocker;
+//const clipboard = app.clipboard;
+var pidusage = require("pidusage");
 const url = require("url");
 
 let win;
-let view;
 let otherWin;
 let loadingWin;
 let server;
-let powerSaver = -1;
+// let powerSaver = -1;
 let cpuTrackInterval;
 
 var __entityMap = {
@@ -426,10 +423,12 @@ var App = (function (App, undefined) {
         windowOptions,
         webPreferences: {
           preload: path.join(__dirname, "index.js"),
+          webviewTag: true,
+          enableRemoteModule: true,
+          nodeIntegration: true,
         },
-        webviewTag: true,
       });
-      win.toggleDevTools({ mode: "undocked" });
+      // win.toggleDevTools({ mode: "undocked" });
       win.setAspectRatio(27 / 16);
 
       win.on("close", function (e) {
@@ -490,27 +489,6 @@ var App = (function (App, undefined) {
     win.webContents.once("did-finish-load", function () {
       App.updateTitle();
     });
-
-    view = new BrowserView({
-      webPreferences: {
-        preload: path.join(__dirname, "server-ipc.js"),
-      },
-    });
-
-    win.setBrowserView(view);
-
-    view.setBounds({
-      x: 0,
-      y: 0,
-      width: windowOptions.width,
-      height: windowOptions.height,
-    });
-
-    // view.webContents.loadURL(
-    //   "file://" +
-    //     path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
-    //     "/aidos.html"
-    // );
 
     App.createMenuBar();
   };
@@ -1294,49 +1272,24 @@ var App = (function (App, undefined) {
         );
       }
 
-      // const view = new BrowserView({
-      //   webPreferences: {
-      //     preload: path.join(__dirname, "server-ipc.js"),
-      //   },
-      // });
-
-      // win.setBrowserView(view);
-
-      // view.setBounds({
-      //   x: 0,
-      //   y: 0,
-      //   width: windowOptions.width,
-      //   height: windowOptions.height,
-      // });
-
-      // view.webContents.loadURL(
-      //   "file://" +
-      //     path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
-      //     "/aidos.html"
-      // );
-
-      view.fromWebContents(
-        webContents.send(
-          "nodeStarted",
-          "file://" +
-            path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
-            "/aidos.html",
-          {
-            inApp: 1,
-            showStatus: settings.showStatusBar,
-            host:
-              settings.lightWallet == 1
-                ? settings.lightWalletHost
-                : "localhost",
-            port:
-              settings.lightWallet == 1
-                ? settings.lightWalletPort
-                : settings.port,
-            depth: settings.depth,
-            minWeightMagnitude: settings.minWeightMagnitude,
-            ccurlPath: ccurlPath,
-          }
-        )
+      win.webContents.send(
+        "nodeStarted",
+        "file://" +
+          path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
+          "/aidos.html",
+        {
+          inApp: 1,
+          showStatus: settings.showStatusBar,
+          host:
+            settings.lightWallet == 1 ? settings.lightWalletHost : "localhost",
+          port:
+            settings.lightWallet == 1
+              ? settings.lightWalletPort
+              : settings.port,
+          depth: settings.depth,
+          minWeightMagnitude: settings.minWeightMagnitude,
+          ccurlPath: ccurlPath,
+        }
       );
     } catch (err) {
       console.log("Error:");
@@ -1473,17 +1426,16 @@ var App = (function (App, undefined) {
     } else if (server && server.pid) {
       pid = server.pid;
     }
-
     if (pid) {
-      pusage.stat(pid, function (err, stat) {
+      pidusage(pid, function (err, stats) {
         if (err) {
           App.updateStatusBar({ cpu: "" });
         } else {
-          App.updateStatusBar({ cpu: Math.round(stat.cpu).toFixed(2) });
+          App.updateStatusBar({ cpu: Math.round(stats.cpu).toFixed(2) });
         }
       });
 
-      pusage.unmonitor(pid);
+      pidusage.clear();
     } else {
       console.log("Track CPU: No server PID");
       if (cpuTrackInterval) {
@@ -1672,8 +1624,10 @@ var App = (function (App, undefined) {
         resizable: false,
         webPreferences: {
           preload: path.join(__dirname, "index.js"),
+          webviewTag: true,
+          enableRemoteModule: true,
+          nodeIntegration: true,
         },
-        webviewTag: true,
       });
       // otherWin.toggleDevTools({mode: "undocked"});
       otherWin.setFullScreenable(false);

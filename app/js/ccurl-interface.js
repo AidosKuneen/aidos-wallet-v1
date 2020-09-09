@@ -1,15 +1,18 @@
 var ffi = require("ffi-napi");
-var struct = require("ref-struct");
-var ref = require("ref");
+var ref = require("ref-napi");
+var struct = require("ref-struct-di");
+var StructType = require("ref-struct-di")(ref);
 
 var isInitialized = false;
 
-var result = struct({
+var result = StructType({
   corenum: "int",
   count: "long long",
   time: "long long",
   trytes: "string",
 });
+
+// var rs = new result();
 
 var ccurlProvider = function (ccurlPath) {
   if (!ccurlPath) {
@@ -19,10 +22,12 @@ var ccurlProvider = function (ccurlPath) {
 
   var fullPath = ccurlPath + "/libccurl";
 
+  // refResult = ref.refType(result);
+
   try {
     // Define libccurl to be used for finding the nonce
     var libccurl = ffi.Library(fullPath, {
-      ccurl_pow: ["string", ["string", "int", ref.refType(result)]],
+      ccurl_pow: ["string", ["string", "int", result]],
       ccurl_pow_finalize: ["void", []],
       ccurl_pow_interrupt: ["void", []],
     });

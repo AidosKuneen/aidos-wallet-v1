@@ -49,6 +49,9 @@
     "rimraf": "^3.0.2"
   },
   "build": {
+    "files": [
+      "app/js/main.js"
+    ],
     "directories": {
       "buildResources": "build",
       "output": "out"
