@@ -1,10 +1,10 @@
-language: c  
+language: c
 os:
   - linux
   - osx
 
 sudo: required
-dist: trusty
+dist: focal
 group: edge
 
 cache:
@@ -12,7 +12,7 @@ cache:
     - node_modules
 
 env:
-  - NODE_VERSION="7.4.0"
+  - NODE_VERSION="12.8.3"
 
 addons:
   apt:
@@ -26,15 +26,15 @@ addons:
       - xz-utils
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-       echo "in osx";
-       git clone https://github.com/creationix/nvm.git /tmp/.nvm;
-       source /tmp/.nvm/nvm.sh;
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    echo "in osx";
+    git clone https://github.com/creationix/nvm.git /tmp/.nvm;
+    source /tmp/.nvm/nvm.sh;
     fi
   - nvm install $NODE_VERSION
   - nvm use --delete-prefix $NODE_VERSION
   - node --version
-   - npm install electron@1.6.11
+    - npm install electron@1.6.11
   - npm install bower
   - npm install electron-builder@11.5.0
 
@@ -44,18 +44,18 @@ install:
   - rm mac/libccurl.dylib
   - rm lin64/libccurl.so
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        echo "in linux";
-        gcc -shared -o libccurl.so libccurl.cpp -O3 -lpthread -fPIC -std=c++11;
-        mkdir -p lin64;
-        cp libccurl.so lin64/;
-        rm libccurl.so;
+    echo "in linux";
+    gcc -shared -o libccurl.so libccurl.cpp -O3 -lpthread -fPIC -std=c++11;
+    mkdir -p lin64;
+    cp libccurl.so lin64/;
+    rm libccurl.so;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        echo "in osx";
-        gcc -dynamiclib -o libccurl.dylib libccurl.cpp -O3 -lpthread -std=c++11;
-        mkdir -p mac;
-        cp libccurl.dylib mac/;
-        rm libccurl.dylib;
+    echo "in osx";
+    gcc -dynamiclib -o libccurl.dylib libccurl.cpp -O3 -lpthread -std=c++11;
+    mkdir -p mac;
+    cp libccurl.dylib mac/;
+    rm libccurl.dylib;
     fi
   - popd
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run compile:lin; fi
