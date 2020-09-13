@@ -84,11 +84,11 @@
       ]
     },
     "win": {
-      "icon": "/build/icons/png/256x256x.png",
+      "icon": "/build/icons/png/256x256.png",
       "target": "nsis"
     },
     "linux": {
-      "icon": "/build/icons/png/256x25x.png",
+      "icon": "/build/icons/png/256x256.png",
       "target": [
         "AppImage",
         "deb",
