@@ -36,11 +36,11 @@ before_install:
     git clone https://github.com/creationix/nvm.git /tmp/.nvm;
     source /tmp/.nvm/nvm.sh;
     fi
-  - nvm install $NODE_VERSION
-  - nvm use --delete-prefix $NODE_VERSION
+  - nvm install --lts
+  - nvm use --delete-prefix --lts
   - node --version
-    - npm install electron@10.1.1
-  - npm install electron-builder@22.8.0
+    - yarn add electron@10.1.1
+  - yarn add electron-builder@22.8.0
 
 install:
   - yarn
