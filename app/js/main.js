@@ -421,6 +421,9 @@ var App = (function (App, undefined) {
 
       win = new BrowserWindow({
         windowOptions,
+        icon:
+          path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
+          "/images/logo-min.png",
         webPreferences: {
           preload: path.join(__dirname, "index.js"),
           webviewTag: true,
