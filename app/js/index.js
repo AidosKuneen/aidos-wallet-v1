@@ -124,10 +124,7 @@ var UI = (function (UI, undefined) {
 
     webview = document.getElementById("server");
     webviewIsLoaded = false;
-    webview.openDevTools();
-    // webview.addEventListener("dom-ready", () => {
-    //   webview.loadURL(url);
-    // });
+
     const loadPage = () => {
       webview.loadURL(url);
       webview.removeEventListener("dom-ready", loadPage);

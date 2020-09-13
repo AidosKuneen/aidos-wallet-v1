@@ -4,12 +4,19 @@
 <head>
   <meta charset="utf-8">
   <title>Aidos Kuneen Wallet</title>
-  <script type="text/javascript" src="js/modules/jquery.min.js"></script>
   <script>
-    let $ = require('jquery');
+
+if (typeof module === 'object') {window.module = module; module = undefined;}
+
   </script>
+
+  <script type="text/javascript" src="js/modules/jquery.min.js"></script>
+  <!-- <script>
+    window.$ = window.jQuery = require("jquery");
+  </script> -->
+  <script type="text/javascript" src="js/modules/jquery-qrcode.min.js"></script>
   <script type="text/javascript" src="js/modules/clipboard.min.js"></script>
-  <script type="text/javascript" src="js/modules/jquery.qrcode.min.js"></script>
+  <script type="text/javascript" src="js/modules/toastr.min.js"></script>
   <script type="text/javascript" src="js/modules/remodal.min.js"></script>
   <script type="text/javascript" src="js/modules/async.min.js"></script>
   <script type="text/javascript" src="aidos.lib.js/dist/aidos.js"></script>
@@ -39,7 +46,7 @@
   <script src="js/uikit.min.js"></script>
   <script src="js/components/accordion.js"></script>
   <script src="js/ui.aidos.js"></script>
-
+  <script>if (window.module) module = window.module;</script>
 </head>
 
 <body>

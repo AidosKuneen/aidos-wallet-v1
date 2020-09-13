@@ -1,5 +1,5 @@
 var aidos;
-var toastr = require("toastr");
+// var toastr = require("toastr");
 
 var connection = {
   accountData: false,

@@ -4,12 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/uikit.min.css" />
+    <script>
+      if (typeof module === "object") {
+        window.module = module;
+        module = undefined;
+      }
+    </script>
     <script src="js/jquery.min.js"></script>
     <script>
       window.$ = window.jQuery = require("jquery");
     </script>
     <script src="js/uikit.min.js"></script>
     <script src="js/tingle.min.js"></script>
+    <script>
+      if (window.module) module = window.module;
+    </script>
   </head>
 
   <body>
