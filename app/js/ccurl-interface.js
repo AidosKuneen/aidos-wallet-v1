@@ -1,6 +1,5 @@
 var ffi = require("ffi-napi");
 var ref = require("ref-napi");
-var struct = require("ref-struct-di");
 var StructType = require("ref-struct-di")(ref);
 
 var isInitialized = false;
