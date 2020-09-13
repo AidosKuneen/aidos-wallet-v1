@@ -30,16 +30,11 @@
   },
   "dependencies": {
     "async": "^3.2.0",
-    "clipboard": "^2.0.6",
     "ffi-napi": "^3.0.1",
-    "font-awesome": "^4.7.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "jquery": "^3.5.1",
-    "jquery-qrcode": "^1.0.0",
     "pidusage": "^2.0.21",
-    "remodal": "^1.1.1",
-    "tingle.js": "^0.15.3",
+    "jquery": "^3.5.1",
     "toastr": "^2.1.4"
   },
   "devDependencies": {
