@@ -33,6 +33,7 @@
     "ffi-napi": "^3.0.1",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
+    "jquery": "^3.5.1",
     "pidusage": "^2.0.21",
     "toastr": "^2.1.4"
   },
@@ -44,8 +45,7 @@
   "build": {
     "files": [
       "app/**/*",
-      "build/**/*",
-      "ui/**/*"
+      "build/**/*"
     ],
     "directories": {
       "buildResources": "build",
