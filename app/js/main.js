@@ -423,7 +423,7 @@ var App = (function (App, undefined) {
         windowOptions,
         icon:
           path.join(resourcesDirectory, "build").replace(path.sep, "/") +
-          "/icons/png/256x256.png",
+          "/icons/256x256.png",
         webPreferences: {
           preload: path.join(__dirname, "index.js"),
           webviewTag: true,
@@ -431,7 +431,7 @@ var App = (function (App, undefined) {
           nodeIntegration: true,
         },
       });
-      // win.toggleDevTools({ mode: "undocked" });
+      win.toggleDevTools({ mode: "undocked" });
       win.setAspectRatio(27 / 16);
 
       win.on("close", function (e) {
@@ -1626,7 +1626,7 @@ var App = (function (App, undefined) {
         center: true,
         resizable: false,
         webPreferences: {
-          preload: path.join(__dirname, "index.js"),
+          preload: path.join(__dirname, "/index.js"),
           webviewTag: true,
           enableRemoteModule: true,
           nodeIntegration: true,

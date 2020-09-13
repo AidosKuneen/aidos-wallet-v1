@@ -10,7 +10,7 @@
   },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "start": "export NODE_ENV=development || set NODE_ENV=development && electron app/js/main.js",
+    "start": "export NODE_ENV=development || set NODE_ENV=development && electron .",
     "precompile": "rimraf out/*",
     "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32",
     "compile:lin": "electron-builder build --linux --x64 --ia32",
@@ -33,20 +33,19 @@
     "ffi-napi": "^3.0.1",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "jquery": "^3.5.1",
     "pidusage": "^2.0.21",
     "toastr": "^2.1.4"
   },
   "devDependencies": {
     "electron": "^10.1.1",
     "electron-builder": "^22.8.0",
-    "electron-rebuild": "^2.0.1",
     "rimraf": "^3.0.2"
   },
   "build": {
     "files": [
-      "app/js/main.js",
-      "build/**/*"
+      "app/**/*",
+      "build/**/*",
+      "ui/**/*"
     ],
     "directories": {
       "buildResources": "build",
@@ -67,7 +66,7 @@
     ],
     "nodeGypRebuild": false,
     "dmg": {
-      "icon": "/build/icons/mac/icon.icns",
+      "icon": "/build/icons/icon.icns",
       "iconSize": 125,
       "contents": [
         {
@@ -84,16 +83,12 @@
       ]
     },
     "win": {
-      "icon": "/build/icons/win/icon.ico",
+      "icon": "/build/icons/icon.ico",
       "target": "nsis"
     },
     "linux": {
-      "icon": "/build/icons/png/256x256.png",
       "target": [
-        "AppImage",
-        "deb",
-        "rpm",
-        "tar.gz"
+        "AppImage"
       ]
     }
   }
