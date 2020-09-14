@@ -38,7 +38,7 @@ deploy:
   description: ""
   provider: GitHub
   auth_token:
-    secure: 3iQcaZ+ekUfV7qNqpOzlT1mY/pT4mhoNxxKsySYB643/Y6QWaPEEHqiOzHtQh+6k
+    secure: 5ebe9d9c6a866b5ec581f79762c11bc6270f543d
   artifact: /.*\.exe/
   draft: false
   prerelease: false
