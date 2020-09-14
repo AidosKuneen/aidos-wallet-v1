@@ -10,6 +10,7 @@ group: edge
 cache:
   directories:
     - node_modules
+
 env:
   - NODE_VERSION="12.8.3"
 
@@ -30,12 +31,15 @@ before_install:
     git clone https://github.com/creationix/nvm.git /tmp/.nvm;
     source /tmp/.nvm/nvm.sh;
     fi
-  - nvm install --lts
-  - nvm use --delete-prefix --lts
+  - nvm install $NODE_VERSION
+  - nvm use --delete-prefix $NODE_VERSION
   - node --version
+    - npm install electron@1.6.11
+  - npm install bower
+  - npm install electron-builder@11.5.0
 
 install:
-  - yarn
+  - npm install
   - pushd ccurl
   - rm mac/libccurl.dylib
   - rm lin64/libccurl.so
@@ -54,8 +58,8 @@ install:
     rm libccurl.dylib;
     fi
   - popd
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  yarn compile:lin; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  yarn compile:mac; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run compile:lin; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run compile:mac; fi
   - find out
 
 script:
