@@ -1,23 +1,15 @@
-- os: osx
-  osx_image: xcode12
-  language: node_js
-  node_js: "12"
-  env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-
-- os: linux
-  services: docker
-  language: generic
+language: c
+os:
+  - linux
+  - osx
 
 sudo: required
+dist: trusty
+group: edge
 
 cache:
   directories:
     - node_modules
-    - $HOME/.cache/electron
-    - $HOME/.cache/electron-builder
-
 env:
   - NODE_VERSION="12.8.3"
 
