@@ -12,6 +12,8 @@ matrix:
       services: docker
       language: generic
 
+sudo: required
+
 cache:
   directories:
     - node_modules
