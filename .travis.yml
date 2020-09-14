@@ -26,9 +26,7 @@ addons:
       - xz-utils
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    npm i -g npm@12.8.3
-    fi
+  - npm i -g npm@12.8.3
   - node --version
     - npm install electron@10.1.1
   - npm install electron-builder@22.8.0
