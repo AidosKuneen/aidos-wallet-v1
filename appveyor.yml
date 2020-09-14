@@ -1,24 +1,24 @@
+image: Visual Studio 2019
+
 platform:
   - x64
+
 cache:
   - node_modules
   - '%APPDATA%\npm-cache'
   - '%USERPROFILE%\.electron'
 
 install:
-  - ps: Install-Product node 7 x64
-  - npm install electron@1.6.11
-  - npm install bower
-  - npm install electron-builder@11.5.0
-  - npm install
+  - ps: Install-Product node 12 x64
+  - yarn
   - cd ccurl
-  - call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+  - call "C:\Program Files\Microsoft SDKs\Windows\v10.0\Bin\SetEnv.cmd" /x64
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 19.0\VC\vcvarsall.bat" x86_amd64
   - cl libccurl.cpp /LD /Ox
   - if not exist "win64" mkdir win64
   - copy libccurl.dll win64\
   - del libccurl.dll
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 19.0\VC\vcvarsall.bat" x86
   - cl libccurl.cpp /LD /Ox
   - if not exist "win32" mkdir win32
   - copy libccurl.dll win32\
@@ -26,25 +26,23 @@ install:
   - cd ..
 
 build_script:
-  - npm run compile:win
+  - yarn compile:win
   - tree /f out
 
 test: off
 
 artifacts:
-
   # pushing a single file
-   - path: out\*.exe
+  - path: out\*.exe
 
 deploy:
   release: $(appveyor_repo_tag_name)
-  description: ''
+  description: ""
   provider: GitHub
   auth_token:
-      secure: 3iQcaZ+ekUfV7qNqpOzlT1mY/pT4mhoNxxKsySYB643/Y6QWaPEEHqiOzHtQh+6k
-  artifact: /.*\.exe/            
+    secure: 3iQcaZ+ekUfV7qNqpOzlT1mY/pT4mhoNxxKsySYB643/Y6QWaPEEHqiOzHtQh+6k
+  artifact: /.*\.exe/
   draft: false
   prerelease: false
   on:
-    appveyor_repo_tag: true        
- 
+    appveyor_repo_tag: true

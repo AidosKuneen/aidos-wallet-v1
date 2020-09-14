@@ -1,19 +1,19 @@
-const electron = require("electron")
+const { remote, webFrame, ipcRenderer, shell, clipboard } = require("electron");
 
 var __entityMap = {
   "&": "&amp;",
   "<": "&lt;",
   ">": "&gt;",
-  '"': '&quot;',
-  "'": '&#39;',
-  "/": '&#x2F;'
+  '"': "&quot;",
+  "'": "&#39;",
+  "/": "&#x2F;",
 };
 
 String.prototype.escapeHTML = function () {
   return String(this).replace(/[&<>"'\/]/g, function (s) {
     return __entityMap[s];
   });
-}
+};
 
 var UI = (function (UI, undefined) {
   var showQuitAlert = false;
@@ -30,7 +30,7 @@ var UI = (function (UI, undefined) {
     var showStatusBar = false;
     var isFirstRun = false;
 
-    if (typeof (URLSearchParams) != "undefined") {
+    if (typeof URLSearchParams != "undefined") {
       var params = new URLSearchParams(location.search.slice(1));
       showStatusBar = params.get("showStatus") == 1;
       isFirstRun = params.get("isFirstRun") == 1;
@@ -45,8 +45,8 @@ var UI = (function (UI, undefined) {
       document.body.className = "";
     }
 
-    electron.webFrame.setZoomLevelLimits(1, 1);
-    electron.ipcRenderer.send("rendererIsInitialized");
+    webFrame.setVisualZoomLevelLimits(1, 1);
+    ipcRenderer.send("rendererIsInitialized");
     if (callNodeStarted) {
       UI.nodeStarted(callNodeStarted);
       callNodeStarted = false;
@@ -54,20 +54,23 @@ var UI = (function (UI, undefined) {
 
     if (!lightWallet) {
       document.body.className += " full-node";
-      document.getElementById("status-bar-milestone").addEventListener("click", function (e) {
-        electron.ipcRenderer.send("showServerLog");
-      });
+      document
+        .getElementById("status-bar-milestone")
+        .addEventListener("click", function (e) {
+          ipcRenderer.send("showServerLog");
+        });
 
-      document.getElementById("status-bar-solid-milestone").addEventListener("click", function (e) {
-        electron.ipcRenderer.send("showServerLog");
-      });
+      document
+        .getElementById("status-bar-solid-milestone")
+        .addEventListener("click", function (e) {
+          ipcRenderer.send("showServerLog");
+        });
     }
-
 
     document.getElementById("new-user").addEventListener("click", function (e) {
       UI.sendToWebview("openHelpMenu");
     });
-  }
+  };
 
   UI.showContextMenu = function (e) {
     var template = [
@@ -79,32 +82,41 @@ var UI = (function (UI, undefined) {
       {
         label: "Copy",
         accelerator: "CmdOrCtrl+C",
-        role: "copy"
+        role: "copy",
       },
       {
         label: "Paste",
         accelerator: "CmdOrCtrl+V",
-        role: "paste"
-      }
+        role: "paste",
+      },
     ];
 
-    if (electron.remote.getCurrentWindow().isFullScreen()) {
+    if (remote.getCurrentWindow().isFullScreen()) {
       template.push({
         label: "Exit Fullscreen",
         accelerator: process.platform === "darwin" ? "Ctrl+Command+F" : "F11",
         click: function () {
-          electron.remote.getCurrentWindow().setFullScreen(false);
-        }
-      })
+          remote.getCurrentWindow().setFullScreen(false);
+        },
+      });
     }
 
-    const menu = electron.remote.Menu.buildFromTemplate(template);
-    menu.popup(electron.remote.getCurrentWindow(), e.x, e.y);
-  }
+    const menu = remote.Menu.buildFromTemplate(template);
+    menu.popup(remote.getCurrentWindow(), e.x, e.y);
+  };
 
   UI.nodeStarted = function (url, settings) {
-    url = url + "?" + Object.keys(settings).map(function (key) { return encodeURIComponent(key) + "=" + encodeURIComponent(settings[key]); }).join("&");
-    
+    url =
+      url +
+      "?" +
+      Object.keys(settings)
+        .map(function (key) {
+          return (
+            encodeURIComponent(key) + "=" + encodeURIComponent(settings[key])
+          );
+        })
+        .join("&");
+
     if (!isInitialized) {
       callNodeStarted = url;
       return;
@@ -113,13 +125,22 @@ var UI = (function (UI, undefined) {
     webview = document.getElementById("server");
     webviewIsLoaded = false;
 
-    webview.loadURL(url);
+    const loadPage = () => {
+      webview.loadURL(url);
+      webview.removeEventListener("dom-ready", loadPage);
+    };
+
+    webview.addEventListener("dom-ready", loadPage);
 
     // Prevent window from redirecting to dragged link location (mac)
-    webview.addEventListener("dragover", function (e) {
-      e.preventDefault();
-      return false;
-    }, false);
+    webview.addEventListener(
+      "dragover",
+      function (e) {
+        e.preventDefault();
+        return false;
+      },
+      false
+    );
 
     //also "dom-ready"
     webview.addEventListener("did-finish-load", UI.webviewDidFinishLoad());
@@ -128,9 +149,9 @@ var UI = (function (UI, undefined) {
     setTimeout(UI.webviewDidFinishLoad, 1000);
 
     webview.addEventListener("new-window", function (e) {
-      electron.shell.openExternal(e.url);
+      shell.openExternal(e.url);
     });
-  }
+  };
 
   UI.webviewDidFinishLoad = function () {
     //for some reason this is sometimes called 2 times?..
@@ -138,9 +159,9 @@ var UI = (function (UI, undefined) {
       return;
     }
 
-    if (electron.remote.getGlobal("hasOtherWin")) {
-      return;
-    }
+    // if (remote.getGlobal("hasOtherWin")) {
+    //   return;
+    // }
 
     if (webview.style.display == "none") {
       webview.style.display = "";
@@ -148,30 +169,35 @@ var UI = (function (UI, undefined) {
 
     webviewIsLoaded = true;
 
-    webview.getWebContents().addListener("context-menu", function (e) {
+    const remoteContent = remote.webContents.fromId(webview.getWebContentsId());
+
+    remoteContent.addListener("context-menu", function (e) {
       e.preventDefault();
       e.stopPropagation();
       UI.showContextMenu(e);
     });
 
     setTimeout(function () {
-      electron.remote.getCurrentWindow().show();
+      remote.getCurrentWindow().show();
       webview.focus();
-      //electron.ipcRenderer.send("rendererIsReady");
+      //ipcRenderer.send("rendererIsReady");
     }, 250);
 
     try {
-      webview.getWebContents().document.body.addEventListener("contextmenu", UI.showContextMenu, false);
-    } catch (err) {
-    }
-  }
+      remoteContent.document.body.addEventListener(
+        "contextmenu",
+        UI.showContextMenu,
+        false
+      );
+    } catch (err) {}
+  };
 
   // https://github.com/electron/electron/issues/5900
   UI.focusOnWebview = function () {
     if (webviewIsLoaded && webview) {
       webview.focus();
     }
-  }
+  };
 
   UI.showServerLog = function (serverOutput) {
     if (showQuitAlert) {
@@ -185,25 +211,35 @@ var UI = (function (UI, undefined) {
 
     log = log.replace(/\n\s*\n/g, "\n");
 
-    UI.showAlert("<h1>Server Log</h1><p>Below are the last messages from the server log (<a href='#' id='copy_server_log'>copy</a>):</p>" +
-      "<textarea rows='10' class='form-control' id='server_output' style='background:#000;color:#fff;font-family:courier;' readonly>" + String(log).escapeHTML() + "</textarea>", function () {
-        document.getElementById("copy_server_log").addEventListener("click", function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          UI.copyServerLog();
-        });
-      }, function () {
-        electron.ipcRenderer.send("stopLookingAtServerLog");
-      });
+    UI.showAlert(
+      "<h1>Server Log</h1><p>Below are the last messages from the server log (<a href='#' id='copy_server_log'>copy</a>):</p>" +
+        "<textarea rows='10' class='form-control' id='server_output' style='background:#000;color:#fff;font-family:courier;' readonly>" +
+        String(log).escapeHTML() +
+        "</textarea>",
+      function () {
+        document
+          .getElementById("copy_server_log")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            UI.copyServerLog();
+          });
+      },
+      function () {
+        ipcRenderer.send("stopLookingAtServerLog");
+      }
+    );
 
-    document.getElementById("server_output").scrollTop = document.getElementById("server_output").scrollHeight;
-  }
+    document.getElementById(
+      "server_output"
+    ).scrollTop = document.getElementById("server_output").scrollHeight;
+  };
 
   UI.copyServerLog = function () {
     document.getElementById("server_output").select();
     document.execCommand("copy");
     window.getSelection().removeAllRanges();
-  }
+  };
 
   UI.appendToServerLog = function (data) {
     var serverLog = document.getElementById("server_output");
@@ -217,42 +253,58 @@ var UI = (function (UI, undefined) {
         serverLogLines = 1000;
       }
       serverLog.value += data;
-      if (serverLog.scrollHeight - (serverLog.scrollTop + serverLog.offsetHeight) < 100) {
+      if (
+        serverLog.scrollHeight -
+          (serverLog.scrollTop + serverLog.offsetHeight) <
+        100
+      ) {
         serverLog.scrollTop = serverLog.scrollHeight;
       }
     }
-  }
+  };
 
   UI.toggleStatusBar = function (show) {
-    document.body.className = (show ? "status-bar-active" : "");
+    document.body.className = show ? "status-bar-active" : "";
     if (webviewIsLoaded && webview) {
       webview.send("toggleStatusBar", show);
     }
-  }
+  };
 
   UI.updateStatusBar = function (data) {
     if (data.hasOwnProperty("latestSolidSubmeshMilestoneIndex")) {
-      document.getElementById("status-bar-solid-milestone").innerHTML = String(data.latestSolidSubmeshMilestoneIndex).escapeHTML();
+      document.getElementById("status-bar-solid-milestone").innerHTML = String(
+        data.latestSolidSubmeshMilestoneIndex
+      ).escapeHTML();
     }
     if (data.hasOwnProperty("latestMilestoneIndex")) {
-      document.getElementById("status-bar-milestone").innerHTML = String(data.latestMilestoneIndex).escapeHTML();
+      document.getElementById("status-bar-milestone").innerHTML = String(
+        data.latestMilestoneIndex
+      ).escapeHTML();
     }
 
     if (data.hasOwnProperty("cpu")) {
       if (data.cpu === "") {
         document.getElementById("status-bar-cpu").innerHTML = "";
       } else {
-        document.getElementById("status-bar-cpu").innerHTML = "CPU: " + String(data.cpu).escapeHTML() + "%";
+        document.getElementById("status-bar-cpu").innerHTML =
+          "CPU: " + String(data.cpu).escapeHTML() + "%";
       }
     }
 
     if (document.getElementById("status-bar-dot-1").style.display == "none") {
-      if (document.getElementById("status-bar-milestone").innerHTML && document.getElementById("status-bar-solid-milestone").innerHTML) {
+      if (
+        document.getElementById("status-bar-milestone").innerHTML &&
+        document.getElementById("status-bar-solid-milestone").innerHTML
+      ) {
         document.getElementById("status-bar-dot-1").style.display = "inline";
       }
     }
     if (document.getElementById("status-bar-dot-2").style.display == "none") {
-      if ((document.getElementById("status-bar-milestone").innerHTML || document.getElementById("status-bar-solid-milestone").innerHTML) && document.getElementById("status-bar-cpu").innerHTML) {
+      if (
+        (document.getElementById("status-bar-milestone").innerHTML ||
+          document.getElementById("status-bar-solid-milestone").innerHTML) &&
+        document.getElementById("status-bar-cpu").innerHTML
+      ) {
         document.getElementById("status-bar-dot-2").style.display = "inline";
       }
     }
@@ -262,13 +314,14 @@ var UI = (function (UI, undefined) {
         document.getElementById("status-bar-aidos").style.display = "none";
       } else {
         document.getElementById("status-bar-aidos").style.display = "inline";
-        document.getElementById("status-bar-aidos").innerHTML = UI.convertToAidos(data.hoverAmount);
+        document.getElementById(
+          "status-bar-aidos"
+        ).innerHTML = UI.convertToAidos(data.hoverAmount);
       }
     }
-  }
+  };
 
   UI.convertToAidos = function (amount) {
-
     if (isNaN(amount)) {
       return "";
     }
@@ -283,7 +336,7 @@ var UI = (function (UI, undefined) {
     formattedAmount = negative + amount + " ADK";
 
     return formattedAmount;
-  }
+  };
 
   UI.showPreferences = function (settings) {
     UI.hideAlerts();
@@ -294,7 +347,7 @@ var UI = (function (UI, undefined) {
         var close = document.querySelector(".tingle-modal__close");
         var modalContent = document.querySelector(".tingle-modal-box__content");
         modalContent.appendChild(close);
-      }
+      },
     });
 
     /*
@@ -307,14 +360,22 @@ var UI = (function (UI, undefined) {
                      "</select>");
     */
 
-    modal.setContent("<h1>Preferences</h1>" +
-      (process.platform != "linux" ? "<div class='input-group input-group-last'><label class='label--checkbox'><input type='checkbox' name='open_at_login' id='preferences_open_at_login' class='checkbox' value='1'" + (settings.openAtLogin ? " checked='checked'" : "") + " />Open at Login</label>" : ""));
+    modal.setContent(
+      "<h1>Preferences</h1>" +
+        (process.platform != "linux"
+          ? "<div class='input-group input-group-last'><label class='label--checkbox'><input type='checkbox' name='open_at_login' id='preferences_open_at_login' class='checkbox' value='1'" +
+            (settings.openAtLogin ? " checked='checked'" : "") +
+            " />Open at Login</label>"
+          : "")
+    );
 
     modal.addFooterBtn("Save", "tingle-btn tingle-btn--primary", function () {
       var settings = {};
 
       if (process.platform != "linux") {
-        settings.openAtLogin = document.getElementById("preferences_open_at_login").checked;
+        settings.openAtLogin = document.getElementById(
+          "preferences_open_at_login"
+        ).checked;
       }
 
       /*
@@ -323,11 +384,11 @@ var UI = (function (UI, undefined) {
       */
 
       modal.close();
-      electron.ipcRenderer.send("updatePreferences", settings);
+      ipcRenderer.send("updatePreferences", settings);
     });
 
     modal.open();
-  }
+  };
 
   UI.addPeerNode = function (node) {
     if (showQuitAlert) {
@@ -342,24 +403,36 @@ var UI = (function (UI, undefined) {
         var close = document.querySelector(".tingle-modal__close");
         var modalContent = document.querySelector(".tingle-modal-box__content");
         modalContent.appendChild(close);
+      },
+    });
+
+    modal.setContent(
+      "<h1>Add Peer</h1>" +
+        "<p>Are you sure you want to add this Peer to your server configuration?</p>" +
+        "<p style='font-weight:bold'>" +
+        String(node).escapeHTML() +
+        "</p>"
+    );
+
+    modal.addFooterBtn(
+      "Yes, Add This Peer",
+      "tingle-btn tingle-btn--primary",
+      function () {
+        modal.close();
+        ipcRenderer.send("addPeerNode", node);
       }
-    });
+    );
 
-    modal.setContent("<h1>Add Peer</h1>" +
-      "<p>Are you sure you want to add this Peer to your server configuration?</p>" +
-      "<p style='font-weight:bold'>" + String(node).escapeHTML() + "</p>");
-
-    modal.addFooterBtn("Yes, Add This Peer", "tingle-btn tingle-btn--primary", function () {
-      modal.close();
-      electron.ipcRenderer.send("addPeerNode", node);
-    });
-
-    modal.addFooterBtn("No, Cancel", "tingle-btn tingle-btn--default", function () {
-      modal.close();
-    });
+    modal.addFooterBtn(
+      "No, Cancel",
+      "tingle-btn tingle-btn--default",
+      function () {
+        modal.close();
+      }
+    );
 
     modal.open();
-  }
+  };
 
   UI.editNodeConfiguration = function (configuration) {
     if (showQuitAlert) {
@@ -375,28 +448,35 @@ var UI = (function (UI, undefined) {
         var modalContent = document.querySelector(".tingle-modal-box__content");
         modalContent.appendChild(close);
 
-        var el = document.getElementById(configuration.lightWallet ? "server_config_host" : "server_config_port");
+        var el = document.getElementById(
+          configuration.lightWallet
+            ? "server_config_host"
+            : "server_config_port"
+        );
 
         var temp = el.value;
         el.value = "";
         el.value = temp;
         el.focus();
-      }
+      },
     });
 
     var content = "";
 
     if (configuration.lightWallet) {
-      var host = "wallet1.aidoskuneen.com";
+      var host = "wallet.aidoskuneen.com";
       if (configuration.lightWalletHost) {
         host = configuration.lightWalletHost.match(/^https?:\/\/(.*)$/i);
         if (host && host.length > 0) {
           host = host[1];
         }
       }
-      content = "<h3>Enter Server Address: </h3>" +
-        "<input class='cfg' maxlength='32' type='text' id='server_config_host' placeholder='wallet1.aidoskuneen.com' value='" + host + "' />" +
-        "<botLabel>(without 'http://' and port number)</botLabel>"
+      content =
+        "<h3>Enter Server Address: </h3>" +
+        "<input class='cfg' maxlength='32' type='text' id='server_config_host' placeholder='wallet.aidoskuneen.com' value='" +
+        host +
+        "' />" +
+        "<botLabel>(without 'http://' and port number)</botLabel>";
     }
     modal.setContent(content);
 
@@ -407,7 +487,7 @@ var UI = (function (UI, undefined) {
 
       if (configuration.lightWallet) {
         //[0-9]+
-        var res = String(document.getElementById("server_config_host").value);//.match(/^(https?:\/\/.*):(14266)$/i);
+        var res = String(document.getElementById("server_config_host").value); //.match(/^(https?:\/\/.*):(14266)$/i);
 
         if (!res) {
           document.getElementById("host-error").style.display = "inline";
@@ -416,26 +496,31 @@ var UI = (function (UI, undefined) {
         }
 
         config.lightWalletHost = "http://" + res;
-        config.lightWalletPort = configuration.testNet ? 15555 : 14266;//res[2];
-        config.minWeightMagnitude = configuration.testNet ? "13" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        config.lightWalletPort = configuration.testNet ? 15555 : 14266; //res[2];
+        config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
       } else {
-        config.port = configuration.testNet ? 15555 : 14266;//parseInt(document.getElementById("server_config_port").value, 10);
-        config.depth = parseInt(document.getElementById("server_config_depth").value, 10);
-        config.minWeightMagnitude = configuration.testNet ? "13" : "18";//parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        config.port = configuration.testNet ? 15555 : 14266; //parseInt(document.getElementById("server_config_port").value, 10);
+        config.depth = parseInt(
+          document.getElementById("server_config_depth").value,
+          10
+        );
+        config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
         config.nodes = document.getElementById("server_config_peers").value;
       }
 
       modal.close();
 
-      electron.ipcRenderer.send("updateNodeConfiguration", config);
+      ipcRenderer.send("updateNodeConfiguration", config);
     });
 
     modal.open();
-  }
+  };
 
   UI.showUpdateAvailable = function () {
-    UI.showAlert("<h1>Update Available</h1><p>An update is available and is being downloaded.</p>");
-  }
+    UI.showAlert(
+      "<h1>Update Available</h1><p>An update is available and is being downloaded.</p>"
+    );
+  };
 
   UI.showUpdateDownloaded = function (releaseNotes, releaseName, releaseDate) {
     if (showQuitAlert) {
@@ -447,38 +532,56 @@ var UI = (function (UI, undefined) {
     var modal = new tingle.modal({
       allowClose: false,
       footer: true,
-      cssClass: ["update-downloaded"]
+      cssClass: ["update-downloaded"],
     });
 
-    modal.setContent("<h1>New Update Available...</h1><p>Version " + String(releaseName).escapeHTML() + " is downloaded and ready to install.");
+    modal.setContent(
+      "<h1>New Update Available...</h1><p>Version " +
+        String(releaseName).escapeHTML() +
+        " is downloaded and ready to install."
+    );
 
-    modal.addFooterBtn("Install Now", "tingle-btn tingle-btn--primary", function () {
-      modal.close();
-      electron.ipcRenderer.send("installUpdate");
-    });
+    modal.addFooterBtn(
+      "Install Now",
+      "tingle-btn tingle-btn--primary",
+      function () {
+        modal.close();
+        ipcRenderer.send("installUpdate");
+      }
+    );
 
-    modal.addFooterBtn("Install on Quit", "tingle-btn tingle-btn--default", function () {
-      modal.close();
-    });
+    modal.addFooterBtn(
+      "Install on Quit",
+      "tingle-btn tingle-btn--default",
+      function () {
+        modal.close();
+      }
+    );
 
     modal.open();
-  }
+  };
 
   UI.showUpdateError = function () {
-    UI.showAlert("<h1>Update Error</h1><p>An error occurred during checking for an update.</p>");
-  }
+    UI.showAlert(
+      "<h1>Update Error</h1><p>An error occurred during checking for an update.</p>"
+    );
+  };
 
   UI.showCheckingForUpdate = function () {
     if (showQuitAlert) {
       return;
     }
 
-    UI.showAlert("<h1>Checking for Updates...</h1><p>Checking for updates, please wait...</p>");
-  }
+    UI.showAlert(
+      "<h1>Checking for Updates...</h1><p>Checking for updates, please wait...</p>"
+    );
+  };
 
   UI.showUpdateNotAvailable = function () {
-    UI.showAlert("<h1>No Updates</h1><p>No updates are currently available.</p>");
-  }
+    UI.showAlert(
+      "<h1>No Updates</h1><p>No updates are currently available.</p>"
+    );
+  };
 
   UI.showKillAlert = function () {
     showQuitAlert = true;
@@ -487,13 +590,15 @@ var UI = (function (UI, undefined) {
 
     var modal = new tingle.modal({
       footer: false,
-      allowClose: false
+      allowClose: false,
     });
 
-    modal.setContent("<h1>Shutdown In Progress</h1><p style='margin-bottom:0'>Shutting down Aidos... Please wait.</p>");
+    modal.setContent(
+      "<h1>Shutdown In Progress</h1><p style='margin-bottom:0'>Shutting down Aidos... Please wait.</p>"
+    );
 
     modal.open();
-  }
+  };
 
   UI.hideAlerts = function () {
     var nodes = document.querySelectorAll(".tingle-modal");
@@ -501,9 +606,9 @@ var UI = (function (UI, undefined) {
       node.parentNode.removeChild(node);
     });
 
-    var body = document.querySelector('body');
+    var body = document.querySelector("body");
     body.classList.remove("tingle-enabled");
-  }
+  };
 
   UI.showAlert = function (msg, openCallback, closeCallback) {
     if (showQuitAlert) {
@@ -526,7 +631,7 @@ var UI = (function (UI, undefined) {
         if (closeCallback) {
           closeCallback();
         }
-      }
+      },
     });
 
     modal.setContent(msg);
@@ -536,7 +641,7 @@ var UI = (function (UI, undefined) {
     });
 
     modal.open();
-  }
+  };
 
   UI.showAlertAndQuit = function (msg, serverOutput, callback) {
     if (showQuitAlert) {
@@ -548,7 +653,8 @@ var UI = (function (UI, undefined) {
     UI.hideAlerts();
 
     if (!msg) {
-      msg = "<h1>Error</h1><p>An error occurred, the server has quit. Please restart the application.</p>";
+      msg =
+        "<h1>Error</h1><p>An error occurred, the server has quit. Please restart the application.</p>";
     }
 
     if (serverOutput && serverOutput.length) {
@@ -556,7 +662,12 @@ var UI = (function (UI, undefined) {
 
       log = log.replace(/\n\s*\n/g, "\n");
 
-      var html = "<p>" + msg + "</p><textarea rows='6' class='form-control' readonly>" + String(log).escapeHTML() + "</textarea>";
+      var html =
+        "<p>" +
+        msg +
+        "</p><textarea rows='6' class='form-control' readonly>" +
+        String(log).escapeHTML() +
+        "</textarea>";
     } else {
       var html = "<p>" + msg + "</p>";
     }
@@ -565,9 +676,9 @@ var UI = (function (UI, undefined) {
       footer: true,
       allowClose: false,
       onClose: function () {
-        electron.remote.getCurrentWindow().hide();
-        electron.remote.getCurrentWindow().close();
-      }
+        remote.getCurrentWindow().hide();
+        remote.getCurrentWindow().close();
+      },
     });
 
     modal.setContent(html);
@@ -577,21 +688,21 @@ var UI = (function (UI, undefined) {
     });
 
     modal.open();
-  }
+  };
 
   UI.relaunchApplication = function (didFinalize) {
-    electron.ipcRenderer.send("relaunchApplication", didFinalize);
-  }
+    ipcRenderer.send("relaunchApplication", didFinalize);
+  };
 
   UI.toggleDeveloperTools = function () {
     if (webviewIsLoaded && webview) {
       if (webview.isDevToolsOpened()) {
         webview.closeDevTools();
       } else {
-        webview.openDevTools({ "mode": "undocked" });
+        webview.openDevTools({ mode: "undocked" });
       }
     }
-  }
+  };
 
   UI.sendToWebview = function (command, args) {
     if (showQuitAlert) {
@@ -600,33 +711,40 @@ var UI = (function (UI, undefined) {
 
     if (webviewIsLoaded && webview) {
       webview.send(command, args);
-    } else if (args && args.constructor == Object && args.hasOwnProperty("relaunch") && args.relaunch) {
+    } else if (
+      args &&
+      args.constructor == Object &&
+      args.hasOwnProperty("relaunch") &&
+      args.relaunch
+    ) {
       UI.relaunchApplication(true);
     }
-  }
+  };
 
   UI.setFocus = function (focus) {
     if (webviewIsLoaded && webview) {
       webview.send("setFocus", focus);
     }
-  }
+  };
 
   UI.notify = function (type, message, options) {
     if (webviewIsLoaded && webview) {
       webview.send("notify", type, message, options);
     }
-  }
+  };
 
   UI.handleURL = function (url) {
     UI.hideAlerts();
 
-    url = decodeURI(url.replace("aidos://", "").toLowerCase().replace(/\/$/, ""));
+    url = decodeURI(
+      url.replace("aidos://", "").toLowerCase().replace(/\/$/, "")
+    );
 
     if (url == "config" || url == "configuration" || url == "setup") {
-      electron.ipcRenderer.send("editNodeConfiguration");
+      ipcRenderer.send("editNodeConfiguration");
     } else if (url == "log") {
       if (!lightWallet) {
-        electron.ipcRenderer.send("showServerLog");
+        ipcRenderer.send("showServerLog");
       }
     } else if (url == "nodeinfo" || url == "node") {
       UI.sendToWebview("showNodeInfo");
@@ -650,7 +768,7 @@ var UI = (function (UI, undefined) {
         UI.sendToWebview("handleURL", url);
       }
     }
-  }
+  };
 
   UI.relaunch = function () {
     UI.hideAlerts();
@@ -660,16 +778,16 @@ var UI = (function (UI, undefined) {
     if (server) {
       server.style.display = "none";
     }
-  }
+  };
 
   UI.shutdown = function () {
     if (webviewIsLoaded && webview) {
       webview.send("shutdown");
     }
-  }
+  };
 
   return UI;
-}(UI || {}));
+})(UI || {});
 
 window.addEventListener("load", UI.initialize, false);
 
@@ -681,58 +799,68 @@ window.addEventListener("contextmenu", function (e) {
   UI.showContextMenu(e);
 });
 
-electron.ipcRenderer.on("showAlertAndQuit", function (event, msg, serverOutput, callback) {
+ipcRenderer.on("showAlertAndQuit", function (
+  event,
+  msg,
+  serverOutput,
+  callback
+) {
   UI.showAlertAndQuit(msg, serverOutput, callback);
 });
 
-electron.ipcRenderer.on("showKillAlert", UI.showKillAlert);
+ipcRenderer.on("showKillAlert", UI.showKillAlert);
 
-electron.ipcRenderer.on("nodeStarted", function (event, url, settings) {
+ipcRenderer.on("nodeStarted", function (event, url, settings) {
   UI.nodeStarted(url, settings);
 });
 
-electron.ipcRenderer.on("showServerLog", function (event, serverOutput) {
+ipcRenderer.on("showServerLog", function (event, serverOutput) {
   UI.showServerLog(serverOutput);
 });
 
-electron.ipcRenderer.on("appendToServerLog", function (event, data) {
+ipcRenderer.on("appendToServerLog", function (event, data) {
   UI.appendToServerLog(data);
 });
 
-electron.ipcRenderer.on("toggleStatusBar", function (event, show) {
+ipcRenderer.on("toggleStatusBar", function (event, show) {
   UI.toggleStatusBar(show);
 });
 
-electron.ipcRenderer.on("updateStatusBar", function (event, data) {
+ipcRenderer.on("updateStatusBar", function (event, data) {
   UI.updateStatusBar(data);
 });
 
-electron.ipcRenderer.on("updateAppInfo", function (event, data) {
-  electron.ipcRenderer.send("updateAppInfo", data);
+ipcRenderer.on("updateAppInfo", function (event, data) {
+  ipcRenderer.send("updateAppInfo", data);
 });
 
-electron.ipcRenderer.on("showUpdateAvailable", UI.showUpdateAvailable);
+ipcRenderer.on("showUpdateAvailable", UI.showUpdateAvailable);
 
-electron.ipcRenderer.on("showUpdateDownloaded", function (event, releaseNotes, releaseName, releaseDate) {
+ipcRenderer.on("showUpdateDownloaded", function (
+  event,
+  releaseNotes,
+  releaseName,
+  releaseDate
+) {
   UI.showUpdateDownloaded(releaseNotes, releaseName, releaseDate);
 });
 
-electron.ipcRenderer.on("showUpdateError", UI.showUpdateError);
+ipcRenderer.on("showUpdateError", UI.showUpdateError);
 
-electron.ipcRenderer.on("showCheckingForUpdate", UI.showCheckingForUpdate);
+ipcRenderer.on("showCheckingForUpdate", UI.showCheckingForUpdate);
 
-electron.ipcRenderer.on("showUpdateNotAvailable", UI.showUpdateNotAvailable);
+ipcRenderer.on("showUpdateNotAvailable", UI.showUpdateNotAvailable);
 
-electron.ipcRenderer.on("showPreferences", function (event, settings) {
+ipcRenderer.on("showPreferences", function (event, settings) {
   UI.showPreferences(settings);
 });
 
-electron.ipcRenderer.on("showNodeInfo", function () {
+ipcRenderer.on("showNodeInfo", function () {
   UI.hideAlerts();
   UI.sendToWebview("showNodeInfo");
 });
 
-electron.ipcRenderer.on("showModal", function (event, identifier, html) {
+ipcRenderer.on("showModal", function (event, identifier, html) {
   UI.hideAlerts();
 
   var modal = new tingle.modal({
@@ -744,11 +872,18 @@ electron.ipcRenderer.on("showModal", function (event, identifier, html) {
       modalContent.appendChild(close);
 
       if (identifier == "generated-seed-modal") {
-        document.getElementById("generated-seed-value").onclick = document.getElementById("generated-seed-value-copy").onclick = function (e) {
+        document.getElementById(
+          "generated-seed-value"
+        ).onclick = document.getElementById(
+          "generated-seed-value-copy"
+        ).onclick = function (e) {
           e.preventDefault();
           e.stopPropagation();
-          electron.clipboard.writeText(document.getElementById("generated-seed-value").dataset.clipboardText);
-        }
+          clipboard.writeText(
+            document.getElementById("generated-seed-value").dataset
+              .clipboardText
+          );
+        };
       }
     },
   });
@@ -758,55 +893,55 @@ electron.ipcRenderer.on("showModal", function (event, identifier, html) {
   modal.open();
 });
 
-electron.ipcRenderer.on("handleURL", function (event, url) {
+ipcRenderer.on("handleURL", function (event, url) {
   UI.handleURL(url);
 });
 
-electron.ipcRenderer.on("showPeers", function () {
+ipcRenderer.on("showPeers", function () {
   UI.hideAlerts();
   UI.sendToWebview("showPeers");
 });
 
-electron.ipcRenderer.on("showFAQ", function () {
+ipcRenderer.on("showFAQ", function () {
   UI.hideAlerts();
   UI.sendToWebview("showFAQ");
 });
 
-electron.ipcRenderer.on("showTerm", function () {
+ipcRenderer.on("showTerm", function () {
   UI.hideAlerts();
   UI.sendToWebview("showTerm");
 });
 
-electron.ipcRenderer.on("addPeer", function (event, addedNode) {
-  UI.sendToWebview("addPeer", { "add": addedNode });
+ipcRenderer.on("addPeer", function (event, addedNode) {
+  UI.sendToWebview("addPeer", { add: addedNode });
 });
 
-electron.ipcRenderer.on("stopCcurl", function (event, data) {
+ipcRenderer.on("stopCcurl", function (event, data) {
   UI.sendToWebview("stopCcurl", data);
 });
 
-electron.ipcRenderer.on("editNodeConfiguration", function (event, serverConfiguration) {
+ipcRenderer.on("editNodeConfiguration", function (event, serverConfiguration) {
   UI.editNodeConfiguration(serverConfiguration);
 });
 
-electron.ipcRenderer.on("toggleDeveloperTools", UI.toggleDeveloperTools);
+ipcRenderer.on("toggleDeveloperTools", UI.toggleDeveloperTools);
 
-electron.ipcRenderer.on("setFocus", function (event, focus) {
+ipcRenderer.on("setFocus", function (event, focus) {
   UI.setFocus(focus);
 });
 
-electron.ipcRenderer.on("hoverAmountStart", function (event, amount) {
-  UI.updateStatusBar({ "hoverAmount": amount });
+ipcRenderer.on("hoverAmountStart", function (event, amount) {
+  UI.updateStatusBar({ hoverAmount: amount });
 });
 
-electron.ipcRenderer.on("hoverAmountStop", function () {
-  UI.updateStatusBar({ "hoverAmount": -1 });
+ipcRenderer.on("hoverAmountStop", function () {
+  UI.updateStatusBar({ hoverAmount: -1 });
 });
 
-electron.ipcRenderer.on("notify", function (event, type, message, options) {
+ipcRenderer.on("notify", function (event, type, message, options) {
   UI.notify(type, message, options);
 });
 
-electron.ipcRenderer.on("relaunch", UI.relaunch);
+ipcRenderer.on("relaunch", UI.relaunch);
 
-electron.ipcRenderer.on("shutdown", UI.shutdown);
+ipcRenderer.on("shutdown", UI.shutdown);

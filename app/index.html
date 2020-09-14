@@ -1,33 +1,43 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <script>
+      if (typeof module === "object") {
+        window.module = module;
+        module = undefined;
+      }
+    </script>
+    <script src="js/jquery.min.js"></script>
+    <script>
+      window.$ = window.jQuery = require("jquery");
+    </script>
+    <script src="js/uikit.min.js"></script>
+    <script src="js/tingle.min.js"></script>
+    <script>
+      if (window.module) module = window.module;
+    </script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-   <script type="text/javascript" src="../ui/bower_components/jquery/dist/jquery.min.js"></script>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="../ui/css/uikit.min.css">
-  <script src="../ui/js/uikit.min.js"></script>
-</head>
-
-<body>
-  <webview id="server" src="about:blank" preload="./js/server-ipc.js"></webview>
-  <div id="status-bar">
-    <div id="status-bar-left">
-      <span id="status-bar-solid-milestone"></span>
-      <span id="status-bar-dot-1" style="display:none"> • </span>
-      <span id="status-bar-milestone"></span>
-      <span id="status-bar-dot-2" style="display:none"> • </span>
-      <span id="status-bar-cpu"></span>
+  <body>
+    <webview
+      id="server"
+      src="about:blank"
+      nodeintegration
+      preload="js/server-ipc.js"
+    ></webview>
+    <div id="status-bar">
+      <div id="status-bar-left">
+        <span id="status-bar-solid-milestone"></span>
+        <span id="status-bar-dot-1" style="display: none"> • </span>
+        <span id="status-bar-milestone"></span>
+        <span id="status-bar-dot-2" style="display: none"> • </span>
+        <span id="status-bar-cpu"></span>
+      </div>
+      <div id="status-bar-right"><span id="status-bar-aidos"></span></div>
     </div>
-    <div id="status-bar-right"><span id="status-bar-aidos"></span></div>
-  </div>
-  <div id="new-user">
-    New user? Read the <strong>FAQ</strong> first!
-  </div>
-</body>
-<script src="bower_components/tingle/dist/tingle.min.js"></script>
-<script type="text/javascript">
-  require("./js/index.js")
-</script>
-
+    <div id="new-user">New user? Read the <strong>FAQ</strong> first!</div>
+  </body>
 </html>

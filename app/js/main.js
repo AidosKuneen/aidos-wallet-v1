@@ -1,39 +1,49 @@
-const electron = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  protocol,
+  shell,
+} = require("electron");
 const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
-const autoUpdater = electron.autoUpdater;
-const powerSaveBlocker = electron.powerSaveBlocker;
-const shell = electron.shell;
-const clipboard = electron.clipboard;
-const pusage = require("pidusage");
+const autoUpdater = app.autoUpdater;
+//const powerSaveBlocker = app.powerSaveBlocker;
+//const clipboard = app.clipboard;
+var pidusage = require("pidusage");
 const url = require("url");
 
 let win;
 let otherWin;
 let loadingWin;
 let server;
-let powerSaver = -1;
+// let powerSaver = -1;
 let cpuTrackInterval;
 
 var __entityMap = {
   "&": "&amp;",
   "<": "&lt;",
   ">": "&gt;",
-  '"': '&quot;',
-  "'": '&#39;',
-  "/": '&#x2F;'
+  '"': "&quot;",
+  "'": "&#39;",
+  "/": "&#x2F;",
 };
 
 String.prototype.escapeHTML = function () {
   return String(this).replace(/[&<>"'\/]/g, function (s) {
     return __entityMap[s];
   });
-}
+};
 
-Array.prototype.unique = function (a) {
-  return function () { return this.filter(a) }
-}(function (a, b, c) { return c.indexOf(a, b + 1) < 0 });
+Array.prototype.unique = (function (a) {
+  return function () {
+    return this.filter(a);
+  };
+})(function (a, b, c) {
+  return c.indexOf(a, b + 1) < 0;
+});
 
 var App = (function (App, undefined) {
   var isStarted = false;
@@ -71,7 +81,7 @@ var App = (function (App, undefined) {
   App.uiIsInitialized = false;
   App.doNodeStarted = false;
 
-  App.initialize = function () {
+  initialize = function () {
     appDirectory = path.dirname(__dirname);
     resourcesDirectory = path.dirname(appDirectory);
 
@@ -80,7 +90,7 @@ var App = (function (App, undefined) {
     }
 
     if (process.platform == "darwin") {
-      var appPath = electron.app.getPath("exe");
+      var appPath = app.getPath("exe");
       if (process.execPath.match(/\/Volumes\/Aidos Wallet/i)) {
         App.showWindow("mac_volume.html");
         return;
@@ -89,7 +99,10 @@ var App = (function (App, undefined) {
 
     // https://github.com/electron/electron/issues/6044#issuecomment-226061244
     if (process.platform == "win32") {
-      is64BitOS = process.arch == "x64" || process.env.PROCESSOR_ARCHITECTURE == "AMD64" || process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432");
+      is64BitOS =
+        process.arch == "x64" ||
+        process.env.PROCESSOR_ARCHITECTURE == "AMD64" ||
+        process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432");
     } else {
       is64BitOS = process.arch == "x64";
     }
@@ -102,9 +115,9 @@ var App = (function (App, undefined) {
 
     App.findDirectories();
 
-    if (!electron.app.isDefaultProtocolClient("aidos")) {
+    if (!app.isDefaultProtocolClient("aidos")) {
       console.log("Register aidos as a default protocol");
-      electron.app.setAsDefaultProtocolClient("aidos"); // not linux
+      app.setAsDefaultProtocolClient("aidos"); // not linux
     }
 
     // if (process.platform == "win32" && !is64BitOS) {
@@ -113,23 +126,44 @@ var App = (function (App, undefined) {
     // }
 
     App.start();
-  }
+  };
 
   App.quit = function () {
-    electron.app.quit();
-  }
+    app.quit();
+  };
 
   App.loadSettings = function () {
     try {
-      var settingsFile = path.join(electron.app.getPath("appData"), "Aidos Wallet" + (isTestNet ? " Testnet" : "") + path.sep + "settings.json");
+      // var settingsFile = path.join(
+      //   app.getPath("appData"),
+      //   "Aidos Wallet" +
+      //     (isTestNet ? " Testnet" : "") +
+      //     path.sep +
+      //     "settings.json"
+      // );
 
-      if (!fs.existsSync(settingsFile)) {
-        throw "Settings file does not exist.";
-      }
+      // if (!fs.existsSync(settingsFile)) {
+      //   throw "Settings file does not exist.";
+      // }
 
-      settings = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
+      settings = {
+        bounds: { width: 1300, height: 850 },
+        lightWalletHost: "http://wallet.aidoskuneen.com",
+        lightWalletPort: isTestNet ? 15555 : 14266,
+        checkForUpdates: 1,
+        lightWallet: 1,
+        lastUpdateCheck: 0,
+        showStatusBar: 0,
+        isFirstRun: 1,
+        port: isTestNet ? 15777 : 14265,
+        nodes: [],
+      };
+      // settings = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
 
-      if (!settings.hasOwnProperty("bounds") || typeof (settings.bounds) != "object") {
+      if (
+        !settings.hasOwnProperty("bounds") ||
+        typeof settings.bounds != "object"
+      ) {
         settings.bounds = { width: 1300, height: 850 };
       }
       if (!settings.hasOwnProperty("lightWallet")) {
@@ -148,16 +182,16 @@ var App = (function (App, undefined) {
         settings.isFirstRun = 1;
       }
       if (!settings.hasOwnProperty("port")) {
-        settings.port = (isTestNet ? 15777 : 14265);
+        settings.port = isTestNet ? 15777 : 14265;
       }
       if (!settings.hasOwnProperty("depth")) {
         settings.depth = 3;
       }
       if (!settings.hasOwnProperty("lightWalletHost")) {
-        settings.lightWalletHost = "http://wallet1.aidoskuneen.com";
+        settings.lightWalletHost = "http://wallet.aidoskuneen.com";
       }
       if (!settings.hasOwnProperty("lightWalletPort")) {
-        settings.lightWalletPort = (isTestNet ? 15555 : 14266);
+        settings.lightWalletPort = isTestNet ? 15555 : 14266;
       }
       if (!settings.hasOwnProperty("minWeightMagnitude")) {
         settings.minWeightMagnitude = 18;
@@ -170,22 +204,51 @@ var App = (function (App, undefined) {
     } catch (err) {
       console.log("Error reading settings:");
       console.log(err);
-      settings = { bounds: { width: 1300, height: 850 },lightWalletHost:"http://wallet1.aidoskuneen.com",lightWalletPort:(isTestNet ? 15555 : 14266), checkForUpdates: 1, lightWallet: 1, lastUpdateCheck: 0, showStatusBar: 0, isFirstRun: 1, port: (isTestNet ? 15777 : 14265), nodes: [] };
+      settings = {
+        bounds: { width: 1300, height: 850 },
+        lightWalletHost: "http://wallet.aidoskuneen.com",
+        lightWalletPort: isTestNet ? 15555 : 14266,
+        checkForUpdates: 1,
+        lightWallet: 1,
+        lastUpdateCheck: 0,
+        showStatusBar: 0,
+        isFirstRun: 1,
+        port: isTestNet ? 15777 : 14265,
+        nodes: [],
+      };
     }
 
     try {
-      if (electron.screen) {
-        var displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
+      if (app.screen) {
+        var displaySize = app.screen.getPrimaryDisplay().workAreaSize;
 
-        if (displaySize.width < settings.bounds.width + 100 || displaySize.height < settings.bounds.height + 100) {
+        if (
+          displaySize.width < settings.bounds.width + 100 ||
+          displaySize.height < settings.bounds.height + 100
+        ) {
           settings.bounds.height = displaySize.height - 100;
-          settings.bounds.width = Math.round(settings.bounds.height / 16 * 27);
+          settings.bounds.width = Math.round(
+            (settings.bounds.height / 16) * 27
+          );
         }
       }
-    } catch (err) { }
-  }
+    } catch (err) {}
+  };
 
   App.saveSettings = function () {
+    settings = {
+      bounds: { width: 1300, height: 850 },
+      lightWalletHost: "http://wallet.aidoskuneen.com",
+      lightWalletPort: isTestNet ? 15555 : 14266,
+      checkForUpdates: 1,
+      lightWallet: 1,
+      lastUpdateCheck: 0,
+      showStatusBar: 0,
+      isFirstRun: 1,
+      port: isTestNet ? 15777 : 14265,
+      nodes: [],
+    };
+
     try {
       if (App.windowIsReady() && !win.isFullScreen()) {
         settings.bounds = win.getBounds();
@@ -199,14 +262,20 @@ var App = (function (App, undefined) {
 
       settings.isFirstRun = 0;
 
-      var settingsFile = path.join(electron.app.getPath("appData"), "Aidos Wallet" + (isTestNet ? " Testnet" : "") + path.sep + "settings.json");
+      // var settingsFile = path.join(
+      //   app.getPath("appData"),
+      //   "Aidos Wallet" +
+      //     (isTestNet ? " Testnet" : "") +
+      //     path.sep +
+      //     "settings.json"
+      // );
 
-      fs.writeFileSync(settingsFile, JSON.stringify(settings));
+      // fs.writeFileSync(settingsFile, JSON.stringify(settings));
     } catch (err) {
       console.log("Error writing settings:");
       console.log(err);
     }
-  }
+  };
 
   App.checkLaunchURL = function () {
     if (process.argv.length == 1 || process.argv.indexOf("--dev") != -1) {
@@ -221,7 +290,7 @@ var App = (function (App, undefined) {
         }
       }
     }
-  }
+  };
 
   App.autoUpdate = function () {
     // Auto update is disabled for now.
@@ -237,7 +306,13 @@ var App = (function (App, undefined) {
       }
     });
 
-    autoUpdater.addListener("update-downloaded", function (event, releaseNotes, releaseName, releaseDate, updateURL) {
+    autoUpdater.addListener("update-downloaded", function (
+      event,
+      releaseNotes,
+      releaseName,
+      releaseDate,
+      updateURL
+    ) {
       App.showUpdateDownloaded(releaseNotes, releaseName, releaseDate);
     });
 
@@ -249,9 +324,9 @@ var App = (function (App, undefined) {
 
     // We don't need to show this
     /*
-	 * autoUpdater.addListener("checking-for-update", function(event) { if
-	 * (didCheckForUpdates) { App.showCheckingForUpdate(); } });
-	 */
+     * autoUpdater.addListener("checking-for-update", function(event) { if
+     * (didCheckForUpdates) { App.showCheckingForUpdate(); } });
+     */
 
     autoUpdater.addListener("update-not-available", function (event) {
       if (didCheckForUpdates) {
@@ -260,9 +335,9 @@ var App = (function (App, undefined) {
     });
 
     if (process.platform == "darwin") {
-      var feedURL = "" // https://aidos.com/latest-osx.php?v=" + appVersion;
+      var feedURL = ""; // https://aidos.com/latest-osx.php?v=" + appVersion;
     } else {
-      var feedURL = ""// https://aidos.com/latest-win.php?v=" + appVersion +
+      var feedURL = ""; // https://aidos.com/latest-win.php?v=" + appVersion +
       // "&arch=" + (is64BitOS ? "64" : "32");
     }
 
@@ -290,7 +365,7 @@ var App = (function (App, undefined) {
         App.checkForUpdates();
       }
     }
-  }
+  };
 
   App.checkForUpdates = function (manual) {
     if (manual) {
@@ -303,11 +378,11 @@ var App = (function (App, undefined) {
 
     autoUpdater.checkForUpdates();
     settings.lastUpdateCheck = new Date().getTime();
-  }
+  };
 
-  App.installUpdate = function () {
+  installUpdate = function () {
     autoUpdater.quitAndInstall();
-  }
+  };
 
   App.showDefaultWindow = function () {
     if (loadingWin) {
@@ -327,22 +402,36 @@ var App = (function (App, undefined) {
 
     if (!win) {
       var windowOptions = {
-        "width": settings.bounds.width,
-        "height": settings.bounds.height,
-        "minWidth": 675,
-        "minHeight": 400,
-        "backgroundColor": "#4DC1B5",
-        "center": true,
-        "show": false
+        width: settings.bounds.width,
+        height: settings.bounds.height,
+        minWidth: 675,
+        minHeight: 400,
+        backgroundColor: "#4DC1B5",
+        center: true,
+        show: false,
       };
 
-      if (settings.bounds.hasOwnProperty("x") && settings.bounds.hasOwnProperty("y")) {
+      if (
+        settings.bounds.hasOwnProperty("x") &&
+        settings.bounds.hasOwnProperty("y")
+      ) {
         windowOptions.x = settings.bounds.x;
         windowOptions.y = settings.bounds.y;
       }
 
-      win = new electron.BrowserWindow(windowOptions);
-      // win.toggleDevTools({mode: "undocked"});
+      win = new BrowserWindow({
+        windowOptions,
+        icon:
+          path.join(resourcesDirectory, "build").replace(path.sep, "/") +
+          "/icons/256x256.png",
+        webPreferences: {
+          preload: path.join(__dirname, "index.js"),
+          webviewTag: true,
+          enableRemoteModule: true,
+          nodeIntegration: true,
+        },
+      });
+      // win.toggleDevTools({ mode: "undocked" });
       win.setAspectRatio(27 / 16);
 
       win.on("close", function (e) {
@@ -370,7 +459,7 @@ var App = (function (App, undefined) {
 
         App.killNode(function () {
           isClosed = true;
-          electron.app.quit();
+          app.quit();
         });
       });
 
@@ -383,218 +472,229 @@ var App = (function (App, undefined) {
           e.preventDefault();
           shell.openExternal(url);
         }
-      }
+      };
 
       win.webContents.on("new-window", handleRedirect);
       win.webContents.on("will-navigate", handleRedirect);
     }
 
-    win.loadURL("file://" + appDirectory.replace(path.sep, "/") + "/index.html?showStatus=" + settings.showStatusBar + "&isFirstRun=" + settings.isFirstRun + "&lightWallet=" + settings.lightWallet);
+    win.loadURL(
+      "file://" +
+        appDirectory.replace(path.sep, "/") +
+        "/index.html?showStatus=" +
+        settings.showStatusBar +
+        "&isFirstRun=" +
+        settings.isFirstRun +
+        "&lightWallet=" +
+        settings.lightWallet
+    );
 
     win.webContents.once("did-finish-load", function () {
       App.updateTitle();
     });
 
     App.createMenuBar();
-  }
+  };
 
   App.createMenuBar = function (simple) {
     var template = [];
-    template.push(
-      {
-        label: "File",
-        submenu: [
-          {
-            label: "Close",
-            accelerator: "CmdOrCtrl+W",
-            role: "close"
-          }
-        ]
-      });
-    template.push(
-      {
-        label: "Edit",
-        submenu: [
-          {
-            label: "Undo",
-            accelerator: "CmdOrCtrl+Z",
-            role: "undo"
-          },
-          {
-            label: "Redo",
-            accelerator: "Shift+CmdOrCtrl+Z",
-            role: "redo"
-          },
-          {
-            type: "separator"
-          },
-          {
-            label: "Cut",
-            accelerator: "CmdOrCtrl+X",
-            role: "cut"
-          },
-          {
-            label: "Copy",
-            accelerator: "CmdOrCtrl+C",
-            role: "copy"
-          },
-          {
-            label: "Paste",
-            accelerator: "CmdOrCtrl+V",
-            role: "paste"
-          },
-          {
-            label: "Select All",
-            accelerator: "CmdOrCtrl+A",
-            role: "selectall"
-          },
-        ]
-      });
+    template.push({
+      label: "File",
+      submenu: [
+        {
+          label: "Close",
+          accelerator: "CmdOrCtrl+W",
+          role: "close",
+        },
+      ],
+    });
+    template.push({
+      label: "Edit",
+      submenu: [
+        {
+          label: "Undo",
+          accelerator: "CmdOrCtrl+Z",
+          role: "undo",
+        },
+        {
+          label: "Redo",
+          accelerator: "Shift+CmdOrCtrl+Z",
+          role: "redo",
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: "Cut",
+          accelerator: "CmdOrCtrl+X",
+          role: "cut",
+        },
+        {
+          label: "Copy",
+          accelerator: "CmdOrCtrl+C",
+          role: "copy",
+        },
+        {
+          label: "Paste",
+          accelerator: "CmdOrCtrl+V",
+          role: "paste",
+        },
+        {
+          label: "Select All",
+          accelerator: "CmdOrCtrl+A",
+          role: "selectall",
+        },
+      ],
+    });
 
     if (!simple) {
-      template.push(
-        {
-          label: "View",
-          submenu: [
-            {
-              label: (settings.showStatusBar ? "Hide Status Bar" : "Show Status Bar"),
-              accelerator: "CmdOrCtrl+/",
-              click() {
-                App.toggleStatusBar();
-              }
+      template.push({
+        label: "View",
+        submenu: [
+          {
+            label: settings.showStatusBar
+              ? "Hide Status Bar"
+              : "Show Status Bar",
+            accelerator: "CmdOrCtrl+/",
+            click() {
+              App.toggleStatusBar();
             },
-            {
-              label: "Toggle Web Inspector",
-              accelerator: process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
-              click() {
-                win.webContents.send("toggleDeveloperTools");
-              }
+          },
+          {
+            label: "Toggle Web Inspector",
+            accelerator:
+              process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
+            click() {
+              win.webContents.send("toggleDeveloperTools");
             },
-            {
-              label: "Enter Full Screen",
-              accelerator: process.platform === "darwin" ? "Ctrl+Command+F" : "F11",
-              click() {
-                win.setFullScreen(!win.isFullScreen());
-              }
-            }
-          ]
-        });
+          },
+          {
+            label: "Enter Full Screen",
+            accelerator:
+              process.platform === "darwin" ? "Ctrl+Command+F" : "F11",
+            click() {
+              win.setFullScreen(!win.isFullScreen());
+            },
+          },
+        ],
+      });
 
-      template.push(
-        {
-          label: "Tools",
-          submenu: [
-            {
-              label: "View Node Info",
-              accelerator: "CmdOrCtrl+I",
-              click(item) {
-                App.showNodeInfo();
-              }
+      template.push({
+        label: "Tools",
+        submenu: [
+          {
+            label: "View Node Info",
+            accelerator: "CmdOrCtrl+I",
+            click(item) {
+              App.showNodeInfo();
             },
-            {
-              label: "Edit Node Configuration",
-              accelerator: "CmdOrCtrl+E",
-              click(item) {
-                App.editNodeConfiguration();
-              }
-            }
-          ]
-        });
+          },
+          {
+            label: "Edit Node Configuration",
+            accelerator: "CmdOrCtrl+E",
+            click(item) {
+              App.editNodeConfiguration();
+            },
+          },
+        ],
+      });
     }
 
-    template.push(
-      {
-        label: "Window",
-        role: "window",
-        submenu: [
-          {
-            label: "Minimize",
-            accelerator: "CmdOrCtrl+M",
-            role: "minimize"
-          }
-        ]
-      });
+    template.push({
+      label: "Window",
+      role: "window",
+      submenu: [
+        {
+          label: "Minimize",
+          accelerator: "CmdOrCtrl+M",
+          role: "minimize",
+        },
+      ],
+    });
 
-    template.push(
-      {
-        label: "Help",
-        role: "help",
-        submenu: [
-          {
-            label: "FAQ",
-            click() {
-              App.showFAQ();
-            }
+    template.push({
+      label: "Help",
+      role: "help",
+      submenu: [
+        {
+          label: "FAQ",
+          click() {
+            App.showFAQ();
           },
-          {
-            label: "Official Website",
-            click() { shell.openExternal("http://aidoskuneen.com/"); }
+        },
+        {
+          label: "Official Website",
+          click() {
+            shell.openExternal("http://aidoskuneen.com/");
           },
-          {
-            label: "Terms && Agreements",
-            click() {
-              App.showTerm();
-            }
+        },
+        {
+          label: "Terms && Agreements",
+          click() {
+            App.showTerm();
           },
-        ]
-      });
+        },
+      ],
+    });
 
     if (process.platform === "darwin") {
-      const name = electron.app.getName();
+      const name = app.getName();
       template.unshift({
         label: name,
         submenu: [
           {
             label: "About " + name,
-            role: "about"
-          },/*
-			 * { label: "Check for Updates...", click() {
-			 * App.checkForUpdates(true); } },
-			 */
-          {
-            type: "separator"
+            role: "about",
+          },
+          /*
+           * { label: "Check for Updates...", click() {
+           * App.checkForUpdates(true); } },
+           */ {
+            type: "separator",
           },
           {
             label: "Preferences...",
             accelerator: "Command+,",
             click() {
               App.showPreferences();
-            }
+            },
           },
           {
-            type: "separator"
+            type: "separator",
           },
           {
             label: "Services",
             role: "services",
-            submenu: []
+            submenu: [],
           },
           {
-            type: "separator"
+            type: "separator",
           },
           {
             label: "Hide " + name,
             accelerator: "Command+H",
-            role: "hide"
+            role: "hide",
           },
           {
             label: "Hide Others",
             accelerator: "Command+Alt+H",
-            role: "hideothers"
+            role: "hideothers",
           },
           {
             label: "Show All",
-            role: "unhide"
+            role: "unhide",
           },
           {
-            type: "separator"
+            type: "separator",
           },
           {
             label: "Quit",
             accelerator: "Command+Q",
-            click() { electron.app.quit(); }
+            click() {
+              app.quit();
+            },
           },
-        ]
+        ],
       });
 
       if (simple) {
@@ -604,33 +704,36 @@ var App = (function (App, undefined) {
       // Window menu.
       template[!simple ? 4 : 2].submenu.push(
         {
-          type: "separator"
+          type: "separator",
         },
         {
           label: "Bring All to Front",
-          role: "front"
+          role: "front",
         }
       );
 
       /*
-		 * if (isDevelopment) { // Remove check for updates
-		 * template[0].submenu.splice(1, 1); }
-		 */
+       * if (isDevelopment) { // Remove check for updates
+       * template[0].submenu.splice(1, 1); }
+       */
     } else if (process.platform == "win32") {
       if (!isDevelopment) {
         /*
-		 * template[4].submenu.push( { type: "separator" }, { label: "Check for
-		 * Updates...", click() { App.checkForUpdates(true); } });
-		 */
+         * template[4].submenu.push( { type: "separator" }, { label: "Check for
+         * Updates...", click() { App.checkForUpdates(true); } });
+         */
       }
     }
 
-    electron.Menu.setApplicationMenu(electron.Menu.buildFromTemplate(template));
-  }
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  };
 
   App.findDirectories = function () {
     try {
-      appDataDirectory = path.join(electron.app.getPath("appData"), "Aidos Wallet" + (isTestNet ? " Testnet" : ""));
+      appDataDirectory = path.join(
+        app.getPath("appData"),
+        "Aidos Wallet" + (isTestNet ? " Testnet" : "")
+      );
 
       if (settings.hasOwnProperty("db")) {
         serverDirectory = settings.db;
@@ -651,7 +754,7 @@ var App = (function (App, undefined) {
       console.log("Error:");
       console.log(err);
     }
-  }
+  };
 
   App.start = function () {
     // if (settings.lightWallet == -1 || (settings.lightWallet == 1 &&
@@ -665,7 +768,7 @@ var App = (function (App, undefined) {
     // App.showLoadingWindow();
     // App.startFullNode();
     // }
-  }
+  };
 
   App.findJavaLocations = function () {
     console.log("Find java locations.");
@@ -673,7 +776,9 @@ var App = (function (App, undefined) {
     javaLocations = [];
 
     if (process.platform == "darwin") {
-      javaLocations.push("/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java");
+      javaLocations.push(
+        "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java"
+      );
       // /usr/libexec/java_home -v 1.8
       // /Library/Java/JavaVirtualMachines/jdk1.8.0_31.jdk/Contents/Home
     } else if (process.platform == "win32") {
@@ -683,7 +788,9 @@ var App = (function (App, undefined) {
 
         if (files && files.length) {
           for (var i = 0; i < files.length; i++) {
-            javaLocations.push(files[i].replace(/\//g, "\\") + "\\bin\\java.exe");
+            javaLocations.push(
+              files[i].replace(/\//g, "\\") + "\\bin\\java.exe"
+            );
           }
         }
 
@@ -691,7 +798,9 @@ var App = (function (App, undefined) {
 
         if (files && files.length) {
           for (var i = 0; i < files.length; i++) {
-            javaLocations.push(files[i].replace(/\//g, "\\") + "\\bin\\java.exe");
+            javaLocations.push(
+              files[i].replace(/\//g, "\\") + "\\bin\\java.exe"
+            );
           }
         }
       } catch (err) {
@@ -718,7 +827,9 @@ var App = (function (App, undefined) {
         console.log("Error during glob:");
         console.log(err);
       }
-      javaLocations.push(path.join(electron.app.getPath("appData"), "Aidos Wallet/java/bin/java"));
+      javaLocations.push(
+        path.join(app.getPath("appData"), "Aidos Wallet/java/bin/java")
+      );
     }
 
     javaLocations.push("java");
@@ -733,7 +844,7 @@ var App = (function (App, undefined) {
       }
       javaLocations.unshift(settings.javaLocation);
     }
-  }
+  };
 
   // execFile is asynchronous...
   App.checkJavaLocation = function (location) {
@@ -741,7 +852,7 @@ var App = (function (App, undefined) {
 
     if (location == "java" || fs.existsSync(location)) {
       try {
-        var error = found = javaVersionOK = java64BitsOK = false;
+        var error = (found = javaVersionOK = java64BitsOK = false);
 
         var child = childProcess.execFile(location, ["-version"]);
 
@@ -753,7 +864,12 @@ var App = (function (App, undefined) {
             if (!javaVersionOK) {
               var version = data.match(/version "([0-9\.]+)(_([0-9]+))?/i);
 
-              if (version && version[1] && App.versionCompare(version[1], "1.8.0") != -1 && (!version[3] || version[3] >= 66)) {
+              if (
+                version &&
+                version[1] &&
+                App.versionCompare(version[1], "1.8.0") != -1 &&
+                (!version[3] || version[3] >= 66)
+              ) {
                 console.log("java version is ok.");
                 javaVersionOK = true;
               }
@@ -793,7 +909,7 @@ var App = (function (App, undefined) {
     } else {
       App.checkNextJavaLocation();
     }
-  }
+  };
 
   App.checkNextJavaLocation = function () {
     console.log("Checking next java location.");
@@ -801,13 +917,13 @@ var App = (function (App, undefined) {
     if (javaLocations[currentLocationTest]) {
       App.checkJavaLocation(javaLocations[currentLocationTest]);
     } else {
-      App.showNoJavaInstalledWindow({ "java64BitsOK": java64BitsOK });
+      App.showNoJavaInstalledWindow({ java64BitsOK: java64BitsOK });
     }
-  }
+  };
 
   App.startLightNode = function () {
     App.nodeStarted();
-  }
+  };
 
   App.startFullNodeProcess = function (javaLocation) {
     console.log("Start server process.");
@@ -837,7 +953,9 @@ var App = (function (App, undefined) {
 
       params.push("-jar");
 
-      params.push(path.join(jarDirectory, "ari" + (isTestNet ? "-testnet" : "") + ".jar"));
+      params.push(
+        path.join(jarDirectory, "ari" + (isTestNet ? "-testnet" : "") + ".jar")
+      );
 
       if (settings.experimental) {
         params.push("-e");
@@ -852,18 +970,23 @@ var App = (function (App, undefined) {
 
       serverOutput = [];
 
-      server = childProcess.spawn(javaLocation, params, {
-        "cwd": serverDirectory,
-        "detached": true
-      }, function (err) {
-        if (err) {
-          if (!didKillNode && !isStarted && !nodeInitializationError) {
-            selectedJavaLocation = "";
-            App.saveSettings();
-            App.showInitializationAlertWindow();
+      server = childProcess.spawn(
+        javaLocation,
+        params,
+        {
+          cwd: serverDirectory,
+          detached: true,
+        },
+        function (err) {
+          if (err) {
+            if (!didKillNode && !isStarted && !nodeInitializationError) {
+              selectedJavaLocation = "";
+              App.saveSettings();
+              App.showInitializationAlertWindow();
+            }
           }
         }
-      });
+      );
 
       server.stdout.setEncoding("utf8");
       server.stderr.setEncoding("utf8");
@@ -886,9 +1009,9 @@ var App = (function (App, undefined) {
         App.logServerOutput("Process exited with status " + code);
 
         /*
-		 * // Kill not initiated by user or app. if (!didKillNode) { didKillNode =
-		 * false; if (code == 143) { App.relaunchApplication(); return; } }
-		 */
+         * // Kill not initiated by user or app. if (!didKillNode) { didKillNode =
+         * false; if (code == 143) { App.relaunchApplication(); return; } }
+         */
 
         if (callback) {
           callback();
@@ -900,7 +1023,10 @@ var App = (function (App, undefined) {
           if (!isStarted) {
             App.showInitializationAlertWindow();
           } else {
-            App.showAlertAndQuit("Server exited", "The Aidos server process has exited.");
+            App.showAlertAndQuit(
+              "Server exited",
+              "The Aidos server process has exited."
+            );
             return;
           }
         } else if (!doNotQuit) {
@@ -912,7 +1038,7 @@ var App = (function (App, undefined) {
       console.log(err);
       App.showInitializationAlertWindow();
     }
-  }
+  };
 
   App.killNode = function (fn) {
     var hasServer = server && server.exitCode == null;
@@ -920,22 +1046,25 @@ var App = (function (App, undefined) {
       App.showKillAlert();
     }
 
-    setTimeout(function () {
-      if (server && server.exitCode == null) {
-        isStarted = false;
-        nodeInitializationError = false;
-        didKillNode = true;
-        isRelaunch = false;
-        App.killAlreadyRunningProcess(true);
-        callback = fn;
-        server.kill();
-      } else {
-        // killAlreadyRunningProcess(true);
-        // callback = null;
-        fn();
-      }
-    }, (!hasServer ? 0 : 500));
-  }
+    setTimeout(
+      function () {
+        if (server && server.exitCode == null) {
+          isStarted = false;
+          nodeInitializationError = false;
+          didKillNode = true;
+          isRelaunch = false;
+          App.killAlreadyRunningProcess(true);
+          callback = fn;
+          server.kill();
+        } else {
+          // killAlreadyRunningProcess(true);
+          // callback = null;
+          fn();
+        }
+      },
+      !hasServer ? 0 : 500
+    );
+  };
 
   App.openDatabaseFolder = function (file) {
     if (!file) {
@@ -944,14 +1073,18 @@ var App = (function (App, undefined) {
 
     try {
       shell.showItemInFolder(path.join(serverDirectory, file));
-    } catch (err) { }
-  }
+    } catch (err) {}
+  };
 
   App.getAlreadyRunningProcess = function () {
     try {
       if (process.platform == "win32") {
         // " + String(command).replace(/\\/g, "\\\\") + "
-        var output = childProcess.execSync("wmic process where \"commandline LIKE '%-jar %ari" + (isTestNet ? "-testnet" : "") + ".jar' and name LIKE '%java%'\" get processid");
+        var output = childProcess.execSync(
+          "wmic process where \"commandline LIKE '%-jar %ari" +
+            (isTestNet ? "-testnet" : "") +
+            ".jar' and name LIKE '%java%'\" get processid"
+        );
 
         process.stdout.write(output);
 
@@ -968,7 +1101,9 @@ var App = (function (App, undefined) {
       } else {
         // var escapeStringRegexp = require("escape-string-regexp");
         // + escapeStringRegexp(command.replace(/\"/g, '')) +
-        var output = childProcess.execSync("ps gx | grep \"[j]ar .*ari" + (isTestNet ? "\-testnet" : "") + "\.jar\"");
+        var output = childProcess.execSync(
+          'ps gx | grep "[j]ar .*ari' + (isTestNet ? "-testnet" : "") + '.jar"'
+        );
 
         output = output.toString().trim();
 
@@ -980,24 +1115,23 @@ var App = (function (App, undefined) {
           console.log("PID not found");
         }
       }
-    } catch (err) {
-    }
+    } catch (err) {}
 
     return 0;
-  }
+  };
 
   App.switchNodeType = function () {
     /*
-	 * if (win) { win.hide(); }
-	 */
+     * if (win) { win.hide(); }
+     */
     var lightWallet = settings.lightWallet == 1 ? 0 : 1;
 
     if (lightWallet) {
       App.editNodeConfiguration(lightWallet);
     } else {
-      App.updateNodeConfiguration({ "lightWallet": lightWallet });
+      App.updateNodeConfiguration({ lightWallet: lightWallet });
     }
-  }
+  };
 
   App.relaunchApplication = function (didFinalize) {
     console.log("App.relaunchApplication: " + didFinalize);
@@ -1005,7 +1139,7 @@ var App = (function (App, undefined) {
     // properly before restarting..
     if (global.lightWallet && App.windowIsReady && !didFinalize) {
       console.log("Sending stopCcurl message to renderer");
-      win.webContents.send("stopCcurl", { "relaunch": true });
+      win.webContents.send("stopCcurl", { relaunch: true });
       return;
     }
 
@@ -1030,12 +1164,12 @@ var App = (function (App, undefined) {
         App.start();
       }, 300);
     });
-  }
+  };
 
   App.killAlreadyRunningProcessAndRestart = function () {
     App.killAlreadyRunningProcess(true);
     App.relaunchApplication();
-  }
+  };
 
   App.killAlreadyRunningProcess = function (wait) {
     var pid;
@@ -1054,13 +1188,11 @@ var App = (function (App, undefined) {
         var then = new Date();
 
         if (wait) {
-          while (App.getAlreadyRunningProcess()) {
-          }
+          while (App.getAlreadyRunningProcess()) {}
         }
-      } catch (err) {
-      }
+      } catch (err) {}
     }
-  }
+  };
 
   App.versionCompare = function (v1, v2) {
     if (v2 == undefined) {
@@ -1071,8 +1203,8 @@ var App = (function (App, undefined) {
 
     // https://gist.github.com/TheDistantSea/8021359 (based on)
 
-    var v1parts = v1.split('.');
-    var v2parts = v2.split('.');
+    var v1parts = v1.split(".");
+    var v2parts = v2.split(".");
 
     function isValidPart(x) {
       return /^\d+$/.test(x);
@@ -1103,7 +1235,7 @@ var App = (function (App, undefined) {
     }
 
     return 0;
-  }
+  };
 
   App.nodeStarted = function () {
     if (isStarted) {
@@ -1128,36 +1260,60 @@ var App = (function (App, undefined) {
       var ccurlPath;
 
       if (process.platform == "win32") {
-        ccurlPath = path.join(resourcesDirectory, "ccurl", "win" + (is64BitOS ? "64" : "32"));
+        ccurlPath = path.join(
+          resourcesDirectory,
+          "ccurl",
+          "win" + (is64BitOS ? "64" : "32")
+        );
       } else if (process.platform == "darwin") {
         ccurlPath = path.join(resourcesDirectory, "ccurl", "mac");
       } else {
-        ccurlPath = path.join(resourcesDirectory, "ccurl", "lin" + (is64BitOS ? "64" : "32"));
+        ccurlPath = path.join(
+          resourcesDirectory,
+          "ccurl",
+          "lin" + (is64BitOS ? "64" : "32")
+        );
       }
 
-      win.webContents.send("nodeStarted", "file://" + path.join(resourcesDirectory, "ui").replace(path.sep, "/") + "/aidos.html", {
-        "inApp": 1,
-        "showStatus": settings.showStatusBar,
-        "host": (settings.lightWallet == 1 ? settings.lightWalletHost : "localhost"),
-        "port": (settings.lightWallet == 1 ? settings.lightWalletPort : settings.port),
-        "depth": settings.depth,
-        "minWeightMagnitude": settings.minWeightMagnitude,
-        "ccurlPath": ccurlPath
-      });
+      win.webContents.send(
+        "nodeStarted",
+        "file://" +
+          path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
+          "/aidos.html",
+        {
+          inApp: 1,
+          showStatus: settings.showStatusBar,
+          host:
+            settings.lightWallet == 1 ? settings.lightWalletHost : "localhost",
+          port:
+            settings.lightWallet == 1
+              ? settings.lightWalletPort
+              : settings.port,
+          depth: settings.depth,
+          minWeightMagnitude: settings.minWeightMagnitude,
+          ccurlPath: ccurlPath,
+        }
+      );
     } catch (err) {
       console.log("Error:");
       console.log(err);
     }
-  }
+  };
 
   App.checkServerOutput = function (data, type) {
     if (!isStarted && !didKillNode && !nodeInitializationError) {
       if (type == "error") {
         if (data.match(/java\.net\.BindException/i)) {
-          lastError = "The server address is already in use. Please close any other apps/services that may be running on port " + String(settings.port).escapeHTML() + ".";
+          lastError =
+            "The server address is already in use. Please close any other apps/services that may be running on port " +
+            String(settings.port).escapeHTML() +
+            ".";
         } else {
           var error = data.match(/ERROR\s*com\.aidos\.ari\.ARI\s*\-\s*(.*)/i);
-          if (error && !lastError.match(/URI Syntax Exception|Illegal Argument Exception/i)) {
+          if (
+            error &&
+            !lastError.match(/URI Syntax Exception|Illegal Argument Exception/i)
+          ) {
             lastError = error[1];
           }
         }
@@ -1167,7 +1323,7 @@ var App = (function (App, undefined) {
         var ari = data.match(/Welcome to ARI (Testnet)?\s*([0-9\.]+)/i);
         if (ari) {
           // don't run mainnet ARI in testnet GUI, and other way around
-          if (isTestNet && !ari[1] || !isTestNet && ari[1]) {
+          if ((isTestNet && !ari[1]) || (!isTestNet && ari[1])) {
             App.quit();
           }
           ariVersion = ari[2];
@@ -1178,7 +1334,7 @@ var App = (function (App, undefined) {
         }
       }
     } else if (type == "error") {
-      var regex = /ERROR\s*[a-z\.]+\s*\-\s*(.*)/ig;
+      var regex = /ERROR\s*[a-z\.]+\s*\-\s*(.*)/gi;
       var error = regex.exec(data);
       while (error != null) {
         if (error[1] != lastError) {
@@ -1194,8 +1350,12 @@ var App = (function (App, undefined) {
     if (settings.showStatusBar) {
       var milestone = {};
 
-      var latestSolid = data.match(/Latest SOLID SUBMESH milestone has changed from #[0-9]+ to #([0-9]+)/i);
-      var latest = data.match(/Latest milestone has changed from #[0-9]+ to #([0-9]+)/i);
+      var latestSolid = data.match(
+        /Latest SOLID SUBMESH milestone has changed from #[0-9]+ to #([0-9]+)/i
+      );
+      var latest = data.match(
+        /Latest milestone has changed from #[0-9]+ to #([0-9]+)/i
+      );
 
       if (latestSolid) {
         milestone.latestSolidSubmeshMilestoneIndex = latestSolid[1];
@@ -1209,7 +1369,7 @@ var App = (function (App, undefined) {
         App.updateStatusBar(milestone);
       }
     }
-  }
+  };
 
   App.logServerOutput = function (data) {
     console.log(data);
@@ -1222,7 +1382,7 @@ var App = (function (App, undefined) {
     if (serverOutput.length > 500) {
       serverOutput.shift();
     }
-  }
+  };
 
   App.toggleStatusBar = function () {
     if (App.windowIsReady()) {
@@ -1242,7 +1402,7 @@ var App = (function (App, undefined) {
         App.stopTrackingCPU();
       }
     }
-  }
+  };
 
   App.startTrackingCPU = function () {
     if (cpuTrackInterval) {
@@ -1252,14 +1412,14 @@ var App = (function (App, undefined) {
     cpuTrackInterval = setInterval(App.trackCPU, 5000);
 
     App.trackCPU();
-  }
+  };
 
   App.stopTrackingCPU = function () {
     if (cpuTrackInterval) {
       clearInterval(cpuTrackInterval);
     }
-    App.updateStatusBar({ "cpu": "" });
-  }
+    App.updateStatusBar({ cpu: "" });
+  };
 
   App.trackCPU = function () {
     var pid;
@@ -1269,17 +1429,16 @@ var App = (function (App, undefined) {
     } else if (server && server.pid) {
       pid = server.pid;
     }
-
     if (pid) {
-      pusage.stat(pid, function (err, stat) {
+      pidusage(pid, function (err, stats) {
         if (err) {
-          App.updateStatusBar({ "cpu": "" });
+          App.updateStatusBar({ cpu: "" });
         } else {
-          App.updateStatusBar({ "cpu": Math.round(stat.cpu).toFixed(2) });
+          App.updateStatusBar({ cpu: Math.round(stats.cpu).toFixed(2) });
         }
       });
 
-      pusage.unmonitor(pid);
+      pidusage.clear();
     } else {
       console.log("Track CPU: No server PID");
       if (cpuTrackInterval) {
@@ -1287,35 +1446,35 @@ var App = (function (App, undefined) {
         clearInterval(cpuTrackInterval);
       }
     }
-  }
+  };
 
   App.hoverAmountStart = function (amount) {
     if (settings.showStatusBar && App.windowIsReady()) {
       win.webContents.send("hoverAmountStart", amount);
     }
-  }
+  };
 
   App.hoverAmountStop = function () {
     if (settings.showStatusBar && App.windowIsReady()) {
       win.webContents.send("hoverAmountStop");
     }
-  }
+  };
 
   App.showWindowIfNotVisible = function () {
     if (App.windowIsReady() && !win.isVisible()) {
       win.show();
     }
-  }
+  };
 
   App.showSetupWindow = function (params) {
     App.showWindow("setup.html", {
-      "lightWallet": settings.lightWallet,
-      "lightWalletHost": settings.lightWalletHost,
-      "lightWalletPort": settings.lightWalletPort,
-      "port": settings.port,
-      "section": params && params.section ? params.section : null
+      lightWallet: settings.lightWallet,
+      lightWalletHost: settings.lightWalletHost,
+      lightWalletPort: settings.lightWalletPort,
+      port: settings.port,
+      section: params && params.section ? params.section : null,
     });
-  }
+  };
 
   App.showInitializationAlertWindow = function (title, msg) {
     if (nodeInitializationError) {
@@ -1329,7 +1488,7 @@ var App = (function (App, undefined) {
     }
 
     if (!msg) {
-      msg = (lastError ? lastError : "A server initialization error occurred.");
+      msg = lastError ? lastError : "A server initialization error occurred.";
     }
 
     if (!selectedJavaLocation) {
@@ -1338,7 +1497,7 @@ var App = (function (App, undefined) {
 
     // check if user is running 32-bit java on win 64..
     if (is64BitOS) {
-      var javaVersionOK = java64BitsOK = false;
+      var javaVersionOK = (java64BitsOK = false);
 
       var child = childProcess.execFile(selectedJavaLocation, ["-version"]);
 
@@ -1346,7 +1505,12 @@ var App = (function (App, undefined) {
       child.stderr.on("data", function (data) {
         var version = data.match(/version "([0-9\.]+)(_([0-9]+))?/i);
 
-        if (version && version[1] && App.versionCompare(version[1], "1.8.0") != -1 && (!version[3] || version[3] >= 66)) {
+        if (
+          version &&
+          version[1] &&
+          App.versionCompare(version[1], "1.8.0") != -1 &&
+          (!version[3] || version[3] >= 66)
+        ) {
           javaVersionOK = true;
         }
 
@@ -1357,68 +1521,76 @@ var App = (function (App, undefined) {
 
       child.on("exit", function () {
         App.showWindow("init_error.html", {
-          "title": title,
-          "message": msg,
-          "serverOutput": serverOutput,
-          "javaVersionOK": javaVersionOK,
-          "java64BitsOK": java64BitsOK,
-          "is64BitOS": is64BitOS,
-          "port": settings.port
+          title: title,
+          message: msg,
+          serverOutput: serverOutput,
+          javaVersionOK: javaVersionOK,
+          java64BitsOK: java64BitsOK,
+          is64BitOS: is64BitOS,
+          port: settings.port,
         });
       });
     } else {
       App.showWindow("init_error.html", {
-        "title": title,
-        "message": msg,
-        "serverOutput": serverOutput,
-        "port": settings.port
+        title: title,
+        message: msg,
+        serverOutput: serverOutput,
+        port: settings.port,
       });
     }
 
     selectedJavaLocation = "";
-  }
+  };
 
   App.showAlertAndQuit = function (title, msg) {
     if (!App.windowIsReady()) {
-      App.showWindow("quit.html", { "title": title, "message": msg });
+      App.showWindow("quit.html", { title: title, message: msg });
     } else {
       App.showWindowIfNotVisible();
-      win.webContents.send("showAlertAndQuit", "<h1>" + title + "</h1><p>" + msg + "</p>", serverOutput);
+      win.webContents.send(
+        "showAlertAndQuit",
+        "<h1>" + title + "</h1><p>" + msg + "</p>",
+        serverOutput
+      );
     }
-  }
+  };
 
   App.showKillAlert = function () {
-    if (!App.windowIsReady()) { return; }
+    if (!App.windowIsReady()) {
+      return;
+    }
     App.showWindowIfNotVisible();
 
     win.webContents.send("showKillAlert");
-  }
+  };
 
   App.showNoJavaInstalledWindow = function (params) {
     App.showWindow("no_java.html", params);
-  }
+  };
 
   App.showAlreadyRunningProcessAlert = function () {
     App.showWindow("already_running_process.html");
-  }
+  };
 
   App.showLoadingWindow = function () {
-    loadingWin = new electron.BrowserWindow({
-      "width": 120,
-      "height": 80,
-      "show": false,
-      "backgroundColor": "#4DC1B5",
-      "frame": false,
-      "center": true,
-      "resizable": false
+    loadingWin = new BrowserWindow({
+      width: 120,
+      height: 80,
+      show: false,
+      backgroundColor: "#4DC1B5",
+      frame: false,
+      center: true,
+      resizable: false,
     });
 
-    loadingWin.loadURL("file://" + appDirectory.replace(path.sep, "/") + "/windows/loading.html");
+    loadingWin.loadURL(
+      "file://" + appDirectory.replace(path.sep, "/") + "/windows/loading.html"
+    );
 
     loadingWin.webContents.once("did-finish-load", function () {
       loadingWin.show();
     });
-  }
+  };
 
   App.showWindow = function (filename, params) {
     if (!filename) {
@@ -1446,13 +1618,19 @@ var App = (function (App, undefined) {
     App.uiIsReady = false;
 
     if (!otherWin) {
-      otherWin = new electron.BrowserWindow({
-        "width": 600,
-        "height": height,
-        "show": false,
-        "useContentSize": true,
-        "center": true,
-        "resizable": false
+      otherWin = new BrowserWindow({
+        width: 600,
+        height: height,
+        show: false,
+        useContentSize: true,
+        center: true,
+        resizable: false,
+        webPreferences: {
+          preload: path.join(__dirname, "index.js"),
+          webviewTag: true,
+          enableRemoteModule: true,
+          nodeIntegration: true,
+        },
       });
       // otherWin.toggleDevTools({mode: "undocked"});
       otherWin.setFullScreenable(false);
@@ -1470,7 +1648,9 @@ var App = (function (App, undefined) {
       });
     }
 
-    otherWin.loadURL("file://" + appDirectory.replace(path.sep, "/") + "/windows/" + filename);
+    otherWin.loadURL(
+      "file://" + appDirectory.replace(path.sep, "/") + "/windows/" + filename
+    );
 
     // todo: fix normal windows also should open in new window, even if not
     // specified
@@ -1487,42 +1667,42 @@ var App = (function (App, undefined) {
     });
 
     App.createMenuBar(true);
-  }
+  };
 
   App.showNodeInfo = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showNodeInfo");
     }
-  }
+  };
 
   App.showPeers = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showPeers");
     }
-  }
+  };
 
   App.showFAQ = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showFAQ");
     }
-  }
+  };
 
   App.showTerm = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showTerm");
     }
-  }
+  };
 
   App.generateSeed = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("generateSeed");
     }
-  }
+  };
 
   App.editNodeConfiguration = function (walletType) {
     if (App.windowIsReady()) {
@@ -1531,13 +1711,25 @@ var App = (function (App, undefined) {
         walletType = settings.lightWallet;
       }
       if (walletType == 1) {
-        var config = { "lightWallet": 1, "lightWalletHost": settings.lightWalletHost, "lightWalletPort": settings.lightWalletPort, "minWeightMagnitude": settings.minWeightMagnitude, "testNet": isTestNet };
+        var config = {
+          lightWallet: 1,
+          lightWalletHost: settings.lightWalletHost,
+          lightWalletPort: settings.lightWalletPort,
+          minWeightMagnitude: settings.minWeightMagnitude,
+          testNet: isTestNet,
+        };
       } else {
-        var config = { "lightWallet": 0, "port": settings.port, "depth": settings.depth, "minWeightMagnitude": settings.minWeightMagnitude, "testNet": isTestNet };
+        var config = {
+          lightWallet: 0,
+          port: settings.port,
+          depth: settings.depth,
+          minWeightMagnitude: settings.minWeightMagnitude,
+          testNet: isTestNet,
+        };
       }
       win.webContents.send("editNodeConfiguration", config);
     }
-  }
+  };
 
   App.checkNodeValidity = function (node) {
     var result = /^udp:\/\/(.*):([0-9]+)$/i.exec(node);
@@ -1563,7 +1755,7 @@ var App = (function (App, undefined) {
     }
 
     return valid;
-  }
+  };
 
   App.updateNodeConfiguration = function (configuration) {
     console.log("update node config");
@@ -1614,7 +1806,10 @@ var App = (function (App, undefined) {
       }
 
       if (configuration.hasOwnProperty("minWeightMagnitude")) {
-        settings.minWeightMagnitude = parseInt(configuration.minWeightMagnitude, 10);
+        settings.minWeightMagnitude = parseInt(
+          configuration.minWeightMagnitude,
+          10
+        );
 
         if (!isTestNet && settings.minWeightMagnitude < 18) {
           settings.minWeightMagnitude = 18;
@@ -1635,7 +1830,7 @@ var App = (function (App, undefined) {
       console.log("Error:");
       console.log(err);
     }
-  }
+  };
 
   App.addPeerNode = function (node) {
     if (settings.lightWallet == 1) {
@@ -1659,7 +1854,7 @@ var App = (function (App, undefined) {
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   App.showServerLog = function () {
     if (App.windowIsReady() && settings.lightWallet != 1) {
@@ -1667,83 +1862,93 @@ var App = (function (App, undefined) {
       isLookingAtServerLog = true;
       win.webContents.send("showServerLog", serverOutput);
     }
-  }
+  };
 
   App.stopLookingAtServerLog = function () {
     isLookingAtServerLog = false;
-  }
+  };
 
   App.showModal = function (identifier, html) {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showModal", identifier, html);
     }
-  }
+  };
 
   App.showPreferences = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
 
       if (process.platform != "linux") {
-        var loginSettings = electron.app.getLoginItemSettings();
+        var loginSettings = app.getLoginItemSettings();
       } else {
-        var loginSettings = { "openAtLogin": false };
+        var loginSettings = { openAtLogin: false };
       }
 
-      win.webContents.send("showPreferences", { "openAtLogin": loginSettings.openAtLogin });
+      win.webContents.send("showPreferences", {
+        openAtLogin: loginSettings.openAtLogin,
+      });
     }
-  }
+  };
 
   App.updatePreferences = function (updatedSettings) {
     if (process.platform != "linux") {
-      var loginSettings = electron.app.getLoginItemSettings();
+      var loginSettings = app.getLoginItemSettings();
 
       if (updatedSettings.openAtLogin != loginSettings.openAtLogin) {
-        electron.app.setLoginItemSettings({ "openAtLogin": updatedSettings.openAtLogin, "openAsHidden": true });
+        app.setLoginItemSettings({
+          openAtLogin: updatedSettings.openAtLogin,
+          openAsHidden: true,
+        });
       }
     }
-  }
+  };
 
   App.showUpdateAvailable = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showUpdateAvailable");
     }
-  }
+  };
 
   App.showUpdateDownloaded = function (releaseNotes, releaseName, releaseDate) {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
-      win.webContents.send("showUpdateDownloaded", releaseNotes, releaseName, releaseDate);
+      win.webContents.send(
+        "showUpdateDownloaded",
+        releaseNotes,
+        releaseName,
+        releaseDate
+      );
     }
-  }
+  };
 
   App.showUpdateError = function (error) {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showUpdateError", error);
     }
-  }
+  };
 
   App.showCheckingForUpdate = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showCheckingForUpdate");
     }
-  }
+  };
 
   App.showUpdateNotAvailable = function () {
     if (App.windowIsReady()) {
       App.showWindowIfNotVisible();
       win.webContents.send("showUpdateNotAvailable");
     }
-  }
+  };
 
   App.setFocus = function (focus) {
     if (win && win.webContents) {
       win.webContents.send("setFocus", focus);
     }
-  }
+  };
 
   App.rendererIsInitialized = function () {
     App.uiIsInitialized = true;
@@ -1751,7 +1956,7 @@ var App = (function (App, undefined) {
       App.doNodeStarted = false;
       App.nodeStarted();
     }
-  }
+  };
 
   App.rendererIsReady = function (pid) {
     rendererPid = pid;
@@ -1769,13 +1974,13 @@ var App = (function (App, undefined) {
 
     // Disable auto-update for now
     // App.autoUpdate();
-  }
+  };
 
   App.notify = function (type, message, options) {
     if (App.windowIsReady()) {
       win.webContents.send("notify", type, message, options);
     }
-  }
+  };
 
   App.handleURL = function (url) {
     console.log("App.handleURL: " + url);
@@ -1788,30 +1993,42 @@ var App = (function (App, undefined) {
     } else if (!launchURL) {
       launchURL = url;
     }
-  }
+  };
 
   App.updateStatusBar = function (data) {
     if (App.windowIsReady()) {
       win.webContents.send("updateStatusBar", data);
     }
-  }
+  };
 
   App.updateAppInfo = function (data) {
     if (data.testnet != isTestNet) {
-      App.notify("error", "You are connecting to a " + (data.testnet ? "testnet" : "mainnet") + " node from the " + (isTestNet ? "testnet" : "mainnet") + " wallet. This is not recommended...", { "timeOut": 15000, "extendedTimeOut": 15000 });
+      App.notify(
+        "error",
+        "You are connecting to a " +
+          (data.testnet ? "testnet" : "mainnet") +
+          " node from the " +
+          (isTestNet ? "testnet" : "mainnet") +
+          " wallet. This is not recommended...",
+        { timeOut: 15000, extendedTimeOut: 15000 }
+      );
     }
 
     ariVersion = data.version;
 
     App.updateTitle(data.testnet);
-  }
+  };
 
   App.updateTitle = function (_isTestNet) {
     if (_isTestNet === undefined) {
       _isTestNet = isTestNet;
     }
 
-    var title = "Aidos Wallet " + String(appVersion.replace("-testnet", "")).escapeHTML() + (_isTestNet ? " - Testnet" : "") + (ariVersion ? " - ARI " + String(ariVersion).escapeHTML() : "");
+    var title =
+      "Aidos Wallet " +
+      String(appVersion.replace("-testnet", "")).escapeHTML() +
+      (_isTestNet ? " - Testnet" : "") +
+      (ariVersion ? " - ARI " + String(ariVersion).escapeHTML() : "");
 
     try {
       if (win) {
@@ -1823,17 +2040,23 @@ var App = (function (App, undefined) {
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   App.windowIsReady = function () {
-    return (App.uiIsReady && win && win.webContents);
-  }
+    return App.uiIsReady && win && win.webContents;
+  };
 
   return App;
-}(App || {}));
+})(App || {});
 
 // For windows
-const shouldQuit = electron.app.makeSingleInstance(function (commandLine, workingDirectory) {
+
+app.requestSingleInstanceLock();
+
+const shouldQuit = app.on("second-instance", function (
+  commandLine,
+  workingDirectory
+) {
   if (!App.uiIsReady) {
     return;
   }
@@ -1851,107 +2074,131 @@ const shouldQuit = electron.app.makeSingleInstance(function (commandLine, workin
   }
 });
 
-if (shouldQuit) {
-  console.log("Quit this instance.");
-  electron.app.quit();
-  return;
-}
+// const shouldQuit = app.makeSingleInstance(function (
+//   commandLine,
+//   workingDirectory
+// ) {
+//   if (!App.uiIsReady) {
+//     return;
+//   }
 
-electron.app.on("ready", function () {
-  App.initialize();
+//   // Someone tried to run a second instance, we should focus our window.
+//   if (win) {
+//     if (win.isMinimized()) win.restore();
+//     win.focus();
+
+//     if (process.platform == "win32" && commandLine.length == 2) {
+//       if (String(commandLine[1]).match(/^aidos:\/\//i)) {
+//         App.handleURL(commandLine[1]);
+//       }
+//     }
+//   }
+// });
+
+// if (shouldQuit) {
+//   console.log("Quit this instance.");
+//   app.quit();
+//   return;
+// }
+
+app.on("ready", function () {
+  initialize();
 });
 
 // prevent links to be opened in webview
-electron.app.on('web-contents-created', (event, contents) => {
-	  if (contents.getType() == 'webview') {
-	    contents.on('will-navigate', (event, link) => {
-	      let protocol = url.parse(link).protocol;
-	      if (protocol === 'http:' || protocol === 'https:') {
-	    	  event.preventDefault()
-	    	  shell.openExternal(link)
-	      }
-	    })
-	  }
+app.on("web-contents-created", (event, contents) => {
+  if (contents.getType() == "webview") {
+    contents.on("will-navigate", (event, link) => {
+      let protocol = url.parse(link).protocol;
+      if (protocol === "http:" || protocol === "https:") {
+        event.preventDefault();
+        shell.openExternal(link);
+      }
+    });
+  }
 });
 
-electron.app.on("open-url", function (event, url) {
+app.on("open-url", function (event, url) {
   App.handleURL(url);
 });
 
-electron.app.on("window-all-closed", function () {
+app.on("window-all-closed", function () {
   App.quit();
 });
 
-electron.app.on("browser-window-focus", function () {
+app.on("browser-window-focus", function () {
   App.setFocus(true);
 });
 
-electron.app.on("browser-window-blur", function () {
+app.on("browser-window-blur", function () {
   App.setFocus(false);
 });
 
-electron.ipcMain.on("relaunchApplication", function (event, didFinalize) {
+ipcMain.on("relaunchApplication", function (event, didFinalize) {
   App.relaunchApplication(didFinalize);
 });
 
-electron.ipcMain.on("killAlreadyRunningProcessAndRestart", App.killAlreadyRunningProcessAndRestart);
+ipcMain.on(
+  "killAlreadyRunningProcessAndRestart",
+  App.killAlreadyRunningProcessAndRestart
+);
 
-electron.ipcMain.on("rendererIsInitialized", function () {
+ipcMain.on("rendererIsInitialized", function () {
   App.rendererIsInitialized();
 });
 
-electron.ipcMain.on("rendererIsReady", function (event, pid) {
+ipcMain.on("rendererIsReady", function (event, pid) {
   App.rendererIsReady(pid);
 });
 
-electron.ipcMain.on("updatePreferences", function (event, checkForUpdatesOption) {
+ipcMain.on("updatePreferences", function (event, checkForUpdatesOption) {
   App.updatePreferences(checkForUpdatesOption);
 });
 
-electron.ipcMain.on("updateNodeConfiguration", function (event, configuration) {
+ipcMain.on("updateNodeConfiguration", function (event, configuration) {
   App.updateNodeConfiguration(configuration);
 });
 
-electron.ipcMain.on("installUpdate", function () {
-  App.installUpdate();
+ipcMain.on("installUpdate", function () {
+  installUpdate();
 });
 
-electron.ipcMain.on("quit", function () {
+ipcMain.on("quit", function () {
   App.quit();
 });
 
-electron.ipcMain.on("hoverAmountStart", function (event, amount) {
+ipcMain.on("hoverAmountStart", function (event, amount) {
   App.hoverAmountStart(amount);
 });
 
-electron.ipcMain.on("hoverAmountStop", App.hoverAmountStop);
+ipcMain.on("hoverAmountStop", App.hoverAmountStop);
 
-electron.ipcMain.on("stopLookingAtServerLog", App.stopLookingAtServerLog);
+ipcMain.on("stopLookingAtServerLog", App.stopLookingAtServerLog);
 
-electron.ipcMain.on("showNoJavaInstalledWindow", function (event, params) {
+ipcMain.on("showNoJavaInstalledWindow", function (event, params) {
   App.showNoJavaInstalledWindow(params);
 });
 
-electron.ipcMain.on("showSetupWindow", function (event, params) {
+ipcMain.on("showSetupWindow", function (event, params) {
   App.showSetupWindow(params);
 });
 
-electron.ipcMain.on("editNodeConfiguration", App.editNodeConfiguration);
+ipcMain.on("editNodeConfiguration", App.editNodeConfiguration);
 
-electron.ipcMain.on("addPeerNode", function (event, node) {
+ipcMain.on("addPeerNode", function (event, node) {
   App.addPeerNode(node);
 });
 
-electron.ipcMain.on("showServerLog", App.showServerLog);
+ipcMain.on("showServerLog", App.showServerLog);
 
-electron.ipcMain.on("showModal", function (event, identifier, html) {
+ipcMain.on("showModal", function (event, identifier, html) {
   App.showModal(identifier, html);
 });
 
-electron.ipcMain.on("updateStatusBar", function (event, data) {
+ipcMain.on("updateStatusBar", function (event, data) {
   App.updateStatusBar(data);
 });
 
-electron.ipcMain.on("updateAppInfo", function (event, data) {
+ipcMain.on("updateAppInfo", function (event, data) {
   App.updateAppInfo(data);
 });

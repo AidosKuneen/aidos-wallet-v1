@@ -1,28 +1,29 @@
 var aidos;
+// var toastr = require("toastr");
 
 var connection = {
-  "accountData": false,
-  "previousAccountData": false,
-  "isLoggedIn": false,
-  "showStatus": false,
-  "inApp": false,
-  "isSpamming": false,
-  "handleURL": false,
-  "testNet": false,
-  "host": "http://localhost",
-  "port": 14265,
-  "depth": 3,
-  "minWeightMagnitude": 18,
-  "ccurlPath": null,
-  "lightWallet": false
+  accountData: false,
+  previousAccountData: false,
+  isLoggedIn: false,
+  showStatus: false,
+  inApp: false,
+  isSpamming: false,
+  handleURL: false,
+  testNet: false,
+  host: "http://localhost",
+  port: 14265,
+  depth: 3,
+  minWeightMagnitude: 18,
+  ccurlPath: null,
+  lightWallet: false,
 };
 
 var __entityMap = {
   "&": "&amp;",
   "<": "&lt;",
   ">": "&gt;",
-  '"': '&quot;',
-  "'": '&#39;'
+  '"': "&quot;",
+  "'": "&#39;",
 };
 
 String.prototype.escapeHTML = function () {
@@ -34,7 +35,7 @@ String.prototype.escapeHTML = function () {
 if (typeof document.hasFocus === "undefined") {
   document.hasFocus = function () {
     return document.visibilityState == "visible";
-  }
+  };
 }
 
 $(document).ready(function () {
@@ -54,11 +55,12 @@ var UI = (function (UI, $, undefined) {
     UI.initializationTime = new Date().getTime();
 
     var d = document.documentElement.style;
-    var supported = ("flex" in d || "msFlex" in d || "webkitFlex" in d || "webkitBoxFlex" in d);
+    var supported =
+      "flex" in d || "msFlex" in d || "webkitFlex" in d || "webkitBoxFlex" in d;
     if (!supported || String(2779530283277761) != "2779530283277761") {
       showOutDatedBrowserMessage();
     } else {
-      if (typeof (URLSearchParams) != "undefined" && parent) {
+      if (typeof URLSearchParams != "undefined" && parent) {
         var params = new URLSearchParams(location.search.slice(1));
         connection.inApp = params.get("inApp") == 1;
         connection.showStatus = params.get("showStatus") == 1;
@@ -72,27 +74,33 @@ var UI = (function (UI, $, undefined) {
           connection.depth = parseInt(params.get("depth"), 10);
         }
         if (params.has("minWeightMagnitude")) {
-          connection.minWeightMagnitude = parseInt(params.get("minWeightMagnitude"), 10);
+          connection.minWeightMagnitude = parseInt(
+            params.get("minWeightMagnitude"),
+            10
+          );
         }
         if (params.has("ccurlPath")) {
           connection.ccurlPath = params.get("ccurlPath");
         }
       }
 
-      if (connection.inApp && (typeof (backendLoaded) == "undefined" || !backendLoaded)) {
+      if (
+        connection.inApp &&
+        (typeof backendLoaded == "undefined" || !backendLoaded)
+      ) {
         showBackendConnectionError();
         return;
       }
 
       aidos = new aidos({
-        "host": connection.host,
-        "port": connection.port
+        host: connection.host,
+        port: connection.port,
       });
 
       if (connection.host != "http://localhost") {
         connection.lightWallet = true;
-        if (!connection.inApp || typeof (ccurl) == "undefined" || !ccurl) {
-          if (typeof (ccurl) == "undefined") {
+        if (!connection.inApp || typeof ccurl == "undefined" || !ccurl) {
+          if (typeof ccurl == "undefined") {
             console.log("ccurl is undefined");
           } else if (!ccurl) {
             console.log("ccurl is false");
@@ -104,25 +112,29 @@ var UI = (function (UI, $, undefined) {
         } else {
           connection.ccurlProvider = ccurl.ccurlProvider(connection.ccurlPath);
           if (!connection.ccurlProvider) {
-            console.log("Did not get ccurlProvider from " + connection.ccurlPath);
+            console.log(
+              "Did not get ccurlProvider from " + connection.ccurlPath
+            );
             showLightWalletErrorMessage();
             return;
           }
         }
 
         // Overwrite aidos lib with light wallet functionality
-        $.getScript("js/aidos.lightwallet.js").done(function () {
-          setTimeout(initialize, 100);
-        }).fail(function (jqxhr, settings, exception) {
-          console.log("Could not load aidos.lightwallet.js");
-          console.log(exception);
-          showLightWalletErrorMessage();
-        });
+        $.getScript("js/aidos.lightwallet.js")
+          .done(function () {
+            setTimeout(initialize, 100);
+          })
+          .fail(function (jqxhr, settings, exception) {
+            console.log("Could not load aidos.lightwallet.js");
+            console.log(exception);
+            showLightWalletErrorMessage();
+          });
       } else {
         setTimeout(initialize, 100);
       }
     }
-  }
+  };
 
   function initialize() {
     $("body").show();
@@ -139,7 +151,7 @@ var UI = (function (UI, $, undefined) {
     $(".btn:not(.btn-no-loading)").loadingInitialize();
 
     // Enable copy to clipboard
-    var clipboard = new Clipboard(".clipboard");
+    var clipboard = new ClipboardJS(".clipboard");
     clipboard.on("success", function (e) {
       UI.notify("success", "Copied to clipboard.");
     });
@@ -148,7 +160,11 @@ var UI = (function (UI, $, undefined) {
     $("body").on("click", ".amount.long", function (e) {
       if ($(this).hasClass("detailed")) {
         $(this).parent().removeClass("detailed");
-        $(this).removeClass("detailed").html($(this).data("short")).hide().fadeIn();
+        $(this)
+          .removeClass("detailed")
+          .html($(this).data("short"))
+          .hide()
+          .fadeIn();
       } else {
         $(this).parent().addClass("detailed");
         $(this).addClass("detailed").html($(this).data("long")).hide().fadeIn();
@@ -195,7 +211,10 @@ var UI = (function (UI, $, undefined) {
   }
 
   function showErrorMessage(error) {
-    document.body.innerHTML = "<div style='padding: 20px;background:#efefef;border:#aaa;border-radius: 5px;max-width: 60%;margin: 100px auto;'>" + String(error).escapeHTML() + "</div>";
+    document.body.innerHTML =
+      "<div style='padding: 20px;background:#efefef;border:#aaa;border-radius: 5px;max-width: 60%;margin: 100px auto;'>" +
+      String(error).escapeHTML() +
+      "</div>";
     document.body.style.display = "block";
   }
 
@@ -212,12 +231,17 @@ var UI = (function (UI, $, undefined) {
 
     var html = "";
 
-    html += "<div style='padding: 20px;background:#efefef;border:#aaa;border-radius: 5px;max-width: 60%;margin: 100px auto;'>";
-    html += "<strong>Your browser is out-of date. Please download one of these up-to-date, free and excellent browsers:</strong>";
+    html +=
+      "<div style='padding: 20px;background:#efefef;border:#aaa;border-radius: 5px;max-width: 60%;margin: 100px auto;'>";
+    html +=
+      "<strong>Your browser is out-of date. Please download one of these up-to-date, free and excellent browsers:</strong>";
     html += "<ul>";
-    html += "<li><a href='https://www.google.com/chrome/browser/desktop/' rel='noopener noreferrer'>Google Chrome</a></li>";
-    html += "<li><a href='http://www.mozilla.com/firefox/' rel='noopener noreferrer'>Mozilla Firefox</a></li>";
-    html += "<li><a href='http://www.opera.com/' rel='noopener noreferrer'>Opera</a></li>";
+    html +=
+      "<li><a href='https://www.google.com/chrome/browser/desktop/' rel='noopener noreferrer'>Google Chrome</a></li>";
+    html +=
+      "<li><a href='http://www.mozilla.com/firefox/' rel='noopener noreferrer'>Mozilla Firefox</a></li>";
+    html +=
+      "<li><a href='http://www.opera.com/' rel='noopener noreferrer'>Opera</a></li>";
     html += "</ul>";
     html += "</div>";
 
@@ -225,4 +249,4 @@ var UI = (function (UI, $, undefined) {
   }
 
   return UI;
-}(UI || {}, jQuery));
+})(UI || {}, jQuery);
