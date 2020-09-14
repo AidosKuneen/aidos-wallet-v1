@@ -82,6 +82,14 @@
     "win": {
       "icon": "/build/icons/icon.ico",
       "target": "nsis"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.gz",
+        "rpm"
+      ],
+      "category": "Utility"
     }
   }
 }
