@@ -1,4 +1,6 @@
-language: c
+language: node_js
+node_js:
+  - "12.8.3"
 os:
   - linux
   - osx
@@ -26,7 +28,6 @@ addons:
       - xz-utils
 
 before_install:
-  - brew install node@12
   - node --version
   - npm install electron@10.1.1
   - npm install electron-builder@22.8.0
