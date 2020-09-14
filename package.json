@@ -1,5 +1,5 @@
 {
-  "name": "ADK-Wallet",
+  "name": "adk-wallet",
   "productName": "ADK-Wallet",
   "description": "Aidos Kuneen Wallet",
   "version": "1.3.0",
@@ -63,7 +63,7 @@
     ],
     "nodeGypRebuild": false,
     "dmg": {
-      "icon": "/build/icons/icon.icns",
+      "icon": "/",
       "iconSize": 125,
       "contents": [
         {
