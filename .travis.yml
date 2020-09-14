@@ -4,17 +4,13 @@ node_js:
 os:
   - linux
   - osx
-
+  osx_image: xcode10.2
+  
 sudo: required
-dist: trusty
-group: edge
 
 cache:
   directories:
     - node_modules
-
-env:
-  - NODE_VERSION="12.8.3"
 
 addons:
   apt:

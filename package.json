@@ -14,7 +14,7 @@
     "precompile": "rimraf out/*",
     "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32",
     "compile:lin": "electron-builder build --linux --x64 --ia32",
-    "compile:mac": "sudo export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64",
+    "compile:mac": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64",
     "compile:win": "electron-builder build --win --x64 --ia32",
     "prepublish": "rimraf out/*",
     "publish": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32 --publish always",
