@@ -26,9 +26,9 @@ addons:
       - xz-utils
 
 before_install:
-  - npm i -g npm@12.8.3
+  - brew install node@12
   - node --version
-    - npm install electron@10.1.1
+  - npm install electron@10.1.1
   - npm install electron-builder@22.8.0
 
 install:
