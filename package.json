@@ -49,14 +49,6 @@
       "output": "out"
     },
     "appId": "com.aidoskuneen.wallet",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "AidosKuneen",
-        "repo": "aidos-wallet",
-        "private": false
-      }
-    ],
     "extraResources": [
       "ccurl/**/*",
       "ui/**/*"
