@@ -2,12 +2,12 @@
   "name": "Aidos-Testnet",
   "productName": "Aidos Wallet Testnet",
   "description": "Aidos Wallet Testnet",
-  "version": "1.2.7",
+  "version": "1.3.0",
   "license": "GPL-3.0",
   "main": "app/js/main.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "start": "export NODE_ENV=development || set NODE_ENV=development && electron app/js/main.js",
+    "start": "export NODE_ENV=development || set NODE_ENV=development && electron .",
     "precompile": "rimraf out/*",
     "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && build --win --mac --linux --x64 --ia32",
     "compile:lin": "build --linux --x64 --ia32",
@@ -19,25 +19,17 @@
     "publish:mac": "export CSC_IDENTITY_AUTO_DISCOVERY=false && build --mac --x64 --publish always",
     "publish:win": "build --win --x64 --ia32 --publish always"
   },
-  "author": "Aidos Developers <info@aidoskuneen.com>",
+  "author": "Aidos Kuneen <info@aidoskuneen.com>",
   "homepage": "http://aidoskuneen.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/AidosKuneen/aidos-wallet"
   },
   "dependencies": {
-    "async": "^3.2.0",
-    "clipboard": "^2.0.6",
     "ffi-napi": "^3.0.1",
-    "font-awesome": "^4.7.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "jquery": "^3.5.1",
-    "jquery-qrcode": "^1.0.0",
-    "pidusage": "^2.0.21",
-    "remodal": "^1.1.1",
-    "tingle.js": "^0.15.3",
-    "toastr": "^2.1.4"
+    "pidusage": "^2.0.21"
   },
   "devDependencies": {
     "electron": "^10.1.1",
@@ -45,6 +37,7 @@
     "rimraf": "^3.0.2"
   },
   "build": {
+    "files": ["app/**/*", "build/**/*"],
     "directories": {
       "buildResources": "build",
       "output": "out"

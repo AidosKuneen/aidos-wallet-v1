@@ -464,7 +464,7 @@ var UI = (function (UI, undefined) {
     var content = "";
 
     if (configuration.lightWallet) {
-      var host = "wallet1.aidoskuneen.com";
+      var host = "wallet.aidoskuneen.com";
       if (configuration.lightWalletHost) {
         host = configuration.lightWalletHost.match(/^https?:\/\/(.*)$/i);
         if (host && host.length > 0) {
@@ -473,7 +473,7 @@ var UI = (function (UI, undefined) {
       }
       content =
         "<h3>Enter Server Address: </h3>" +
-        "<input class='cfg' maxlength='32' type='text' id='server_config_host' placeholder='wallet1.aidoskuneen.com' value='" +
+        "<input class='cfg' maxlength='32' type='text' id='server_config_host' placeholder='wallet.aidoskuneen.com' value='" +
         host +
         "' />" +
         "<botLabel>(without 'http://' and port number)</botLabel>";

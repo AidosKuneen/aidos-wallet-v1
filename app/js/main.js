@@ -148,7 +148,7 @@ var App = (function (App, undefined) {
 
       settings = {
         bounds: { width: 1300, height: 850 },
-        lightWalletHost: "http://wallet1.aidoskuneen.com",
+        lightWalletHost: "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
         checkForUpdates: 1,
         lightWallet: 1,
@@ -188,7 +188,7 @@ var App = (function (App, undefined) {
         settings.depth = 3;
       }
       if (!settings.hasOwnProperty("lightWalletHost")) {
-        settings.lightWalletHost = "http://wallet1.aidoskuneen.com";
+        settings.lightWalletHost = "http://wallet.aidoskuneen.com";
       }
       if (!settings.hasOwnProperty("lightWalletPort")) {
         settings.lightWalletPort = isTestNet ? 15555 : 14266;
@@ -206,7 +206,7 @@ var App = (function (App, undefined) {
       console.log(err);
       settings = {
         bounds: { width: 1300, height: 850 },
-        lightWalletHost: "http://wallet1.aidoskuneen.com",
+        lightWalletHost: "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
         checkForUpdates: 1,
         lightWallet: 1,
@@ -238,7 +238,7 @@ var App = (function (App, undefined) {
   App.saveSettings = function () {
     settings = {
       bounds: { width: 1300, height: 850 },
-      lightWalletHost: "http://wallet1.aidoskuneen.com",
+      lightWalletHost: "http://wallet.aidoskuneen.com",
       lightWalletPort: isTestNet ? 15555 : 14266,
       checkForUpdates: 1,
       lightWallet: 1,

@@ -2,11 +2,11 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/0b42t20u4wfv2qau?svg=true)](https://ci.appveyor.com/project/ogami-daigoro/aidos-wallet)
 [![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/AidosKuneen/aidos-wallet/master/LICENSE)
 
-# Aidos Wallet
+# Aidos Kuneen Wallet
 
 ## Overview
 
-This repository contains the desktop wallet for AidosKuneen.
+This repository contains the desktop wallet for Aidos Kuneen.
 
 ## OS
 
