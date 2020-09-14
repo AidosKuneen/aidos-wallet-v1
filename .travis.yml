@@ -27,16 +27,11 @@ addons:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    echo "in osx";
-    git clone https://github.com/creationix/nvm.git /tmp/.nvm;
-    source /tmp/.nvm/nvm.sh;
+    npm i -g npm@12.8.3
     fi
-  - nvm install $NODE_VERSION
-  - nvm use --delete-prefix $NODE_VERSION
   - node --version
-    - npm install electron@1.6.11
-  - npm install bower
-  - npm install electron-builder@11.5.0
+    - npm install electron@10.1.1
+  - npm install electron-builder@22.8.0
 
 install:
   - npm install
