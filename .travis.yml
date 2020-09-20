@@ -49,8 +49,8 @@ install:
     rm libccurl.dylib;
     fi
   - popd
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run compile:lin; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run compile:mac; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run publish:lin; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run publish:mac; fi
   - find out
 
 script:
