@@ -18,8 +18,8 @@
     "compile:win": "electron-builder build --win --x64 --ia32",
     "prepublish": "rimraf out/*",
     "publish": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32 --publish always",
-    "publish:lin": "GH_TOKEN=5ebe9d9c6a866b5ec581f79762c11bc6270f543d electron-builder build --linux --x64 --ia32 --publish always",
-    "publish:mac": "GH_TOKEN=5ebe9d9c6a866b5ec581f79762c11bc6270f543d export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64 --publish always",
+    "publish:lin": "electron-builder build --linux --x64 --ia32 --publish always",
+    "publish:mac": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64 --publish always",
     "publish:win": "electron-builder build --win --x64 --ia32 --publish always"
   },
   "author": "Aidos Kuneen <info@aidoskuneen.com>",
@@ -49,14 +49,6 @@
       "output": "out"
     },
     "appId": "com.aidoskuneen.wallet",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "AidosKuneen",
-        "repo": "aidos-wallet",
-        "private": false
-      }
-    ],
     "extraResources": [
       "ccurl/**/*",
       "ui/**/*"
