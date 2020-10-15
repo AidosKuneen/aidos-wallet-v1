@@ -89,7 +89,10 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "AppImage",
+        "tar.gz",
+        "rpm",
+        "deb"
       ],
       "category": "Utility"
     }
