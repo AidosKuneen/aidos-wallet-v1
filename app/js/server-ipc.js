@@ -63,12 +63,6 @@ ipcRenderer.on("showTerm", function () {
   }
 });
 
-ipcRenderer.on("hideAlerts", function () {
-  if (typeof UI != "undefined") {
-    UI.hideAlerts();
-  }
-});
-
 ipcRenderer.on("setFocus", function (event, focus) {
   if (typeof UI != "undefined") {
     UI.hasFocus = focus;

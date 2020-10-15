@@ -1,0 +1,295 @@
+@tailwind base;
+
+/* Your own custom base styles */
+*,
+*::after,
+*::before {
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-app-region: no-drag;
+}
+
+body {
+  @apply font-roboto;
+  @apply bg-platinum;
+  @apply text-tetsu-black;
+}
+
+a {
+  @apply cursor-pointer;
+}
+
+@tailwind components;
+
+/* Your own custom component styles */
+
+.custom-bg-linear {
+  background: linear-gradient(90deg, #043f32 0%, #228255 100%);
+}
+
+.custom-bg-radial {
+  background: radial-gradient(
+    circle,
+    rgba(34, 130, 85, 1) 0%,
+    rgba(4, 67, 53, 1) 100%
+  );
+}
+
+.custom-divider {
+  @apply flex;
+  @apply items-center;
+  @apply text-center;
+  @apply text-white;
+  @apply text-opacity-50;
+  @apply text-sm;
+  @apply uppercase;
+  @apply font-montserrat;
+  @apply font-semibold;
+}
+
+.custom-divider::before,
+.custom-divider::after {
+  content: "";
+  @apply flex-grow;
+  height: 2px;
+  @apply bg-white;
+  @apply bg-opacity-25;
+}
+/* Menu */
+.menu-btn {
+  @apply flex;
+  @apply py-3;
+  @apply px-12;
+  @apply text-white;
+  @apply text-lg;
+  @apply transition;
+  @apply duration-200;
+  @apply ease-in-out;
+  @apply relative;
+}
+
+.menu-btn.active {
+  @apply bg-cultured;
+  @apply font-medium;
+  @apply text-tetsu-black;
+}
+
+.menu-btn:hover {
+  @apply bg-cultured;
+  @apply font-medium;
+  @apply text-onyx;
+}
+
+.selected {
+  background-color: #eaeaea;
+  @apply font-medium;
+  @apply text-onyx;
+}
+
+/* EXPLORER */
+
+.explorer-form input[type="radio"] {
+  @apply fixed;
+  @apply w-0;
+  @apply opacity-0;
+}
+
+.explorer-form label {
+  @apply inline-block;
+  @apply px-5;
+  @apply py-2;
+  @apply rounded-lg;
+  @apply font-medium;
+  @apply text-tetsu-black;
+  @apply bg-platinum;
+  @apply cursor-pointer;
+}
+
+.explorer-form label:hover {
+  @apply bg-dark-green;
+  @apply text-white;
+}
+
+.explorer-form input[type="radio"]:checked + label {
+  @apply bg-dark-green;
+  @apply text-white;
+}
+
+/* FAQ */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::after {
+  content: url("../images/arrow.svg");
+  @apply absolute;
+  @apply right-0;
+  @apply w-4;
+  @apply h-4;
+}
+
+details[open] > summary {
+  @apply text-dark-green;
+}
+
+details[open] > summary::after {
+  @apply transform;
+  @apply rotate-90;
+}
+
+/* Tab Transaction */
+
+.tab-btn.active {
+  @apply border-b-2;
+  @apply border-green-700;
+}
+.tab-content {
+  @apply hidden;
+}
+.tab-content.active {
+  @apply block;
+}
+
+/* Btn Loader */
+
+.btn {
+  position: relative;
+}
+
+.btn.error {
+  background: #ed0b0b !important;
+  color: #fff;
+}
+
+.btn.success {
+  background: #3fa577 !important;
+  color: #fff;
+}
+
+/* Progress */
+
+progress {
+  @apply appearance-none;
+  @apply block;
+  @apply w-56;
+  @apply h-6;
+}
+
+progress::-webkit-progress-bar {
+  padding: 2px;
+  @apply rounded-xl;
+  @apply bg-platinum;
+  @apply transition;
+  @apply duration-300;
+  @apply ease-linear;
+}
+progress[value]::-webkit-progress-value {
+  @apply rounded-xl;
+  @apply bg-dark-green;
+  @apply transition;
+  @apply duration-300;
+  @apply ease-linear;
+}
+
+/* Toastr */
+.toastify {
+  padding: 12px 20px;
+  color: #fff;
+  display: inline-block;
+  background: -webkit-linear-gradient(315deg, #73a5ff, #5477f5);
+  background: linear-gradient(135deg, #73a5ff, #5477f5);
+  position: fixed;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  max-width: calc(50% - 20px);
+  z-index: 2147483647;
+}
+.toastify.on {
+  opacity: 1;
+}
+.toast-close {
+  opacity: 0.4;
+  padding: 0 5px;
+}
+.toastify-right {
+  right: 15px;
+}
+.toastify-left {
+  left: 15px;
+}
+.toastify-top {
+  top: -150px;
+}
+.toastify-bottom {
+  bottom: -150px;
+}
+.toastify-rounded {
+  border-radius: 25px;
+}
+.toastify-avatar {
+  width: 1.5em;
+  height: 1.5em;
+  margin: -7px 5px;
+  border-radius: 2px;
+}
+.toastify-center {
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  max-width: fit-content;
+  max-width: -moz-fit-content;
+}
+@media only screen and (max-width: 360px) {
+  .toastify-left,
+  .toastify-right {
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    max-width: fit-content;
+  }
+}
+
+.tingle-modal-box {
+  width: auto !important;
+}
+/* Bundle Modal */
+#bundle-details.modal {
+  max-width: 700px;
+  padding: 0;
+}
+/* FAQ Modal */
+#help.modal {
+  max-width: 700px;
+  padding: 0;
+}
+/* scroll bar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #c4c4c4;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Start purging... */
+@tailwind utilities;
+/* Stop purging. */
+
+/* Your own custom utilities */

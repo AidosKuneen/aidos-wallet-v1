@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/uikit.min.css" />
+    <link rel="stylesheet" href="../ui/css/global.css" />
+    <link rel="stylesheet" href="css/tingle.min.css" />
     <script>
       if (typeof module === "object") {
         window.module = module;
@@ -11,11 +12,10 @@
       }
     </script>
     <script src="js/jquery.min.js"></script>
-    <script>
+    <!-- <script>
       window.$ = window.jQuery = require("jquery");
-    </script>
-    <script src="js/uikit.min.js"></script>
-    <script src="js/tingle.min.js"></script>
+    </script> -->
+    <script src="../ui/js/modules/tingle.min.js"></script>
     <script>
       if (window.module) module = window.module;
     </script>
@@ -38,6 +38,5 @@
       </div>
       <div id="status-bar-right"><span id="status-bar-aidos"></span></div>
     </div>
-    <div id="new-user">New user? Read the <strong>FAQ</strong> first!</div>
   </body>
 </html>

@@ -16,7 +16,7 @@ var UI = (function (UI, $, undefined) {
     for (var i = 0; i < 81; i++) {
       var char = value.charAt(i);
 
-      if (!char || ("9ABCDEFGHIJKLMNOPQRSTUVWXYZ").indexOf(char) < 0) {
+      if (!char || "9ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(char) < 0) {
         seed += "9";
       } else {
         seed += char;
@@ -34,13 +34,30 @@ var UI = (function (UI, $, undefined) {
     //don't care if the user has all his characters lowercased, but we do care if he uses mixed case.
     var mixedCase = value.match(/[a-z]/) && value.match(/[A-Z]/);
 
+    if (value.length == 0) {
+      return "Seed is needed";
+    }
     if (value.length == 90) {
       return "This is address, NOT seed.";
     }
     if (invalidCharacters) {
-      return "Your seed contains invalid characters. Only A-Z and the number 9 are accepted." + (value.length > 81 ? " Your seed is also too long." : (value.length < 41 ? " Your seed is also too short." : ""));
+      return (
+        "Your seed contains invalid characters. Only A-Z and the number 9 are accepted." +
+        (value.length > 81
+          ? " Your seed is also too long."
+          : value.length < 41
+          ? " Your seed is also too short."
+          : "")
+      );
     } else if (mixedCase) {
-      return "Your seed contains mixed case characters. Lowercase is converted to uppercase." + (value.length > 81 ? " Your seed is also too long." : (value.length < 41 ? " Your seed is also too short." : ""));
+      return (
+        "Your seed contains mixed case characters. Lowercase is converted to uppercase." +
+        (value.length > 81
+          ? " Your seed is also too long."
+          : value.length < 41
+          ? " Your seed is also too short."
+          : "")
+      );
     } else if (value.length > 81) {
       return "Your seed should not contain more than 81 characters. Extra characters are ignored.";
     } else if (value.length < 41) {
@@ -51,26 +68,19 @@ var UI = (function (UI, $, undefined) {
   }
 
   UI.hide_all = function () {
-    $(".receive_page,.main_page,.send_page,.settings_page,.statistics_page, .transaction_page, .wallet_page").hide()
-  }
+    $(
+      ".receive_page,.main_page,.send_page,.settings_page, .transaction_page, .wallet_page, .faq_page, .confirmation_page"
+    ).addClass("hidden");
+  };
 
   UI.showLoginScreen = function () {
     console.log("UI.showLoginScreen");
 
-    $(".main_page").fadeIn(1000);
-    // loginGradientInterval = UI.applyGradientAnimation("#login", [[77, 193, 181], [40, 176, 162], [0, 132, 118], [0, 104, 93]]);
+    $(".main_page").removeClass("hidden");
 
-    setTimeout(function () {
-      clearInterval(loginGradientInterval);
-    }, 60000);
-
-    $("#login .logo").hide().fadeIn(1000, function () {
-      if (UI.showLoginForm) {
-        UI.fadeInLoginForm();
-      } else {
-        UI.showLoginForm = true;
-      }
-    });
+    // setTimeout(function () {
+    //   clearInterval(loginGradientInterval);
+    // }, 60000);
 
     $("#login-password").on("keydown", function (e) {
       if (e.keyCode == 13 && !$("#login-btn").is(":disabled")) {
@@ -79,21 +89,17 @@ var UI = (function (UI, $, undefined) {
     });
 
     $("#login-btn").on("click", function (e) {
-        var seed = $("#login-password").val();
+      var seed = $("#login-password").val();
 
-        if (!seed) {
-          throw "Seed is required";
-        }
-
-        connection.seed = getSeed(seed);
-        seedError = checkSeedStrength(seed);
-        if (seedError){
-          console.log("UI.login: Error");
-          console.log(seedError);
-          $("#login-btn").loadingError(seedError);
-          $("#login-password").focus();
-          return;
-        }
+      connection.seed = getSeed(seed);
+      seedError = checkSeedStrength(seed);
+      if (seedError) {
+        console.log("UI.login: Error");
+        console.log(seedError);
+        $("#login-btn").loadingError(seedError);
+        $("#login-password").focus();
+        return;
+      }
       UI.isLoggingIn = true;
 
       setTimeout(function () {
@@ -105,7 +111,7 @@ var UI = (function (UI, $, undefined) {
             UI.createStateInterval(500, false);
           } else {
             $("#login-password").val("");
-            $("#login-btn").loadingReset("Logging in...", { "icon": "fa-cog fa-spin fa-fw" });
+            $("#login-btn").loadingReset("Logging in...");
             UI.showAppScreen();
           }
           UI.isLoggingIn = false;
@@ -114,51 +120,62 @@ var UI = (function (UI, $, undefined) {
     });
 
     $("#register").on("click", function (e) {
+      var loginPage = $("#login-page");
+      loginPage.addClass("hidden");
+      var registerPage = $("#generated-seed");
+      registerPage.removeClass("hidden");
       UI.showGeneratedSeed(false);
+    });
+
+    $("#back-login").on("click", function (e) {
+      var loginPage = $("#login-page");
+      loginPage.removeClass("hidden");
+      var registerPage = $("#generated-seed");
+      registerPage.addClass("hidden");
     });
     UI.handleHelpMenu();
     // UI.handleNetworkSpamming();
     // UI.handleClaiming();
-  }
+  };
 
   UI.showAppScreen = function (cls) {
+    $("#menu").removeClass("hidden");
+    $("#header").removeClass("hidden");
+
     console.log("UI.showAppScreen");
 
-    clearInterval(loginGradientInterval);
-
     // After logging in, update state every minute
-    UI.createStateInterval(60000, false);
+    // update state every 2 min
+    UI.createStateInterval(120000, false);
 
     UI.update();
-
-    //$(".main_page,.send_page,.settings_page,.statistics_page, .transaction_page, .wallet_page").fadeOut();
-    //$(cls).css("z-index", 1000).fadeIn(400, function () {
-    //});
-
-    UI.animateStacks(0);
 
     if (seedError) {
       var options = {
         timeOut: 10000,
-        extendedTimeOut: 10000
+        extendedTimeOut: 10000,
       };
-
-      /*
-      if (connection.inApp) {
-        options.onclick = function() {
-          UI.showGeneratedSeed();
-        }
-      }
-      */
 
       UI.notify("error", seedError, options);
     }
 
-    $(window).on("resize", function () {
-      UI.animateStacks(0);
-    });
+    if (connection.handleURL) {
+      UI.handleURL();
+    }
+    if (!seedError) {
+      UI.hide_all();
+      $(".wallet_page").removeClass("hidden");
+    } else {
+      $("#login-btn").loadingError("");
+    }
+
+    UI.handleTransfers();
+    UI.handleAddressGeneration();
+    UI.handleHistory();
 
     $(".logout").on("click", function (e) {
+      $("#menu").addClass("hidden");
+      $("#header").addClass("hidden");
       e.preventDefault();
       e.stopPropagation();
 
@@ -168,45 +185,7 @@ var UI = (function (UI, $, undefined) {
         window.location.reload();
       });
     });
-
-    UI.handleTransfers();
-    UI.handleAddressGeneration();
-    UI.handleHistory();
-
-    $("#app").on("click", ".stack:not(.open)", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      $(".stack.open").removeClass("open").addClass("closing");
-      $(this).removeClass("closed").addClass("open opening");
-
-      UI.animateStacks(200);
-
-      var onOpen = $(this).data("onopen");
-
-      if (onOpen && UI[onOpen]) {
-        UI[onOpen]();
-      }
-
-      // Should be done in callback instead..
-      setTimeout(function () {
-        $(".stack.closing").removeClass("closing");
-        $(".stack:not(.open)").addClass("closed");
-        $(".stack.open").removeClass("opening");
-      }, 205);
-    });
-
-    if (connection.handleURL) {
-      UI.handleURL();
-    }
-    if (!seedError) {
-      // $(".main_page").hide();
-      // $(".wallet_page").show()
-      UI.hide_all();
-      $(".wallet_page").fadeIn(1000);
-    } else {
-      $("#login-btn").loadingError("");
-    }
-  }
+  };
 
   UI.fadeInLoginForm = function () {
     UI.loginFormShown = true;
@@ -218,10 +197,10 @@ var UI = (function (UI, $, undefined) {
     if ($("#error-btn").hasClass("no-connection")) {
       $("#error-btn").show();
     }
-    $form.fadeIn(400);
+    $form.removeClass("hidden");
 
     UI.updateLoginForm();
-  }
+  };
 
   UI.updateLoginForm = function () {
     if (!connection.nodeInfo) {
@@ -231,12 +210,18 @@ var UI = (function (UI, $, undefined) {
         if (timeTaken >= 500 && timeTaken < 10000) {
           if (!$("#error-btn").hasClass("no-connection")) {
             $("#login-btn, #login-password").hide();
-            $("#error-btn").addClass("no-connection").html("Connecting...").fadeIn();
+            $("#error-btn")
+              .addClass("no-connection")
+              .html("Connecting...")
+              .fadeIn();
           }
         }
       } else {
         $("#login-btn, #login-password").hide();
-        $("#error-btn").removeClass("no-connection").html("CONNECTION REFUSED").show();
+        $("#error-btn")
+          .removeClass("no-connection")
+          .html("CONNECTION REFUSED")
+          .show();
         if (UI.updateIntervalTime != 500) {
           UI.createStateInterval(500, false);
         }
@@ -246,7 +231,10 @@ var UI = (function (UI, $, undefined) {
 
       var fadeIn = false;
 
-      if ($("#error-btn").hasClass("no-connection") && $("#error-btn").is(":visible")) {
+      if (
+        $("#error-btn").hasClass("no-connection") &&
+        $("#error-btn").is(":visible")
+      ) {
         fadeIn = true;
       }
 
@@ -260,11 +248,11 @@ var UI = (function (UI, $, undefined) {
 
       $("#login-password").focus();
     }
-  }
+  };
 
   UI.shutdown = function () {
     UI.isShuttingDown = true;
-  }
+  };
 
   return UI;
-}(UI || {}, jQuery));
+})(UI || {}, jQuery);

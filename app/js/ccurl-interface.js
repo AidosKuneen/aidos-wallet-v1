@@ -8,10 +8,10 @@ var result = StructType({
   corenum: "int",
   count: "long long",
   time: "long long",
+  // time_start: "long long",
+  // time_end: "long long",
   trytes: "string",
 });
-
-// var rs = new result();
 
 var ccurlProvider = function (ccurlPath) {
   if (!ccurlPath) {
@@ -21,12 +21,10 @@ var ccurlProvider = function (ccurlPath) {
 
   var fullPath = ccurlPath + "/libccurl";
 
-  // refResult = ref.refType(result);
-
   try {
     // Define libccurl to be used for finding the nonce
     var libccurl = ffi.Library(fullPath, {
-      ccurl_pow: ["string", ["string", "int", result]],
+      ccurl_pow: ["string", ["string", "int", ref.refType(result)]],
       ccurl_pow_finalize: ["void", []],
       ccurl_pow_interrupt: ["void", []],
     });
@@ -115,16 +113,24 @@ var ccurlHashing = function (
   var previousTxHash;
   var i = 0;
 
+  var progressBar = document.getElementById("progress-bar");
+  progressBar.value = 2;
+
+  console.log(progressBar.value);
+
   function loopTrytes() {
     getBundleTrytes(trytes[i], function (error) {
       if (error) {
         return callback(error);
       } else {
         i++;
+        progressBar.value += 2;
+        console.log(progressBar.value);
 
         if (i < trytes.length) {
           loopTrytes();
         } else {
+          progressBar.value = 12;
           // reverse the order so that it's ascending from currentIndex
           return callback(null, finalBundleTrytes.reverse());
         }
@@ -177,6 +183,8 @@ var ccurlHashing = function (
           }
           console.log("corenum:" + resultObj.corenum);
           console.log("count:" + resultObj.count);
+          // console.log("time start:" + resultObj.time_start);
+          // console.log("time end:" + resultObj.time_end);
           console.log("time:" + resultObj.time);
           var spd = resultObj.count / 1e3 / resultObj.time;
           console.log(spd + " kH/sec");

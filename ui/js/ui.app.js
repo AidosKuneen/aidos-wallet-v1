@@ -1,41 +1,43 @@
-var UI = (function(UI, $, undefined) {
-  UI.inAppInitialize = function() {
+var UI = (function (UI, $, undefined) {
+  UI.inAppInitialize = function () {
     console.log("UI.inAppInitialize");
     window.addEventListener("message", handleAppEvents, false);
 
     // Enable status bar updating
-    if (connection.showStatus) {
-      UI.startStatusBarTracking();
-    }
+    // if (connection.showStatus) {
+    //   UI.startStatusBarTracking();
+    // }
 
     rendererIsReady();
-  }
+  };
 
-  UI.startStatusBarTracking = function() {
+  UI.startStatusBarTracking = function () {
     console.log("UI.startStatusBarTracking");
 
     connection.showStatus = 1;
 
-    $("body").on("mouseenter.status", ".amount", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log($(this).data("value"));
-      hoverAmountStart($(this).data("value"));
-    }).on("mouseleave.status", ".amount", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      hoverAmountStop();
-    });
-  }
+    $("body")
+      .on("mouseenter.status", ".amount", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log($(this).data("value"));
+        hoverAmountStart($(this).data("value"));
+      })
+      .on("mouseleave.status", ".amount", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        hoverAmountStop();
+      });
+  };
 
-  UI.stopStatusBarTracking = function() {
+  UI.stopStatusBarTracking = function () {
     console.log("UI.stopStatusBarTracking");
 
     connection.showStatus = 0;
 
     $("body").off("mouseenter.status");
     $("body").off("mouseleave.status");
-  }
+  };
 
   function handleAppEvents(evt) {
     console.log("UI.handleAppEvents: " + evt.data);
@@ -48,20 +50,17 @@ var UI = (function(UI, $, undefined) {
     }
 
     switch (evt.data) {
-      case "showNodeInfo": 
+      case "showNodeInfo":
         UI.showNodeInfo();
         break;
-      case "showPeers": 
+      case "showPeers":
         UI.showPeers();
-        break;
-      case "hideAlerts":
-        UI.hideAlerts();
         break;
       default:
         console.log("UI.handleAppEvents: Unknown command");
-        break
+        break;
     }
   }
 
   return UI;
-}(UI || {}, jQuery));
+})(UI || {}, jQuery);
