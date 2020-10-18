@@ -38,10 +38,6 @@ If you want to package the wallet you will need:
 
 1. [Electron Builder](https://github.com/electron-userland/electron-builder)
 
-```
-npm install -g electron-builder
-```
-
 2. Optionally [Docker](https://www.docker.com) (In case you want to build for other platforms on Windows)
 
 ## Install
