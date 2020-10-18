@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/AidosKuneen/aidos-wallet.svg?branch=master)](https://travis-ci.org/AidosKuneen/aidos-wallet)
-[![Build status](https://ci.appveyor.com/api/projects/status/0b42t20u4wfv2qau?svg=true)](https://ci.appveyor.com/project/ogami-daigoro/aidos-wallet)
+[![Build status](https://ci.appveyor.com/api/projects/status/8mepedm59nxf0hlu?svg=true)](https://ci.appveyor.com/project/jedidavid/aidos-wallet)
 [![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/AidosKuneen/aidos-wallet/master/LICENSE)
 
 # Aidos Kuneen Wallet
