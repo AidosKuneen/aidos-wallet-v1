@@ -1,5 +1,11 @@
 module.exports = {
-  purge: ["/app/**/*.html", "/ui/**/*.html"],
+  purge: [
+    "app/**/*.html",
+    "ui/**/*.html",
+    "app/**/*.js",
+    "ui/**/*.js",
+    "ui/images/spinner.svg",
+  ],
   theme: {
     fontFamily: {
       roboto: [
