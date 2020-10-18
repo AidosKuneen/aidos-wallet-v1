@@ -11,16 +11,17 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "start": "export NODE_ENV=development || set NODE_ENV=development && postcss tailwind.css -o ui/css/global.css && electron .",
+    "build:css": "cross-env NODE_ENV=production postcss tailwind.css -o ui/css/global.css",
     "precompile": "rimraf out/*",
     "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32",
-    "compile:lin": "NODE_ENV=production electron-builder build --linux --x64 --ia32",
-    "compile:mac": "NODE_ENV=production export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64",
-    "compile:win": "NODE_ENV=production electron-builder build --win --x64 --ia32",
+    "compile:lin": "yarn build:css && electron-builder build --linux --x64 --ia32",
+    "compile:mac": "yarn build:css && export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64",
+    "compile:win": "yarn build:css && electron-builder build --win --x64 --ia32",
     "prepublish": "rimraf out/*",
     "publish": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32 --publish always",
-    "publish:lin": "NODE_ENV=production electron-builder build --linux --x64 --ia32 --publish always",
-    "publish:mac": "NODE_ENV=production export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64 --publish always",
-    "publish:win": "NODE_ENV=production electron-builder build --win --x64 --ia32 --publish always"
+    "publish:lin": "yarn build:css && electron-builder build --linux --x64 --ia32 --publish always",
+    "publish:mac": "yarn build:css && export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --mac --x64 --publish always",
+    "publish:win": "yarn build:css && electron-builder build --win --x64 --ia32 --publish always"
   },
   "author": "Aidos Kuneen <info@aidoskuneen.com>",
   "homepage": "http://aidoskuneen.com",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
+    "cross-env": "^7.0.2",
     "cssnano": "^4.1.10",
     "electron": "^10.1.1",
     "electron-builder": "^22.8.0",
