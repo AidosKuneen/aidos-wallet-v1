@@ -1,67 +1,50 @@
 language: node_js
 node_js:
-  - "12.13.0"
+- 12.13.0
 os:
-  - linux
-  - osx
-
+- linux
+- osx
 osx_image: xcode10.2
-
 sudo: required
-
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 addons:
   apt:
     packages:
-      - graphicsmagick
-      - icnsutils
-      - gcc-multilib
-      - g++-multilib
-      - bsdtar
-      - rpm
-      - xz-utils
-
+    - graphicsmagick
+    - icnsutils
+    - gcc-multilib
+    - g++-multilib
+    - bsdtar
+    - rpm
+    - xz-utils
 before_install:
-  - node --version
-  - npm install electron@10.1.1
-  - npm install electron-builder@22.8.0
-  - npm install -g yarn
-
+- node --version
+- npm install electron@10.1.1
+- npm install electron-builder@22.8.0
+- npm install -g yarn
 install:
-  - npm install
-  - pushd ccurl
-  - rm mac/libccurl.dylib
-  - rm lin64/libccurl.so
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    echo "in linux";
-    gcc -shared -o libccurl.so libccurl.cpp -O3 -lpthread -fPIC -std=c++11;
-    mkdir -p lin64;
-    cp libccurl.so lin64/;
-    rm libccurl.so;
-    fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    echo "in osx";
-    gcc -dynamiclib -o libccurl.dylib libccurl.cpp -O3 -lpthread -std=c++11;
-    mkdir -p mac;
-    cp libccurl.dylib mac/;
-    rm libccurl.dylib;
-    fi
-  - popd
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run publish:lin; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run publish:mac; fi
-  - find out
-
+- npm install
+- pushd ccurl
+- rm mac/libccurl.dylib
+- rm lin64/libccurl.so
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "in linux"; gcc -shared -o libccurl.so
+  libccurl.cpp -O3 -lpthread -fPIC -std=c++11; mkdir -p lin64; cp libccurl.so lin64/;
+  rm libccurl.so; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then echo "in osx"; gcc -dynamiclib -o libccurl.dylib
+  libccurl.cpp -O3 -lpthread -std=c++11; mkdir -p mac; cp libccurl.dylib mac/; rm
+  libccurl.dylib; fi
+- popd
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run publish:lin; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run publish:mac; fi
+- find out
 script:
-  - echo "nothing to do"
-
+- echo "nothing to do"
 deploy:
   - provider: releases
     api_key:
-      secure: "rAfSVRMehfpWc8C2PDG3jyEDX8z09TYijN91XlLomtankt8lNNMvz4MA/xuXtzj650LwsbkofXrtz5BmH8yRs6Qji+nE139CLwmHks6kVRnz23iDQFX7jhjsh0V7alYvoWG6JXD0sGpuH0tShpPvrVICS6xCWHJPqiZBHzkoAhhcyWx9eVfaXwuYrWVRrNObgmjHFumuAj928CwCe4tPef0VzwGBiXLGnLztex7rrdyKWmrJoRVksXVZxC/4S2RrnPgKdp3IVf5RTz7FpCCzc6gTw5H04Puj9ktq57HYQVhU0F2bWfgEsCAuJn/jjB30eY7Gj0beGsUtR9LPefePsDNVlzBm7UQE1a1Y9mSIHiiczqAqnIKlPy7ROQjMi0F7vGjYwquAkZn9FUBJ4G0ASCfLp47t8jk5AGTHYP0O0tnO/Mc47PzxWRp+2HPXLSBx15PLhx6FkMWsbhMvLfYRmje0No1F6wlpm4OigeR1gpYbVt7GI0lBWy80yLFS8FcBL2uZD9E/n4RHTHPiL5c+r7snBMLj6PdUr7lAWtp10bu9sgW85cDZEVoAeOIn2d0hZt6DgzVStT5obU2bRJ+yYhrhy9bF2Xf1vUomyZDjNAaeOampYLP2sme4QlWcdfd9dm5vSddDEzJgq4SSM9q2BV1Xz65b9yTvN611AJOuvHI="
-
+      secure: pdQyC5bn4/NYhF7/LbwPFEQhQxuo8cg8z2n9z7lYDrtEbv5w0CtroGOe2TrLHDueeroS4iPOwFmsYgHgIiVHDQ+1W+a0jF09Z5J8Dla1HenInG6mvGLnIcbh5/wjuaCno8LE+bWkzVJMm0h7FtGhVDuOPnTVj8HzXu3zvNKRAgmsUhCeebTOwUbrKXVzLOFl4Z26RVi3nYREgh3VHV8U5hgyJMPAFzI1HkSoOE449hh8finbMayKSyWWZ65yE5tAE/D+rmHOh9WPMyb+AP0YTnkP8moIJvJrYZr5KgmZ+fZkZOoUWpS0BU1YToVliZ2U65u2mwuZN7bB4pCMT8ie5OvjoZuV4+wyiCQvWXxUB9IGPCN0NsnSJ0/ZCF4izMEYfCQ2C8oV602YB6t4N/epCUfeL/DHhZn46gYiIHqidW9QhiIOwiN7Ffe11xSG8f9+ASVFMznokca0e9eyhJDd52FizNETeKSp0NzDukngMK+ipOoi+8cuide+9mELBxXFKi9wCXXxWt9njb+dogNE+SW8BSo2OH73ILS9qbFI6szmYOoSiqD352Jp5Gv/JkKwStbbP8p5nLqxKNFaH0yfQ0Do39wt+m/Lmf4TjlphONglXwcvUNTdf04ISfaPPI/kKXXOZE01xBIAf/53k8vTzCr0zJ1RIB23/un5pNoRQpc=
     file:
       - out/ADK Wallet-*.AppImage
       - out/adk-wallet-*.tar.gz
@@ -71,18 +54,17 @@ deploy:
       - out/adk-wallet-*.x86_64.rpm
       - out/adk-wallet_*_i386.deb
       - out/adk-wallet_*_amd64.deb
-    skip_cleanup: true
-    file_glob: true
-    on:
-      repo: AidosKuneen/aidos-wallet
-      tags: true
-      all_branches: true
-      condition: "$TRAVIS_OS_NAME == linux"
+  skip_cleanup: 'true'
+  file_glob: true
+  on:
+    repo: AidosKuneen/aidos-wallet
+    all_branches: true
+    tags: true
+    condition: "$TRAVIS_OS_NAME == linux"
 
   - provider: releases
     api_key:
-      secure: "rAfSVRMehfpWc8C2PDG3jyEDX8z09TYijN91XlLomtankt8lNNMvz4MA/xuXtzj650LwsbkofXrtz5BmH8yRs6Qji+nE139CLwmHks6kVRnz23iDQFX7jhjsh0V7alYvoWG6JXD0sGpuH0tShpPvrVICS6xCWHJPqiZBHzkoAhhcyWx9eVfaXwuYrWVRrNObgmjHFumuAj928CwCe4tPef0VzwGBiXLGnLztex7rrdyKWmrJoRVksXVZxC/4S2RrnPgKdp3IVf5RTz7FpCCzc6gTw5H04Puj9ktq57HYQVhU0F2bWfgEsCAuJn/jjB30eY7Gj0beGsUtR9LPefePsDNVlzBm7UQE1a1Y9mSIHiiczqAqnIKlPy7ROQjMi0F7vGjYwquAkZn9FUBJ4G0ASCfLp47t8jk5AGTHYP0O0tnO/Mc47PzxWRp+2HPXLSBx15PLhx6FkMWsbhMvLfYRmje0No1F6wlpm4OigeR1gpYbVt7GI0lBWy80yLFS8FcBL2uZD9E/n4RHTHPiL5c+r7snBMLj6PdUr7lAWtp10bu9sgW85cDZEVoAeOIn2d0hZt6DgzVStT5obU2bRJ+yYhrhy9bF2Xf1vUomyZDjNAaeOampYLP2sme4QlWcdfd9dm5vSddDEzJgq4SSM9q2BV1Xz65b9yTvN611AJOuvHI="
-
+      secure: pdQyC5bn4/NYhF7/LbwPFEQhQxuo8cg8z2n9z7lYDrtEbv5w0CtroGOe2TrLHDueeroS4iPOwFmsYgHgIiVHDQ+1W+a0jF09Z5J8Dla1HenInG6mvGLnIcbh5/wjuaCno8LE+bWkzVJMm0h7FtGhVDuOPnTVj8HzXu3zvNKRAgmsUhCeebTOwUbrKXVzLOFl4Z26RVi3nYREgh3VHV8U5hgyJMPAFzI1HkSoOE449hh8finbMayKSyWWZ65yE5tAE/D+rmHOh9WPMyb+AP0YTnkP8moIJvJrYZr5KgmZ+fZkZOoUWpS0BU1YToVliZ2U65u2mwuZN7bB4pCMT8ie5OvjoZuV4+wyiCQvWXxUB9IGPCN0NsnSJ0/ZCF4izMEYfCQ2C8oV602YB6t4N/epCUfeL/DHhZn46gYiIHqidW9QhiIOwiN7Ffe11xSG8f9+ASVFMznokca0e9eyhJDd52FizNETeKSp0NzDukngMK+ipOoi+8cuide+9mELBxXFKi9wCXXxWt9njb+dogNE+SW8BSo2OH73ILS9qbFI6szmYOoSiqD352Jp5Gv/JkKwStbbP8p5nLqxKNFaH0yfQ0Do39wt+m/Lmf4TjlphONglXwcvUNTdf04ISfaPPI/kKXXOZE01xBIAf/53k8vTzCr0zJ1RIB23/un5pNoRQpc=
     file:
       - out/ADK Wallet-*.dmg
     skip_cleanup: true
