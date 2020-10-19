@@ -137,31 +137,19 @@ var App = (function (App, undefined) {
 
   App.loadSettings = function () {
     try {
-      // var settingsFile = path.join(
-      //   app.getPath("appData"),
-      //   "Aidos Wallet" +
-      //     (isTestNet ? " Testnet" : "") +
-      //     path.sep +
-      //     "settings.json"
-      // );
+      var settingsFile = path.join(
+        app.getPath("appData"),
+        "Aidos Wallet" +
+          (isTestNet ? " Testnet" : "") +
+          path.sep +
+          "settings.json"
+      );
 
-      // if (!fs.existsSync(settingsFile)) {
-      //   throw "Settings file does not exist.";
-      // }
+      if (!fs.existsSync(settingsFile)) {
+        throw "Settings file does not exist.";
+      }
 
-      settings = {
-        bounds: { width: 1124, height: 850 },
-        lightWalletHost: "http://wallet.aidoskuneen.com",
-        lightWalletPort: isTestNet ? 15555 : 14266,
-        checkForUpdates: 1,
-        lightWallet: 1,
-        lastUpdateCheck: 0,
-        showStatusBar: 0,
-        isFirstRun: 1,
-        port: isTestNet ? 15777 : 14265,
-        nodes: [],
-      };
-      // settings = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
+      settings = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
 
       if (
         !settings.hasOwnProperty("bounds") ||
@@ -208,7 +196,7 @@ var App = (function (App, undefined) {
       console.log("Error reading settings:");
       console.log(err);
       settings = {
-        bounds: { width: 1024, height: 800 },
+        bounds: { width: 1124, height: 850 },
         lightWalletHost: "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
         checkForUpdates: 1,
@@ -239,19 +227,6 @@ var App = (function (App, undefined) {
   };
 
   App.saveSettings = function () {
-    settings = {
-      bounds: { width: 1124, height: 850 },
-      lightWalletHost: "http://wallet.aidoskuneen.com",
-      lightWalletPort: isTestNet ? 15555 : 14266,
-      checkForUpdates: 1,
-      lightWallet: 1,
-      lastUpdateCheck: 0,
-      showStatusBar: 0,
-      isFirstRun: 1,
-      port: isTestNet ? 15777 : 14265,
-      nodes: [],
-    };
-
     try {
       if (App.windowIsReady() && !win.isFullScreen()) {
         settings.bounds = win.getBounds();
@@ -265,15 +240,15 @@ var App = (function (App, undefined) {
 
       settings.isFirstRun = 0;
 
-      // var settingsFile = path.join(
-      //   app.getPath("appData"),
-      //   "Aidos Wallet" +
-      //     (isTestNet ? " Testnet" : "") +
-      //     path.sep +
-      //     "settings.json"
-      // );
+      var settingsFile = path.join(
+        app.getPath("appData"),
+        "Aidos Wallet" +
+          (isTestNet ? " Testnet" : "") +
+          path.sep +
+          "settings.json"
+      );
 
-      // fs.writeFileSync(settingsFile, JSON.stringify(settings));
+      fs.writeFileSync(settingsFile, JSON.stringify(settings));
     } catch (err) {
       console.log("Error writing settings:");
       console.log(err);
