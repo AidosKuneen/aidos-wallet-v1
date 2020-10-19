@@ -1,25 +1,45 @@
-# ADK Wallet
+# Changelog
 
-### Changelog (v1.3.0)
+## v2.0.0 - 2020-10-18
 
-- Upgade all dependencies:
-  - electron 1.8.8 to 10.1.1
-  - electron-builder 22.8.0
-  - rimraf 2.5.4 to 3.0.2
-  - fsextra 1.0.0 to 9.0.1
-  - Replace ffi to ffi-napi
-  - Replace ref to ref-napi
-  - glob 7.1.1 to 7.1.6
-  - pidusage 1.1.0 to 2.0.21
-  - tingle 0.7.0 to 0.15.3
-  - clipboard 1.5.10 to 2.0.6
-  - fontawesome 4.6.3 to 4.7.0
-  - remodal 1.0.7 to 1.1.1
-  - async 2.1.4 to 3.2.0
-  - jquery 2.2.4 to 3.5.1
-- Required node version is v12+
-- Remove Bower and replace it to Yarn
-- Created modules folder for other dependencies that are required
+This is a major release featuring new design of the Aidos Kuneen Wallet.
+
+### Added
+
+- Form validation for better user experience.
+- Dependencies
+  - tailwindcss
+  - autoprefixer
+  - cssnano
+  - postcss
+  - toastify
+  - modal
+
+### Changed
+
+- Login
+  - New login screen
+- Register
+  - New register screen instead of modal.
+- Wallet
+  - Will show the balance, explorer, and latest transactions.
+- Withdraw (Send)
+  - There is now a progress bar while waiting for the transaction to finish.
+  - Confirmation page after transaction is finish.
+- Deposit (Received)
+- Transaction
+  - Transaction are now categorized by all transactions, sent, and receive.
+  - Transaction will now show the transaction hash instead of the address.
+  - View bundle has a new modal that shows the bundle status, bundle hash, input, and output.
+  - Remove Broadcast ADK.
+- FAQ
+  - New FAQ screen instead of modal
+- Explorer
+  - A new feature where you can quickly search for the address balance, transaction status and amount, and bundle status.
+  - There is a More details link which will take you to explorer.aidoskuneen.com for more information.
+- App State
+  - Every 2 mins (previously 1) it will update the transactions and balance.
+- Node Version to v12+
 - Require different api from electron instead of const electron = require("electron")
 - Enabled [webPreference](https://www.electronjs.org/docs/api/browser-window) in BrowserWindow:
   - Preload index.js
@@ -27,4 +47,18 @@
   - enableRemoteModule is set to true
   - nodeIntegration is set to true
 - [getWebContents](https://www.electronjs.org/docs/breaking-changes#removed-webviewgetwebcontents) is deprecated and replaced it with the new api
-- Update application icon
+- Replace ffi to ffi-napi
+- Replace ref to ref-napi
+
+### Removed
+
+- Fade transitions which causes lag.
+- Bower
+- Dependencies
+  - UI Kit
+  - Fontawesome
+  - remodal
+  - toastr
+  - ui/js/components
+  - ui/js/core
+  - ui/css/components
