@@ -1,5 +1,4 @@
 var aidos;
-// var toastr = require("toastr");
 
 var connection = {
   accountData: false,
@@ -138,12 +137,6 @@ var UI = (function (UI, $, undefined) {
 
   function initialize() {
     $("body").show();
-
-    // Set notification options
-    toastr.options.positionClass = "toast-top-center";
-    // Need not escape, UI.notify already does that.
-    // toastr.options.escapeHtml = true;
-
     // Hide pages
     $("#app, #login").hide();
 
@@ -176,33 +169,54 @@ var UI = (function (UI, $, undefined) {
     // Until we have a server connection we will check every 500ms..
     UI.createStateInterval(500, true);
 
+    UI.menuActive = function () {
+      $(
+        ".href_wallet, .href_transaction, .href_send, .href_receive, .href_settings, .href_faq"
+      ).removeClass("active");
+    };
+
     $(".href_wallet").on("click", function () {
       UI.hide_all();
-      $(".wallet_page").fadeIn(1000);
+      UI.menuActive();
+      $(".href_wallet").first().addClass("active");
+      // $(this).addClass("active");
+      $(".wallet_page").removeClass("hidden");
     });
     $(".href_main").on("click", function () {
       UI.hide_all();
-      $(".main_page").fadeIn(1000);
+      UI.menuActive();
+      $(this).addClass("active");
+      $(".main_page").show();
     });
     $(".href_transaction").on("click", function () {
       UI.hide_all();
-      $(".transaction_page").fadeIn(1000);
-    });
-    $(".href_statistics").on("click", function () {
-      UI.hide_all();
-      $(".statistics_page").fadeIn(1000);
+      UI.menuActive();
+      $(this).addClass("active");
+      $(".transaction_page").removeClass("hidden");
     });
     $(".href_send").on("click", function () {
       UI.hide_all();
-      $(".send_page").fadeIn(1000);
+      UI.menuActive();
+      $(this).addClass("active");
+      $(".send_page").removeClass("hidden");
     });
     $(".href_settings").on("click", function () {
       UI.hide_all();
-      $(".settings_page").fadeIn(1000);
+      UI.menuActive();
+      $(this).addClass("active");
+      $(".settings_page").removeClass("hidden");
     });
     $(".href_receive").on("click", function () {
       UI.hide_all();
-      $(".receive_page").fadeIn(1000);
+      UI.menuActive();
+      $(this).addClass("active");
+      $(".receive_page").removeClass("hidden");
+    });
+    $(".href_faq").on("click", function () {
+      UI.hide_all();
+      UI.menuActive();
+      $(this).addClass("active");
+      $(".faq_page").removeClass("hidden");
     });
     // Enable app message listening
     if (connection.inApp) {

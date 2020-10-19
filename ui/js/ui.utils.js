@@ -1,28 +1,26 @@
 var UI = (function (UI, $, undefined) {
-  UI.hideAlerts = function () {
-    $(".remodal-wrapper, .remodal-overlay").remove();
-    $("html").removeClass("remodal-is-locked");
-  }
-
   UI.formatAmount = function (amount) {
-    if (typeof (amount) != "integer") {
+    if (typeof amount != "integer") {
       amount = parseInt(amount, 10);
     }
 
-    var units = negative = formattedAmount = "", afterComma = "", beforeComma = "", hidden = "", afterCommaDigits = 0;
+    var units = (negative = formattedAmount = ""),
+      afterComma = "",
+      beforeComma = "",
+      hidden = "",
+      afterCommaDigits = 0;
 
     if (amount < 0) {
       amount = Math.abs(amount);
       negative = "-";
     }
 
-
     /*
-	 * 1 M ADK = 10⁶ ADK = 1,000,000 ADK
-	 * 1 ADK = 10^0 = 1 ADK
-	 * 1 m ADK =10-³ ADK = 0.001 ADK 
-	 * 1 u ADK =10-6 ADK = 0.000001 ADK
-	 */
+     * 1 M ADK = 10⁶ ADK = 1,000,000 ADK
+     * 1 ADK = 10^0 = 1 ADK
+     * 1 m ADK =10-³ ADK = 0.001 ADK
+     * 1 u ADK =10-6 ADK = 0.000001 ADK
+     */
 
     if (amount >= 1000000 * 100000000) {
       units = "M ADK";
@@ -45,7 +43,7 @@ var UI = (function (UI, $, undefined) {
     amount = amount.toString();
     if (units == "u ADK") {
       for (i = amount.length; i <= 2; i++) {
-        amount = "0" + amount
+        amount = "0" + amount;
       }
     }
 
@@ -74,73 +72,107 @@ var UI = (function (UI, $, undefined) {
       afterComma = afterComma[0];
     }
 
-    var short = negative + beforeComma + (afterComma ? "." + afterComma : "") + (hidden ? "+" : "") + " " + units;
+    var short =
+      negative +
+      beforeComma +
+      (afterComma ? "." + afterComma : "") +
+      (hidden ? "+" : "") +
+      " " +
+      units;
     // var long = (hidden ? short.replace("+", hidden) : "");
 
     // long = long.escapeHTML();
     short = short.escapeHTML();
-    
+
     // format value
-    var stringValue = value.toFixed(8).replace(/\.?0+$/,"");
+    var stringValue = value.toFixed(8).replace(/\.?0+$/, "");
     var splitValue = stringValue.split("");
     var commaIndex = stringValue.indexOf(".");
     var formatValue = "";
-    
+
     var decimals = 0;
-    if (commaIndex != -1){
-    	decimals = commaIndex-1
+    if (commaIndex != -1) {
+      decimals = commaIndex - 1;
     } else {
-    	decimals = splitValue.length-1
+      decimals = splitValue.length - 1;
     }
     var split = 0;
     for (var i = decimals; i >= 0; i--) {
-    	if (split > 0 && split % 3 == 0) {	
-    		formatValue = "'" + formatValue;
-    	}
-    	formatValue = splitValue[i] + formatValue;
-    	split++;
+      if (split > 0 && split % 3 == 0) {
+        formatValue = "'" + formatValue;
+      }
+      formatValue = splitValue[i] + formatValue;
+      split++;
     }
-    if (commaIndex == -1){
-        formatValue = negative + formatValue + " ADK";
+    if (commaIndex == -1) {
+      formatValue = negative + formatValue + " ADK";
     } else {
-    	formatValue = negative + formatValue + stringValue.substring(commaIndex) + " ADK";
+      formatValue =
+        negative + formatValue + stringValue.substring(commaIndex) + " ADK";
     }
     formatValue = formatValue.escapeHTML();
-    
+
     value = negative + value;
     value = value.escapeHTML();
 
     // if (long) {
-    var output = "<span class='amount long' data-value='" + value + "' data-short='" + short + "' data-long='" + formatValue + "'>" + short + "</span>";
+    var output =
+      "<span class='amount long' data-value='" +
+      value +
+      "' data-short='" +
+      short +
+      "' data-long='" +
+      formatValue +
+      "'>" +
+      short +
+      "</span>";
     // } else {
     // var output = "<span class='amount' data-value='" + negative + value + "'
     // data-long='" + short + "'>" + short + "</span>";
     // }
 
     return output;
-  }
+  };
 
   UI.formatForClipboard = function (text, id) {
     text = String(text).escapeHTML();
 
-    return "<span class='clipboard' title='" + text + "' data-clipboard-text='" + text + "'" + (id ? " id='" + id + "'" : "") + ">" + text + "</span>";
-  }
-  
-  function addZero(i) {
-	    if (i < 10) {
-	        i = "0" + i;
-	    }
-	    return i;
-  }
+    return (
+      "<span class='clipboard' title='" +
+      text +
+      "' data-clipboard-text='" +
+      text +
+      "'" +
+      (id ? " id='" + id + "'" : "") +
+      ">" +
+      text +
+      "</span>"
+    );
+  };
 
+  function addZero(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
 
   UI.formatDate = function (timestamp, full) {
     var date = new Date(timestamp * 1000);
     var h = addZero(date.getHours());
     var m = addZero(date.getMinutes());
-    
-    return ("0" + date.getDate()).substr(-2) + "/" + ("0" + (date.getMonth() + 1)).substr(-2) + (full ? "/" + date.getFullYear() : "") + " " + h + ":" + m;
-  }
+
+    return (
+      ("0" + date.getDate()).substr(-2) +
+      "/" +
+      ("0" + (date.getMonth() + 1)).substr(-2) +
+      (full ? "/" + date.getFullYear() : "") +
+      " " +
+      h +
+      ":" +
+      m
+    );
+  };
 
   UI.notify = function (type, message, options) {
     console.log("UI.notify: " + message);
@@ -148,21 +180,60 @@ var UI = (function (UI, $, undefined) {
     message = String(message).escapeHTML();
 
     if (type == "error") {
-      toastr.error(message, "", options);
+      Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#ED0B0B",
+        stopOnFocus: true,
+      }).showToast();
     } else if (type == "success") {
-      toastr.success(message, "", options);
+      Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#3FA577",
+        stopOnFocus: true,
+      }).showToast();
     } else if (type == "warning") {
-      toastr.warning(message, "", options);
+      Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#FFCA7A",
+        stopOnFocus: true,
+      }).showToast();
     } else {
-      toastr.info(message, "", options);
+      Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#3FA577",
+        stopOnFocus: true,
+      }).showToast();
     }
 
     UI.notifyDesktop(message, true);
-  }
+  };
 
   UI.isFocused = function () {
-    return ((connection.inApp && UI.hasFocus) || (!connection.inApp && document.hasFocus()));
-  }
+    return (
+      (connection.inApp && UI.hasFocus) ||
+      (!connection.inApp && document.hasFocus())
+    );
+  };
 
   UI.notifyDesktop = function (message, ifNotFocused) {
     console.log("UI.notifyDesktop: " + message);
@@ -174,15 +245,17 @@ var UI = (function (UI, $, undefined) {
     if (!("Notification" in window)) {
       return;
     } else if (Notification.permission === "granted") {
-      var notification = new Notification("AIDOS Wallet", { "body": message });
+      var notification = new Notification("AIDOS Wallet", { body: message });
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission(function (permission) {
         if (permission === "granted") {
-          var notification = new Notification("AIDOS Wallet", { "body": message });
+          var notification = new Notification("AIDOS Wallet", {
+            body: message,
+          });
         }
       });
     }
-  }
+  };
 
   UI.formSuccess = function (form, message, options) {
     var $stack = $("#" + form + "-stack");
@@ -199,7 +272,7 @@ var UI = (function (UI, $, undefined) {
     } else {
       UI.notifyDesktop(message, true);
     }
-  }
+  };
 
   UI.formError = function (form, message, options) {
     var $stack = $("#" + form + "-stack");
@@ -212,14 +285,14 @@ var UI = (function (UI, $, undefined) {
     } else {
       UI.notifyDesktop(message, true);
     }
-  }
+  };
 
   UI.formUpdate = function (form, message, options) {
     var $stack = $("#" + form + "-stack");
     var $btn = $stack.find(".btn").first();
 
     $btn.loadingUpdate(message, options);
-  }
+  };
 
   UI.addPeer = function (addNodes) {
     if (addNodes && addNodes.length) {
@@ -227,11 +300,18 @@ var UI = (function (UI, $, undefined) {
         if (error) {
           UI.notify("error", "Error whilst adding peers.");
         } else {
-          UI.notify("success", "Added " + addNodes.length + " peer" + (addNodes.length != 1 ? "s" : "") + ".");
+          UI.notify(
+            "success",
+            "Added " +
+              addNodes.length +
+              " peer" +
+              (addNodes.length != 1 ? "s" : "") +
+              "."
+          );
         }
       });
     }
-  }
+  };
 
   return UI;
-}(UI || {}, jQuery));
+})(UI || {}, jQuery);

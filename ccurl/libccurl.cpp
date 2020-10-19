@@ -102,6 +102,8 @@ typedef struct{
     int corenum;
     long long count;
     long long time;
+    long long time_start;
+    long long time_end;
     char * trytes;
 } RESULT;
 
@@ -536,6 +538,8 @@ EXPORT char* ccurl_pow(char* trytes, int minWeightMagnitude, RESULT *result)
     time_t start = time(NULL);
     result->count = pwork(trytes, minWeightMagnitude, nonce_trit);
     time_t end = time(NULL);
+    result->time_start = start;
+    result->time_end = end;
     result->time = end - start;
    
     hash2tryte(nonce_trit, nonce_tryte);

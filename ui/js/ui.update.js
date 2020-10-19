@@ -1,22 +1,25 @@
-var UI = (function(UI, $, undefined) {
+var UI = (function (UI, $, undefined) {
   UI.updateIntervalTime = 0;
 
-  var isUpdatingState  = false;
-  var updateInterval   = null;
+  var isUpdatingState = false;
+  var updateInterval = null;
 
   function stateExecution(callback) {
     if (connection.seed) {
-      aidos.api.getNodeInfo(function(error, info) {
+      aidos.api.getNodeInfo(function (error, info) {
         connection.nodeInfo = info;
 
-        aidos.api.getAccountData(connection.seed, function(error, accountData) {
+        aidos.api.getAccountData(connection.seed, function (
+          error,
+          accountData
+        ) {
           connection.previousAccountData = connection.accountData;
           connection.accountData = accountData;
           callback(error, accountData);
         });
       });
     } else {
-      aidos.api.getNodeInfo(function(error, info) {
+      aidos.api.getNodeInfo(function (error, info) {
         connection.nodeInfo = info;
         if (callback) {
           callback(error, info);
@@ -25,21 +28,21 @@ var UI = (function(UI, $, undefined) {
     }
   }
 
-  UI.executeState = function(callback) {
+  UI.executeState = function (callback) {
     return stateExecution(callback);
-  }
+  };
 
-  UI.updateState = function(timeout) {
+  UI.updateState = function (timeout) {
     if (timeout) {
-      setTimeout(function() {
+      setTimeout(function () {
         UI.createStateInterval(UI.updateIntervalTime, true);
       }, timeout);
     } else {
       UI.createStateInterval(UI.updateIntervalTime, true);
     }
-  }
+  };
 
-  UI.createStateInterval = function(ms, immediately) {
+  UI.createStateInterval = function (ms, immediately) {
     console.log("UI.createStateInterval: " + ms);
 
     UI.updateIntervalTime = ms;
@@ -53,10 +56,10 @@ var UI = (function(UI, $, undefined) {
       clearInterval(updateInterval);
     }
 
-    updateInterval = setInterval(function() {
+    updateInterval = setInterval(function () {
       if (!isUpdatingState && !UI.isLoggingIn) {
         isUpdatingState = true;
-        stateExecution(function(error) {
+        stateExecution(function (error) {
           if (!error) {
             UI.update();
           }
@@ -69,7 +72,7 @@ var UI = (function(UI, $, undefined) {
       console.log("UI.createStateInterval: Execute immediately");
       if (!isUpdatingState) {
         isUpdatingState = true;
-        stateExecution(function(error) {
+        stateExecution(function (error) {
           if (!error) {
             UI.update();
           } else if (!connection.seed && connection.lightWallet) {
@@ -79,12 +82,15 @@ var UI = (function(UI, $, undefined) {
           isUpdatingState = false;
         });
       } else {
-        console.log("UI.createStateInterval: Cannot execute immediately, already updating state");
+        console.log(
+          "UI.createStateInterval: Cannot execute immediately, already updating state"
+        );
       }
     }
-  }
+  };
 
-  UI.update = function() {
+  UI.update = function () {
+    console.log("update");
     if (!UI.initialConnection && connection.nodeInfo) {
       console.log("We have an initial connection.");
       UI.initialConnection = true;
@@ -97,7 +103,11 @@ var UI = (function(UI, $, undefined) {
         connection.minWeightMagnitude = 18;
       }
       if (connection.inApp && connection.lightWallet) {
-        updateAppInfo({"name": connection.nodeInfo.appName, "version": connection.nodeInfo.appVersion, "testnet": connection.testNet});
+        updateAppInfo({
+          name: connection.nodeInfo.appName,
+          version: connection.nodeInfo.appVersion,
+          testnet: connection.testNet,
+        });
       }
       $(document).trigger("initialConnection");
       if (!connection.seed) {
@@ -107,7 +117,11 @@ var UI = (function(UI, $, undefined) {
     }
 
     if (connection.nodeInfo && connection.inApp) {
-      updateStatusBar({"latestMilestoneIndex": connection.nodeInfo.latestMilestoneIndex, "latestSolidSubmeshMilestoneIndex": connection.nodeInfo.latestSolidSubmeshMilestoneIndex});
+      updateStatusBar({
+        latestMilestoneIndex: connection.nodeInfo.latestMilestoneIndex,
+        latestSolidSubmeshMilestoneIndex:
+          connection.nodeInfo.latestSolidSubmeshMilestoneIndex,
+      });
     }
 
     if (!connection.seed) {
@@ -125,7 +139,7 @@ var UI = (function(UI, $, undefined) {
 
       UI.updateHistory();
     }
-  }
+  };
 
   return UI;
-}(UI || {}, jQuery));
+})(UI || {}, jQuery);

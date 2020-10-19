@@ -1,23 +1,17 @@
-matrix:
-  include:
-    - os: osx
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "12"
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+language: node_js
+node_js:
+  - "12.13.0"
+os:
+  - linux
+  - osx
 
-    - os: linux
-      services: docker
-      language: generic
+osx_image: xcode10.2
+
+sudo: required
 
 cache:
   directories:
     - node_modules
-
-env:
-  - NODE_VERSION="12.8.3"
 
 addons:
   apt:
@@ -31,17 +25,12 @@ addons:
       - xz-utils
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    echo "in osx";
-    git clone https://github.com/creationix/nvm.git /tmp/.nvm;
-    source /tmp/.nvm/nvm.sh;
-    fi
-  - nvm install --lts
-  - nvm use --delete-prefix --lts
   - node --version
+  - npm install electron@10.1.1
+  - npm install electron-builder@22.8.0
 
 install:
-  - yarn
+  - npm install
   - pushd ccurl
   - rm mac/libccurl.dylib
   - rm lin64/libccurl.so
@@ -60,8 +49,8 @@ install:
     rm libccurl.dylib;
     fi
   - popd
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  yarn compile:lin; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  yarn compile:mac; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run publish:lin; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run publish:mac; fi
   - find out
 
 script:

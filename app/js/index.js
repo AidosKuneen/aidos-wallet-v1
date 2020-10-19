@@ -1,4 +1,11 @@
-const { remote, webFrame, ipcRenderer, shell, clipboard } = require("electron");
+const {
+  remote,
+  webFrame,
+  ipcRenderer,
+  shell,
+  clipboard,
+  BrowserView,
+} = require("electron");
 
 var __entityMap = {
   "&": "&amp;",
@@ -67,9 +74,10 @@ var UI = (function (UI, undefined) {
         });
     }
 
-    document.getElementById("new-user").addEventListener("click", function (e) {
-      UI.sendToWebview("openHelpMenu");
-    });
+    //Old Faq
+    // document.getElementById("new-user").addEventListener("click", function (e) {
+    //   UI.sendToWebview("openHelpMenu");
+    // });
   };
 
   UI.showContextMenu = function (e) {
@@ -204,8 +212,6 @@ var UI = (function (UI, undefined) {
       return;
     }
 
-    UI.hideAlerts();
-
     serverLogLines = serverOutput.length;
     var log = serverOutput.join("\n");
 
@@ -339,8 +345,6 @@ var UI = (function (UI, undefined) {
   };
 
   UI.showPreferences = function (settings) {
-    UI.hideAlerts();
-
     var modal = new tingle.modal({
       footer: true,
       onOpen: function () {
@@ -395,8 +399,6 @@ var UI = (function (UI, undefined) {
       return;
     }
 
-    UI.hideAlerts();
-
     var modal = new tingle.modal({
       footer: true,
       onOpen: function () {
@@ -439,10 +441,9 @@ var UI = (function (UI, undefined) {
       return;
     }
 
-    UI.hideAlerts();
-
     var modal = new tingle.modal({
       footer: true,
+      closeMethods: ["overlay", "button", "escape"],
       onOpen: function () {
         var close = document.querySelector(".tingle-modal__close");
         var modalContent = document.querySelector(".tingle-modal-box__content");
@@ -472,46 +473,50 @@ var UI = (function (UI, undefined) {
         }
       }
       content =
-        "<h3>Enter Server Address: </h3>" +
-        "<input class='cfg' maxlength='32' type='text' id='server_config_host' placeholder='wallet.aidoskuneen.com' value='" +
+        "<h3 class='pb-2'>Enter Server Address: </h3>" +
+        "<input class='cfg border-b' maxlength='32' type='text' id='server_config_host' placeholder='wallet.aidoskuneen.com' value='" +
         host +
         "' />" +
-        "<botLabel>(without 'http://' and port number)</botLabel>";
+        "<botLabel class='ml-3'>(without 'http://' and port number)</botLabel>";
     }
     modal.setContent(content);
 
-    modal.addFooterBtn("OK", "cfg-btn2", function () {
-      var config = {};
+    modal.addFooterBtn(
+      "OK",
+      "cfg-btn2 bg-dark-green text-white rounded-lg text-white px-8 py-2",
+      function () {
+        var config = {};
 
-      config.lightWallet = configuration.lightWallet;
+        config.lightWallet = configuration.lightWallet;
 
-      if (configuration.lightWallet) {
-        //[0-9]+
-        var res = String(document.getElementById("server_config_host").value); //.match(/^(https?:\/\/.*):(14266)$/i);
+        if (configuration.lightWallet) {
+          //[0-9]+
+          var res = String(document.getElementById("server_config_host").value); //.match(/^(https?:\/\/.*):(14266)$/i);
 
-        if (!res) {
-          document.getElementById("host-error").style.display = "inline";
-          document.getElementById("host-error").innerHTML = "Invalid!";
-          return;
+          if (!res) {
+            document.getElementById("host-error").style.display = "inline";
+            document.getElementById("host-error").innerHTML = "Invalid!";
+            return;
+          }
+
+          config.lightWalletHost = "http://" + res;
+          config.lightWalletPort = configuration.testNet ? 15555 : 14266; //res[2];
+          config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        } else {
+          config.port = configuration.testNet ? 15555 : 14266; //parseInt(document.getElementById("server_config_port").value, 10);
+          config.depth = parseInt(
+            document.getElementById("server_config_depth").value,
+            10
+          );
+          config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+          config.nodes = document.getElementById("server_config_peers").value;
         }
 
-        config.lightWalletHost = "http://" + res;
-        config.lightWalletPort = configuration.testNet ? 15555 : 14266; //res[2];
-        config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
-      } else {
-        config.port = configuration.testNet ? 15555 : 14266; //parseInt(document.getElementById("server_config_port").value, 10);
-        config.depth = parseInt(
-          document.getElementById("server_config_depth").value,
-          10
-        );
-        config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
-        config.nodes = document.getElementById("server_config_peers").value;
+        modal.close();
+
+        ipcRenderer.send("updateNodeConfiguration", config);
       }
-
-      modal.close();
-
-      ipcRenderer.send("updateNodeConfiguration", config);
-    });
+    );
 
     modal.open();
   };
@@ -526,8 +531,6 @@ var UI = (function (UI, undefined) {
     if (showQuitAlert) {
       return;
     }
-
-    UI.hideAlerts();
 
     var modal = new tingle.modal({
       allowClose: false,
@@ -586,8 +589,6 @@ var UI = (function (UI, undefined) {
   UI.showKillAlert = function () {
     showQuitAlert = true;
 
-    UI.hideAlerts();
-
     var modal = new tingle.modal({
       footer: false,
       allowClose: false,
@@ -600,22 +601,10 @@ var UI = (function (UI, undefined) {
     modal.open();
   };
 
-  UI.hideAlerts = function () {
-    var nodes = document.querySelectorAll(".tingle-modal");
-    Array.prototype.forEach.call(nodes, function (node) {
-      node.parentNode.removeChild(node);
-    });
-
-    var body = document.querySelector("body");
-    body.classList.remove("tingle-enabled");
-  };
-
   UI.showAlert = function (msg, openCallback, closeCallback) {
     if (showQuitAlert) {
       return;
     }
-
-    UI.hideAlerts();
 
     var modal = new tingle.modal({
       footer: true,
@@ -649,8 +638,6 @@ var UI = (function (UI, undefined) {
     }
 
     showQuitAlert = true;
-
-    UI.hideAlerts();
 
     if (!msg) {
       msg =
@@ -734,8 +721,6 @@ var UI = (function (UI, undefined) {
   };
 
   UI.handleURL = function (url) {
-    UI.hideAlerts();
-
     url = decodeURI(
       url.replace("aidos://", "").toLowerCase().replace(/\/$/, "")
     );
@@ -771,7 +756,6 @@ var UI = (function (UI, undefined) {
   };
 
   UI.relaunch = function () {
-    UI.hideAlerts();
     showQuitAlert = false;
     webviewIsLoaded = false;
     var server = document.getElementById("server");
@@ -856,35 +840,19 @@ ipcRenderer.on("showPreferences", function (event, settings) {
 });
 
 ipcRenderer.on("showNodeInfo", function () {
-  UI.hideAlerts();
   UI.sendToWebview("showNodeInfo");
 });
 
 ipcRenderer.on("showModal", function (event, identifier, html) {
-  UI.hideAlerts();
-
   var modal = new tingle.modal({
     footer: false,
+    closeMethods: ["overlay", "button", "escape"],
+    closeLabel: "Close",
     cssClass: [identifier],
     onOpen: function () {
-      var close = document.querySelector(".tingle-modal__close");
-      var modalContent = document.querySelector(".tingle-modal-box__content");
-      modalContent.appendChild(close);
-
-      if (identifier == "generated-seed-modal") {
-        document.getElementById(
-          "generated-seed-value"
-        ).onclick = document.getElementById(
-          "generated-seed-value-copy"
-        ).onclick = function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          clipboard.writeText(
-            document.getElementById("generated-seed-value").dataset
-              .clipboardText
-          );
-        };
-      }
+      // var close = document.querySelector(".tingle-modal__close");
+      // var modalContent = document.querySelector(".tingle-modal-box__content");
+      // modalContent.appendChild(close);
     },
   });
 
@@ -898,17 +866,14 @@ ipcRenderer.on("handleURL", function (event, url) {
 });
 
 ipcRenderer.on("showPeers", function () {
-  UI.hideAlerts();
   UI.sendToWebview("showPeers");
 });
 
 ipcRenderer.on("showFAQ", function () {
-  UI.hideAlerts();
   UI.sendToWebview("showFAQ");
 });
 
 ipcRenderer.on("showTerm", function () {
-  UI.hideAlerts();
   UI.sendToWebview("showTerm");
 });
 

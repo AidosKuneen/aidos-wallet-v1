@@ -1,28 +1,31 @@
-[![Build Status](https://travis-ci.org/AidosKuneen/aidos-wallet.svg?branch=master)](https://travis-ci.org/AidosKuneen/aidos-wallet)
-[![Build status](https://ci.appveyor.com/api/projects/status/0b42t20u4wfv2qau?svg=true)](https://ci.appveyor.com/project/ogami-daigoro/aidos-wallet)
-[![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/AidosKuneen/aidos-wallet/master/LICENSE)
+<h1 align="center">
+  <br>
+  <a href="https://aidoskuneen.com"><img src="https://aidoskuneen.com/wp-content/uploads/2020/08/cropped-adk-logo-footer-192x192.png" alt="Aidos Kuneen"></a>
+  <br>
+  Aidos Kuneen Wallet
+  <br>
+</h1>
 
-# Aidos Kuneen Wallet
+<h5 align="center">This repository contains the desktop wallet for Aidos Kuneen.</h6>
 
-## Overview
-
-This repository contains the desktop wallet for Aidos Kuneen.
-
-## OS
-
-- Linux 64 bit
-- Windows 64bit and 32bit
-- MacOS 64bit
-
-Linux 32bit and MacOS 32bit is NOT supported.
-
-## Install
-
-These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/AidosKuneen/aidos-wallet/releases).
+<p align="center">
+  <a href="https://travis-ci.org/AidosKuneen/aidos-wallet">
+    <img src="https://api.travis-ci.org/AidosKuneen/aidos-wallet.svg?branch=master"
+         alt="Travis">
+  </a>
+  <a href="https://ci.appveyor.com/project/MYehia565/aidos-wallet"><img src="https://ci.appveyor.com/api/projects/status/rnxy5ns9muenbbp5?svg=true" alt="Appveyor"></a>
+  <a href="https://raw.githubusercontent.com/AidosKuneen/aidos-wallet/master/LICENSE">
+      <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" alt="License">
+  </a>
+</p>
 
 ## Requirements
 
-1. [NodeJS](https://nodejs.org/en/download/)
+1. Operating System
+   - Linux 64 bit (32bit not supported)
+   - Windows 64bit and 32bit
+   - MacOS 64bit (32bit not supported)
+2. [NodeJS](https://nodejs.org/en/download/)
 
 NodeJS is required to install and run the app.
 
@@ -38,13 +41,11 @@ If you want to package the wallet you will need:
 
 1. [Electron Builder](https://github.com/electron-userland/electron-builder)
 
-```
-npm install -g electron-builder
-```
-
 2. Optionally [Docker](https://www.docker.com) (In case you want to build for other platforms on Windows)
 
 ## Install
+
+These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/AidosKuneen/aidos-wallet/releases).
 
 1. Clone this repository:
 
@@ -82,9 +83,7 @@ You need the specific OS for each package (i.e. cannot cross compile).
 
 5.  After that you can find the compiled binaries in the `out` dir.
 
-## Testnet
-
-To use the Wallet for the Testnet, rename package.testnet.json to package.json and follow the above instructions to create a runnable version. Make sure you are connecting to a Server that uses the ARI Testnet. (Otherwise your connection will be refused as the Test- and Mainnet use different API ports)
+## [Changelog](https://github.com/AidosKuneen/aidos-wallet/blob/master/changelog.md)
 
 ## LICENSE
 

@@ -6,3 +6,5 @@ ari/*
 out/*
 aidos
 /.project
+yarn-error.log
+yarn.lock

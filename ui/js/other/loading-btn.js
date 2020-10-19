@@ -1,6 +1,6 @@
-(function($){
-  $.fn.loadingInitialize = function(){
-    return this.each(function(){
+(function ($) {
+  $.fn.loadingInitialize = function () {
+    return this.each(function () {
       var resetTimeout;
       var barTimeout;
       var messageTimeout;
@@ -8,42 +8,44 @@
       var startTime;
 
       var $btn = $(this);
-      // var $bar = $('<span class="progress" style="display:none"><div class="line"></div><div class="break dot1"></div><div class="break dot2"></div><div class="break dot3"></div></div></span>');
-      var $bar = $('<span class="progress uk-progress uk-progress-striped uk-active"><div class="uk-progress-bar" style="width: 100%;"></div></span>');
 
       //todo: if updateMessage is called before barTimeout it is overwritten by it!
-      $btn.on("updateMessage", function(e, data) {
+      $btn.on("updateMessage", function (e, data) {
         clearTimeout(messageTimeout);
 
         if (data.timeout) {
-          messageTimeout = setTimeout(function() {
-            if (!$btn.find(".content").length) {
-              $btn.html("<span class='content'></span>");
-            }
-            $btn.find(".content").html(data.msg);
+          messageTimeout = setTimeout(function () {
+            $btn.html(data.msg);
             $btn.data("updated", true);
           }, data.timeout);
         } else {
-          if (!$btn.find(".content").length) {
-            $btn.html("<span class='content'></span>");
-          }
-          $btn.find(".content").html(data.msg);
+          // if (!$btn.find(".content").length) {
+          //   $btn.html("<span class='content'></span>");
+          // }
+          $btn.html(data.msg);
           $btn.data("updated", true);
         }
       });
-      
+
       // Save for cancel tx
       // if ($btn.attr("id") == "transfer-btn"){
-      // }		
+      // }
 
-      $btn.on("click", function(e) {
-        if (!$btn.hasClass("loading") && !$btn.hasClass("success") && !$btn.hasClass("error")) {
-          $btn.removeClass("loading success error reset").addClass("loading").attr("disabled", "disabled");
+      $btn.on("click", function (e) {
+        if (
+          !$btn.hasClass("loading") &&
+          !$btn.hasClass("success") &&
+          !$btn.hasClass("error")
+        ) {
+          $btn
+            .removeClass("loading success error reset")
+            .addClass("loading")
+            .attr("disabled", "disabled");
 
           startTime = new Date().getTime();
 
           $("body").css("cursor", "progress");
-   
+
           var msTimeout = $btn.data("bar-timeout");
 
           if (!msTimeout) {
@@ -51,23 +53,15 @@
           }
 
           // Only start showing the bar if the action is not finished within 200 ms.
-          barTimeout = setTimeout(function() {
+          barTimeout = setTimeout(function () {
             // If the message has already been updated before barTimeout is called, then of course we do not overwrite it again.
-            //if (!$btn.data("updated")) {
-              var message = ($btn.data("loading") ? $btn.data("loading") : "Loading...");
-              var icon = "<i class='fa fa-cog fa-spin fa-fw'></i> ";
+            var message = $btn.data("loading")
+              ? $btn.data("loading")
+              : "Loading...";
+            var icon =
+              '<img src="./images/spinner.svg" alt="" onload="SVGInject(this)" />';
 
-              if (!$btn.find(".content").length) {
-                $btn.html("<span class='content'></span>");
-              }
-
-              $btn.find(".content").html(icon + String(message).toUpperCase().escapeHTML());
-           // } else {
-           //   console.log("ALREADY UPDATED");
-           // }
-
-            $btn.append($bar);
-            $bar.fadeIn(800);
+            $btn.html(icon + String(message).toUpperCase().escapeHTML());
           }, msTimeout);
         } else {
           e.preventDefault();
@@ -76,46 +70,27 @@
 
           if ($(this).hasClass("wait")) {
             clearTimeout(messageTimeout);
-            $btn.removeClass("loading success error reset wait").addClass("reset").find(".content").html($btn.data("initial").toUpperCase().escapeHTML());
+            $btn
+              .removeClass("loading success error reset wait")
+              .addClass("reset")
+              .html($btn.data("initial").toUpperCase().escapeHTML());
           }
         }
       });
 
-      $btn.on("finished", function(e, data) {
+      $btn.on("finished", function (e, data) {
         $("body").css("cursor", "default");
 
-        $bar.remove();
+        // $bar.remove();
 
         clearTimeout(barTimeout);
 
-        var icon = message = "";
+        var icon = (message = "");
 
         if (data && data.msg) {
           message = data.msg;
         } else if (data.type) {
           message = $btn.data(data.type);
-        }
-
-        if (data && data.hasOwnProperty("icon")) {
-          icon = "<i class='fa " + data.icon + "'></i>";
-        }
-
-        if (data.type == "success") {
-          if (!icon) {
-            icon = "<i class='fa fa-check'></i> ";
-          }
-          if (!message) {
-            message = "Success";
-          }
-        } else if (data.type == "error") {
-          if (!icon) {
-            icon = "<i class='fa fa-times'></i> ";
-          }
-          if (!message) {
-            message = "Error";
-          }
-        } else if (!message) {
-          message = "Submit";
         }
 
         if (data && data.hasOwnProperty("initial")) {
@@ -130,13 +105,13 @@
 
         $btn.removeClass("loading success error reset").addClass(data.type);
 
-        if (!$btn.find(".content").length) {
-          $btn.html("<span class='content'></span>");
-        }
+        // if (!$btn.find(".content").length) {
+        //   $btn.html("<span class='content'></span>");
+        // }
 
         clearTimeout(messageTimeout);
 
-        $btn.find(".content").html(icon + message.toUpperCase().escapeHTML());
+        $btn.html(icon + message.escapeHTML());
 
         if (data.type == "success" || data.type == "error") {
           var timeTaken = new Date().getTime() - startTime;
@@ -150,9 +125,13 @@
             $btn.addClass("wait").removeAttr("disabled");
           } else {
             //Else, The user will have to click the button to reset it.
-            resetTimeout = setTimeout(function() {
+            resetTimeout = setTimeout(function () {
               clearTimeout(messageTimeout);
-              $btn.removeClass("loading success error reset").addClass("reset").removeAttr("disabled").find(".content").html($btn.data("initial").toUpperCase().escapeHTML());
+              $btn
+                .removeClass("loading success error reset")
+                .addClass("reset")
+                .removeAttr("disabled")
+                .html($btn.data("initial").toUpperCase().escapeHTML());
             }, 2500);
           }
         } else {
@@ -162,9 +141,9 @@
     });
   };
 
-  $.fn.loadingSuccess = function(msg, options) {
+  $.fn.loadingSuccess = function (msg, options) {
     if (typeof msg == "object") {
-      msg = (msg.message ? msg.message : "");
+      msg = msg.message ? msg.message : "";
     }
 
     console.log("$.fn.loadingSuccess: " + msg);
@@ -173,16 +152,16 @@
       options = {};
     }
 
-    $.extend(options, {"type": "success", "msg": msg});
-    
+    $.extend(options, { type: "success", msg: msg });
+
     console.log(options);
 
     return this.first().trigger("finished", options);
   };
 
-  $.fn.loadingError = function(msg, options) {
+  $.fn.loadingError = function (msg, options) {
     if (typeof msg == "object") {
-      msg = (msg.message ? msg.message : "");
+      msg = msg.message ? msg.message : "";
     }
 
     console.log("$.fn.loadingError: " + msg);
@@ -191,29 +170,27 @@
       options = {};
     }
 
-    $.extend(options, {"type": "error", "msg": msg});
+    $.extend(options, { type: "error", msg: msg });
 
     console.log(options);
 
     return this.first().trigger("finished", options);
   };
 
-  $.fn.loadingReset = function(msg, options) {
+  $.fn.loadingReset = function (msg, options) {
     console.log("$.fn.loadingReset: " + msg);
 
     if (!options) {
       options = {};
     }
 
-    $.extend(options, {"type": "reset", "msg": msg});
+    $.extend(options, { type: "reset", msg: msg });
 
     return this.first().trigger("finished", options);
   };
 
-  $.fn.loadingUpdate = function(msg, options) {
+  $.fn.loadingUpdate = function (msg, options) {
     console.log("$.fn.loadingUpdate: " + msg);
-
-    var icon = (options && options.hasOwnProperty("icon") ? options.icon : "fa fa-cog fa-spin fa-fw");
 
     var $btn = this.first();
 
@@ -225,10 +202,11 @@
       $btn.data("loading", options.loading);
     }
 
-    var msg = (icon ? "<i class='" + icon.escapeHTML() + "'></i> " : "") + msg.toUpperCase().escapeHTML();
+    var timeout = options && options.timeout ? options.timeout : 0;
 
-    var timeout = (options && options.timeout ? options.timeout : 0);
-
-    return this.first().trigger("updateMessage", {"msg": msg, "timeout": timeout});
+    return this.first().trigger("updateMessage", {
+      msg: msg,
+      timeout: timeout,
+    });
   };
 })(jQuery);

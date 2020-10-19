@@ -5,12 +5,15 @@ const {
   Menu,
   protocol,
   shell,
+  BrowserView,
+  screen,
+  powerSaveBlocker,
 } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
 const autoUpdater = app.autoUpdater;
-//const powerSaveBlocker = app.powerSaveBlocker;
+// const powerSaveBlocker = app.powerSaveBlocker;
 //const clipboard = app.clipboard;
 var pidusage = require("pidusage");
 const url = require("url");
@@ -147,7 +150,7 @@ var App = (function (App, undefined) {
       // }
 
       settings = {
-        bounds: { width: 1300, height: 850 },
+        bounds: { width: 1124, height: 850 },
         lightWalletHost: "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
         checkForUpdates: 1,
@@ -164,7 +167,7 @@ var App = (function (App, undefined) {
         !settings.hasOwnProperty("bounds") ||
         typeof settings.bounds != "object"
       ) {
-        settings.bounds = { width: 1300, height: 850 };
+        settings.bounds = { width: 1024, height: 800 };
       }
       if (!settings.hasOwnProperty("lightWallet")) {
         settings.lightWallet = 1;
@@ -205,7 +208,7 @@ var App = (function (App, undefined) {
       console.log("Error reading settings:");
       console.log(err);
       settings = {
-        bounds: { width: 1300, height: 850 },
+        bounds: { width: 1024, height: 800 },
         lightWalletHost: "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
         checkForUpdates: 1,
@@ -219,8 +222,8 @@ var App = (function (App, undefined) {
     }
 
     try {
-      if (app.screen) {
-        var displaySize = app.screen.getPrimaryDisplay().workAreaSize;
+      if (screen) {
+        var displaySize = screen.getPrimaryDisplay().workAreaSize;
 
         if (
           displaySize.width < settings.bounds.width + 100 ||
@@ -237,7 +240,7 @@ var App = (function (App, undefined) {
 
   App.saveSettings = function () {
     settings = {
-      bounds: { width: 1300, height: 850 },
+      bounds: { width: 1124, height: 850 },
       lightWalletHost: "http://wallet.aidoskuneen.com",
       lightWalletPort: isTestNet ? 15555 : 14266,
       checkForUpdates: 1,
@@ -404,11 +407,13 @@ var App = (function (App, undefined) {
       var windowOptions = {
         width: settings.bounds.width,
         height: settings.bounds.height,
-        minWidth: 675,
-        minHeight: 400,
-        backgroundColor: "#4DC1B5",
+        minWidth: 1124,
+        minHeight: 850,
         center: true,
         show: false,
+        icon:
+          path.join(resourcesDirectory, "build").replace(path.sep, "/") +
+          "/icon.png",
       };
 
       if (
@@ -420,10 +425,7 @@ var App = (function (App, undefined) {
       }
 
       win = new BrowserWindow({
-        windowOptions,
-        icon:
-          path.join(resourcesDirectory, "build").replace(path.sep, "/") +
-          "/icons/256x256.png",
+        ...windowOptions,
         webPreferences: {
           preload: path.join(__dirname, "index.js"),
           webviewTag: true,
@@ -431,6 +433,7 @@ var App = (function (App, undefined) {
           nodeIntegration: true,
         },
       });
+
       // win.toggleDevTools({ mode: "undocked" });
       win.setAspectRatio(27 / 16);
 
@@ -1619,7 +1622,7 @@ var App = (function (App, undefined) {
 
     if (!otherWin) {
       otherWin = new BrowserWindow({
-        width: 600,
+        width: 1024,
         height: height,
         show: false,
         useContentSize: true,
@@ -2103,6 +2106,7 @@ const shouldQuit = app.on("second-instance", function (
 
 app.on("ready", function () {
   initialize();
+  powerSaveBlocker.start("prevent-display-sleep"); //Prevent pc from sleeping
 });
 
 // prevent links to be opened in webview

@@ -1,13 +1,15 @@
-var UI = (function(UI, $, undefined) {
-  UI.handleTransfers = function() {
+var UI = (function (UI, $, undefined) {
+  UI.handleTransfers = function () {
     console.log("handleTransfer");
-    $("#transfer-btn").on("click", function(e) {    
+    $("#transfer-btn").on("click", function (e) {
       console.log("UI.handleTransfers: Click");
 
       var $stack = $("#transfer-stack");
 
       if ($("#transfer-autofill").val() == "1") {
-        UI.formError("transfer", "Are you sure?", {"initial": "Yes, Send It Now"});
+        UI.formError("transfer", "Are you sure?", {
+          initial: "Yes, Send It Now",
+        });
         $("#transfer-autofill").val("0");
         return;
       }
@@ -26,25 +28,25 @@ var UI = (function(UI, $, undefined) {
         } else if (!aidos.utils.isValidChecksum(address)) {
           throw "Incorrect address checksum";
         }
-      
-       // var amount = aidos.utils.convertUnits(parseFloat($("#transfer-amount").val()), $("#transfer-units-value").html(), "i");
 
-        var multi=100000000;
-        switch($("#transfer-units-value").html()){
+        // var amount = aidos.utils.convertUnits(parseFloat($("#transfer-amount").val()), $("#transfer-units-value").html(), "i");
+
+        var multi = 100000000;
+        switch ($("#transfer-units-value").html()) {
           case "u ADK":
-            multi=0.000001*100000000;
+            multi = 0.000001 * 100000000;
             break;
           case "m ADK":
-            multi=0.001*100000000;
+            multi = 0.001 * 100000000;
             break;
           case "ADK":
-            multi=1*100000000;
+            multi = 1 * 100000000;
             break;
           case "K ADK":
-            multi=1000*100000000;
+            multi = 1000 * 100000000;
             break;
           case "M ADK":
-            multi=1000000*100000000;
+            multi = 1000000 * 100000000;
             break;
         }
 
@@ -54,7 +56,7 @@ var UI = (function(UI, $, undefined) {
         if (!amount) {
           throw "Amount cannot be zero";
         }
-        if (amount<1) {
+        if (amount < 1) {
           throw "Amount must be more than 0.00000001 ADK";
         }
         var tag = $.trim($("#transfer-tag").val().toUpperCase());
@@ -67,34 +69,52 @@ var UI = (function(UI, $, undefined) {
         UI.formError("transfer", error);
         return;
       }
-
+      $("#progress-bar").val(0);
+      $("#transfer-btn").addClass("hidden");
+      $("#progress-bar").removeClass("hidden");
       console.log("Server.transfer: " + address + " -> " + amount);
 
-      aidos.api.sendTransfer(connection.seed, connection.depth, connection.minWeightMagnitude, [{"address": address, "value": amount, "message": "", "tag": tag}], function(error, transfers) {
-        if (error) {
-          console.log("UI.handleTransfers: Error");
-          console.log(error);
-          UI.formError("transfer", error, {"initial": "Send"});
-        } else {
-          console.log("UI.handleTransfers: Success");
-          UI.formSuccess("transfer", "Transfer Completed", {"initial": "Send"});
-          UI.updateState(1000);
+      aidos.api.sendTransfer(
+        connection.seed,
+        connection.depth,
+        connection.minWeightMagnitude,
+        [{ address: address, value: amount, message: "", tag: tag }],
+        function (error, transfers) {
+          if (error) {
+            console.log("UI.handleTransfers: Error");
+            console.log(error);
+            $("#transfer-btn").removeClass("hidden");
+            UI.formError("transfer", error, { initial: "Send" });
+          } else {
+            console.log("UI.handleTransfers: Success");
+            UI.formSuccess("transfer", "Transfer Completed", {
+              initial: "Send",
+            });
+            $("#transfer-btn").removeClass("hidden");
+            $("#progress-bar").addClass("hidden");
+            $("#progress-bar").val(0);
+            $(".send_page").addClass("hidden");
+            $(".confirmation_page").removeClass("hidden");
+            UI.updateState(1000);
+          }
+          $stack.removeClass("loading");
         }
-        $stack.removeClass("loading");
-      });
+      );
     });
 
-    $("#transfer-units-value").on("click", function(e) {
+    $("#transfer-units-value").on("click", function (e) {
       var $overlay = $("#overlay");
-      var $select = $('<div class="dropdown" id="transfer-units-select">' + 
-                        '<ul>' + 
-                          '<li class="aidos-ua">u ADK</li>' + 
-                          '<li class="aidos-ma">m ADK</li>' + 
-                          '<li class="aidos-a">ADK</li>' + 
-                          '<li class="aidos-Ka">K ADK</li>' + 
-                          '<li class="aidos-Ma">M ADK</li>' + 
-                        '</ul>' + 
-                      '</div>');
+      var $select = $(
+        '<div class="dropdown" id="transfer-units-select">' +
+          "<ul>" +
+          '<li class="aidos-ua">u ADK</li>' +
+          '<li class="aidos-ma">m ADK</li>' +
+          '<li class="aidos-a">ADK</li>' +
+          '<li class="aidos-Ka">K ADK</li>' +
+          '<li class="aidos-Ma">M ADK</li>' +
+          "</ul>" +
+          "</div>"
+      );
 
       $overlay.show();
 
@@ -104,35 +124,47 @@ var UI = (function(UI, $, undefined) {
 
       var offset = $(this).offset();
 
-      $select.css({"position": "absolute", "top": (offset.top + $(this).innerHeight() + 15) + "px", "left": (offset.left) + "px", "width": $(this).outerWidth() + "px"}).addClass("active");
+      $select
+        .css({
+          position: "absolute",
+          top: offset.top + $(this).innerHeight() + 15 + "px",
+          left: offset.left + "px",
+          width: $(this).outerWidth() + "px",
+        })
+        .addClass("active");
 
-      $select.on("click", "li", function(e) {
+      $select.on("click", "li", function (e) {
         $select.removeClass("active");
         $("#transfer-units-value").html($(this).html());
         $overlay.hide().off("click.transfer");
         $(window).off("resize.transfer");
       });
 
-      $overlay.on("click.transfer", function(e) {
+      $overlay.on("click.transfer", function (e) {
         $select.removeClass("active");
         $(this).hide().off("click.transfer");
         $(window).off("resize.transfer");
       });
 
-      $(window).on("resize.transfer", function() {
-        var $rel = $("#transfer-units-value")
+      $(window).on("resize.transfer", function () {
+        var $rel = $("#transfer-units-value");
         var offset = $rel.offset();
-        $select.css({"position": "absolute", "top": (offset.top + $rel.innerHeight() + 15) + "px", "left": (offset.left) + "px", "width": $rel.outerWidth() + "px"});
+        $select.css({
+          position: "absolute",
+          top: offset.top + $rel.innerHeight() + 15 + "px",
+          left: offset.left + "px",
+          width: $rel.outerWidth() + "px",
+        });
       });
     });
 
-    $("#transfer-units-select").on("click", function(e) {
+    $("#transfer-units-select").on("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
 
       var $ul = $(this).find("ul");
       $ul.addClass("active");
-      $ul.find("li").click(function(e) {
+      $ul.find("li").click(function (e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -143,18 +175,18 @@ var UI = (function(UI, $, undefined) {
         $("body").unbind("click.dropdown");
       });
 
-      $("body").on("click.dropdown", function(e) {
+      $("body").on("click.dropdown", function (e) {
         $ul.removeClass("active");
         $("body").unbind("click.dropdown");
-      }); 
+      });
     });
-  }
+  };
 
-  UI.onOpenTransferStack = function() {
+  UI.onOpenTransferStack = function () {
     if ($("#transfer-address").val() == "") {
       $("#transfer-address").focus();
     }
-  }
+  };
 
   return UI;
-}(UI || {}, jQuery));
+})(UI || {}, jQuery);

@@ -1,4 +1,4 @@
-image: Visual Studio 2019
+image: Visual Studio 2017
 
 platform:
   - x64
@@ -12,13 +12,12 @@ install:
   - ps: Install-Product node 12 x64
   - yarn
   - cd ccurl
-  - call "C:\Program Files\Microsoft SDKs\Windows\v10.0\Bin\SetEnv.cmd" /x64
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 19.0\VC\vcvarsall.bat" x86_amd64
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - cl libccurl.cpp /LD /Ox
   - if not exist "win64" mkdir win64
   - copy libccurl.dll win64\
   - del libccurl.dll
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 19.0\VC\vcvarsall.bat" x86
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
   - cl libccurl.cpp /LD /Ox
   - if not exist "win32" mkdir win32
   - copy libccurl.dll win32\
@@ -40,7 +39,7 @@ deploy:
   description: ""
   provider: GitHub
   auth_token:
-    secure: 3iQcaZ+ekUfV7qNqpOzlT1mY/pT4mhoNxxKsySYB643/Y6QWaPEEHqiOzHtQh+6k
+    secure: WQ2YpmVcEVf63/vNEq4UMgww1TzIWWWdWq/eig3TaOFWpnBLgLrOV+Jmz0VMlIcW
   artifact: /.*\.exe/
   draft: false
   prerelease: false
