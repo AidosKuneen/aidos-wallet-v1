@@ -1,46 +1,62 @@
 language: node_js
 node_js:
-- 12.13.0
+  - "12.13.0"
 os:
-- linux
-- osx
+  - linux
+  - osx
+
 osx_image: xcode10.2
+
 sudo: required
+
 cache:
   directories:
-  - node_modules
+    - node_modules
+
 addons:
   apt:
     packages:
-    - graphicsmagick
-    - icnsutils
-    - gcc-multilib
-    - g++-multilib
-    - bsdtar
-    - rpm
-    - xz-utils
+      - graphicsmagick
+      - icnsutils
+      - gcc-multilib
+      - g++-multilib
+      - bsdtar
+      - rpm
+      - xz-utils
+
 before_install:
-- node --version
-- npm install electron@10.1.1
-- npm install electron-builder@22.8.0
-- npm install -g yarn
+  - node --version
+  - npm install electron@10.1.1
+  - npm install electron-builder@22.8.0
+  - npm install -g yarn
+
 install:
-- npm install
-- pushd ccurl
-- rm mac/libccurl.dylib
-- rm lin64/libccurl.so
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "in linux"; gcc -shared -o libccurl.so
-  libccurl.cpp -O3 -lpthread -fPIC -std=c++11; mkdir -p lin64; cp libccurl.so lin64/;
-  rm libccurl.so; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then echo "in osx"; gcc -dynamiclib -o libccurl.dylib
-  libccurl.cpp -O3 -lpthread -std=c++11; mkdir -p mac; cp libccurl.dylib mac/; rm
-  libccurl.dylib; fi
-- popd
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run publish:lin; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run publish:mac; fi
-- find out
+  - npm install
+  - pushd ccurl
+  - rm mac/libccurl.dylib
+  - rm lin64/libccurl.so
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    echo "in linux";
+    gcc -shared -o libccurl.so libccurl.cpp -O3 -lpthread -fPIC -std=c++11;
+    mkdir -p lin64;
+    cp libccurl.so lin64/;
+    rm libccurl.so;
+    fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    echo "in osx";
+    gcc -dynamiclib -o libccurl.dylib libccurl.cpp -O3 -lpthread -std=c++11;
+    mkdir -p mac;
+    cp libccurl.dylib mac/;
+    rm libccurl.dylib;
+    fi
+  - popd
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  npm run publish:lin; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then  npm run publish:mac; fi
+  - find out
+
 script:
-- echo "nothing to do"
+  - echo "nothing to do"
+  
 deploy:
   - provider: releases
     api_key:
