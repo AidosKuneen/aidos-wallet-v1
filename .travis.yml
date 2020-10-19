@@ -56,11 +56,12 @@ install:
 
 script:
   - echo "nothing to do"
-  
+
 deploy:
   - provider: releases
     api_key:
       secure: pdQyC5bn4/NYhF7/LbwPFEQhQxuo8cg8z2n9z7lYDrtEbv5w0CtroGOe2TrLHDueeroS4iPOwFmsYgHgIiVHDQ+1W+a0jF09Z5J8Dla1HenInG6mvGLnIcbh5/wjuaCno8LE+bWkzVJMm0h7FtGhVDuOPnTVj8HzXu3zvNKRAgmsUhCeebTOwUbrKXVzLOFl4Z26RVi3nYREgh3VHV8U5hgyJMPAFzI1HkSoOE449hh8finbMayKSyWWZ65yE5tAE/D+rmHOh9WPMyb+AP0YTnkP8moIJvJrYZr5KgmZ+fZkZOoUWpS0BU1YToVliZ2U65u2mwuZN7bB4pCMT8ie5OvjoZuV4+wyiCQvWXxUB9IGPCN0NsnSJ0/ZCF4izMEYfCQ2C8oV602YB6t4N/epCUfeL/DHhZn46gYiIHqidW9QhiIOwiN7Ffe11xSG8f9+ASVFMznokca0e9eyhJDd52FizNETeKSp0NzDukngMK+ipOoi+8cuide+9mELBxXFKi9wCXXxWt9njb+dogNE+SW8BSo2OH73ILS9qbFI6szmYOoSiqD352Jp5Gv/JkKwStbbP8p5nLqxKNFaH0yfQ0Do39wt+m/Lmf4TjlphONglXwcvUNTdf04ISfaPPI/kKXXOZE01xBIAf/53k8vTzCr0zJ1RIB23/un5pNoRQpc=
+
     file:
       - out/ADK Wallet-*.AppImage
       - out/adk-wallet-*.tar.gz
@@ -70,17 +71,18 @@ deploy:
       - out/adk-wallet-*.x86_64.rpm
       - out/adk-wallet_*_i386.deb
       - out/adk-wallet_*_amd64.deb
-  skip_cleanup: 'true'
-  file_glob: true
-  on:
-    repo: AidosKuneen/aidos-wallet
-    all_branches: true
-    tags: true
-    condition: "$TRAVIS_OS_NAME == linux"
+    skip_cleanup: true
+    file_glob: true
+    on:
+      repo: AidosKuneen/aidos-wallet
+      tags: true
+      all_branches: true
+      condition: "$TRAVIS_OS_NAME == linux"
 
   - provider: releases
     api_key:
       secure: pdQyC5bn4/NYhF7/LbwPFEQhQxuo8cg8z2n9z7lYDrtEbv5w0CtroGOe2TrLHDueeroS4iPOwFmsYgHgIiVHDQ+1W+a0jF09Z5J8Dla1HenInG6mvGLnIcbh5/wjuaCno8LE+bWkzVJMm0h7FtGhVDuOPnTVj8HzXu3zvNKRAgmsUhCeebTOwUbrKXVzLOFl4Z26RVi3nYREgh3VHV8U5hgyJMPAFzI1HkSoOE449hh8finbMayKSyWWZ65yE5tAE/D+rmHOh9WPMyb+AP0YTnkP8moIJvJrYZr5KgmZ+fZkZOoUWpS0BU1YToVliZ2U65u2mwuZN7bB4pCMT8ie5OvjoZuV4+wyiCQvWXxUB9IGPCN0NsnSJ0/ZCF4izMEYfCQ2C8oV602YB6t4N/epCUfeL/DHhZn46gYiIHqidW9QhiIOwiN7Ffe11xSG8f9+ASVFMznokca0e9eyhJDd52FizNETeKSp0NzDukngMK+ipOoi+8cuide+9mELBxXFKi9wCXXxWt9njb+dogNE+SW8BSo2OH73ILS9qbFI6szmYOoSiqD352Jp5Gv/JkKwStbbP8p5nLqxKNFaH0yfQ0Do39wt+m/Lmf4TjlphONglXwcvUNTdf04ISfaPPI/kKXXOZE01xBIAf/53k8vTzCr0zJ1RIB23/un5pNoRQpc=
+
     file:
       - out/ADK Wallet-*.dmg
     skip_cleanup: true
