@@ -67,4 +67,4 @@ This is a major release featuring new design of the Aidos Kuneen Wallet.
 
 ### Fixed
 
-- Fixed CCurl for production
+- Fixed CCurl that cause blank screen for production
