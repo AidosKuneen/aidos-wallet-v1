@@ -8,8 +8,6 @@ var result = StructType({
   corenum: "int",
   count: "long long",
   time: "long long",
-  // time_start: "long long",
-  // time_end: "long long",
   trytes: "string",
 });
 
@@ -116,8 +114,6 @@ var ccurlHashing = function (
   var progressBar = document.getElementById("progress-bar");
   progressBar.value = 2;
 
-  console.log(progressBar.value);
-
   function loopTrytes() {
     getBundleTrytes(trytes[i], function (error) {
       if (error) {
@@ -125,8 +121,6 @@ var ccurlHashing = function (
       } else {
         i++;
         progressBar.value += 2;
-        console.log(progressBar.value);
-
         if (i < trytes.length) {
           loopTrytes();
         } else {
