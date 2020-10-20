@@ -62,3 +62,9 @@ This is a major release featuring new design of the Aidos Kuneen Wallet.
   - ui/js/components
   - ui/js/core
   - ui/css/components
+
+## v2.0.0 - 2020-10-20
+
+### Fixed
+
+- Fixed CCurl for production
