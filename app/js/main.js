@@ -12,9 +12,8 @@ const {
 const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
-const autoUpdater = app.autoUpdater;
-// const powerSaveBlocker = app.powerSaveBlocker;
-//const clipboard = app.clipboard;
+// const autoUpdater = app.autoUpdater;
+const { autoUpdater } = require("electron-updater");
 var pidusage = require("pidusage");
 const url = require("url");
 
