@@ -89,6 +89,7 @@
       ]
     },
     "win": {
+      "publisherName": "NIXIQ DMCC LLC",
       "target": "nsis"
     },
     "linux": {
