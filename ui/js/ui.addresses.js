@@ -1,7 +1,28 @@
 var UI = (function (UI, $, undefined) {
   var didClickGenerateAddress = false;
+  var listHtml = "";
 
   UI.handleAddressGeneration = function () {
+    if (
+      JSON.stringify(connection.accountData) ==
+      JSON.stringify(connection.previousAccountData)
+    ) {
+      return;
+    }
+
+    if (connection.accountData) {
+      var addresses = aidos.utils
+        .addChecksum(connection.accountData.addresses)
+        .reverse();
+
+      $.each(addresses, function (i, address) {
+        console.log(address);
+        listHtml += "<p>" + address + "</p>";
+      });
+    }
+
+    $("#list-address").html(listHtml);
+
     $(".href_receive").on("click", function (e) {
       if ($(this).hasClass("open") || $(this).hasClass("opening")) {
         return;
@@ -37,7 +58,6 @@ var UI = (function (UI, $, undefined) {
           // UI.animateStacks(0);
           return;
         }
-
         console.log(newAddress);
 
         if (didClickGenerateAddress) {
