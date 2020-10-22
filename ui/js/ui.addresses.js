@@ -16,7 +16,7 @@ var UI = (function (UI, $, undefined) {
         .reverse();
 
       $.each(addresses, function (i, address) {
-        console.log(address);
+        // console.log(address);
         listHtml += "<p>" + address + "</p>";
       });
     }
