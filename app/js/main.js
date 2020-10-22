@@ -5,14 +5,13 @@ const {
   Menu,
   protocol,
   shell,
-  BrowserView,
   screen,
   powerSaveBlocker,
+  dialog,
 } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const childProcess = require("child_process");
-// const autoUpdater = app.autoUpdater;
 const { autoUpdater } = require("electron-updater");
 var pidusage = require("pidusage");
 const url = require("url");
@@ -66,7 +65,7 @@ var App = (function (App, undefined) {
   var didKillNode = false;
   var settings = {};
   var isDevelopment = String(process.env.NODE_ENV).trim() === "development";
-  var didCheckForUpdates = false;
+  // var didCheckForUpdates = false;
   var appVersion = require("../../package.json").version;
   var appName = require("../../package.json").name;
   var isLookingAtServerLog = false;
@@ -128,6 +127,7 @@ var App = (function (App, undefined) {
     // }
 
     App.start();
+    autoUpdater.checkForUpdatesAndNotify();
   };
 
   App.quit = function () {
@@ -198,7 +198,6 @@ var App = (function (App, undefined) {
         bounds: { width: 1124, height: 850 },
         lightWalletHost: "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
-        checkForUpdates: 1,
         lightWallet: 1,
         lastUpdateCheck: 0,
         showStatusBar: 0,
@@ -267,98 +266,6 @@ var App = (function (App, undefined) {
         }
       }
     }
-  };
-
-  App.autoUpdate = function () {
-    // Auto update is disabled for now.
-    return;
-
-    if (isDevelopment || process.platform == "linux") {
-      return;
-    }
-
-    autoUpdater.addListener("update-available", function (event) {
-      if (didCheckForUpdates) {
-        App.showUpdateAvailable();
-      }
-    });
-
-    autoUpdater.addListener("update-downloaded", function (
-      event,
-      releaseNotes,
-      releaseName,
-      releaseDate,
-      updateURL
-    ) {
-      App.showUpdateDownloaded(releaseNotes, releaseName, releaseDate);
-    });
-
-    autoUpdater.addListener("error", function (error) {
-      if (didCheckForUpdates) {
-        App.showUpdateError(error);
-      }
-    });
-
-    // We don't need to show this
-    /*
-     * autoUpdater.addListener("checking-for-update", function(event) { if
-     * (didCheckForUpdates) { App.showCheckingForUpdate(); } });
-     */
-
-    autoUpdater.addListener("update-not-available", function (event) {
-      if (didCheckForUpdates) {
-        App.showUpdateNotAvailable();
-      }
-    });
-
-    if (process.platform == "darwin") {
-      var feedURL = ""; // https://aidos.com/latest-osx.php?v=" + appVersion;
-    } else {
-      var feedURL = ""; // https://aidos.com/latest-win.php?v=" + appVersion +
-      // "&arch=" + (is64BitOS ? "64" : "32");
-    }
-
-    autoUpdater.setFeedURL(feedURL);
-
-    if (settings.checkForUpdates == 0) {
-      return;
-    } else if (settings.checkForUpdates == 1) {
-      App.checkForUpdates();
-    } else {
-      if (settings.hasOwnProperty("lastUpdateCheck")) {
-        var lastUpdateCheck = settings.lastUpdateCheck;
-        if (settings.checkForUpdates == 2) {
-          // Daily
-          if (new Date().getTime() - lastUpdateCheck > 86400000) {
-            App.checkForUpdates();
-          }
-        } else if (settings.checkForUpdates == 3) {
-          // Weekly
-          if (new Date().getTime() - lastUpdateCheck > 86400000 * 7) {
-            App.checkForUpdates();
-          }
-        }
-      } else {
-        App.checkForUpdates();
-      }
-    }
-  };
-
-  App.checkForUpdates = function (manual) {
-    if (manual) {
-      didCheckForUpdates = true;
-    }
-
-    if (isDevelopment || process.platform == "linux") {
-      return;
-    }
-
-    autoUpdater.checkForUpdates();
-    settings.lastUpdateCheck = new Date().getTime();
-  };
-
-  installUpdate = function () {
-    autoUpdater.quitAndInstall();
   };
 
   App.showDefaultWindow = function () {
@@ -2129,17 +2036,17 @@ ipcMain.on("rendererIsReady", function (event, pid) {
   App.rendererIsReady(pid);
 });
 
-ipcMain.on("updatePreferences", function (event, checkForUpdatesOption) {
-  App.updatePreferences(checkForUpdatesOption);
-});
+// ipcMain.on("updatePreferences", function (event, checkForUpdatesOption) {
+//   App.updatePreferences(checkForUpdatesOption);
+// });
 
 ipcMain.on("updateNodeConfiguration", function (event, configuration) {
   App.updateNodeConfiguration(configuration);
 });
 
-ipcMain.on("installUpdate", function () {
-  installUpdate();
-});
+// ipcMain.on("installUpdate", function () {
+//   installUpdate();
+// });
 
 ipcMain.on("quit", function () {
   App.quit();
