@@ -2,7 +2,7 @@
   "name": "adk-wallet",
   "productName": "ADK Wallet",
   "description": "Aidos Kuneen Wallet",
-  "version": "2.0.2",
+  "version": "1.5.0",
   "license": "GPL-3.0",
   "main": "app/js/main.js",
   "engines": {
@@ -30,6 +30,7 @@
     "url": "https://github.com/AidosKuneen/aidos-wallet"
   },
   "dependencies": {
+    "electron-store": "^6.0.1",
     "electron-updater": "^4.3.5",
     "ffi-napi": "^3.0.1",
     "fs-extra": "^9.0.1",
@@ -49,6 +50,13 @@
     "tailwindcss": "^1.8.10"
   },
   "build": {
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "AidosKuneen",
+        "repo": "aidos-wallet"
+      }
+    ],
     "files": [
       "app/**/*",
       "build/**/*",
