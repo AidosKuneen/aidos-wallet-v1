@@ -7,6 +7,22 @@ const {
   BrowserView,
 } = require("electron");
 
+const Store = require("electron-store");
+
+const schema = {
+  pin: {
+    type: "string",
+    minLength: 6,
+    maxlength: 6,
+    pattern: "^(0|[1-9][0-9]*)$",
+  },
+};
+
+const store = new Store({ schema });
+
+// store.set("pin", "432525");
+// alert(store.get("pin"));
+
 var __entityMap = {
   "&": "&amp;",
   "<": "&lt;",
@@ -521,70 +537,70 @@ var UI = (function (UI, undefined) {
     modal.open();
   };
 
-  UI.showUpdateAvailable = function () {
-    UI.showAlert(
-      "<h1>Update Available</h1><p>An update is available and is being downloaded.</p>"
-    );
-  };
+  // UI.showUpdateAvailable = function () {
+  //   UI.showAlert(
+  //     "<h1>Update Available</h1><p>An update is available and is being downloaded.</p>"
+  //   );
+  // };
 
-  UI.showUpdateDownloaded = function (releaseNotes, releaseName, releaseDate) {
-    if (showQuitAlert) {
-      return;
-    }
+  // UI.showUpdateDownloaded = function (releaseNotes, releaseName, releaseDate) {
+  //   if (showQuitAlert) {
+  //     return;
+  //   }
 
-    var modal = new tingle.modal({
-      allowClose: false,
-      footer: true,
-      cssClass: ["update-downloaded"],
-    });
+  //   var modal = new tingle.modal({
+  //     allowClose: false,
+  //     footer: true,
+  //     cssClass: ["update-downloaded"],
+  //   });
 
-    modal.setContent(
-      "<h1>New Update Available...</h1><p>Version " +
-        String(releaseName).escapeHTML() +
-        " is downloaded and ready to install."
-    );
+  //   modal.setContent(
+  //     "<h1>New Update Available...</h1><p>Version " +
+  //       String(releaseName).escapeHTML() +
+  //       " is downloaded and ready to install."
+  //   );
 
-    modal.addFooterBtn(
-      "Install Now",
-      "tingle-btn tingle-btn--primary",
-      function () {
-        modal.close();
-        ipcRenderer.send("installUpdate");
-      }
-    );
+  //   modal.addFooterBtn(
+  //     "Install Now",
+  //     "tingle-btn tingle-btn--primary",
+  //     function () {
+  //       modal.close();
+  //       ipcRenderer.send("installUpdate");
+  //     }
+  //   );
 
-    modal.addFooterBtn(
-      "Install on Quit",
-      "tingle-btn tingle-btn--default",
-      function () {
-        modal.close();
-      }
-    );
+  //   modal.addFooterBtn(
+  //     "Install on Quit",
+  //     "tingle-btn tingle-btn--default",
+  //     function () {
+  //       modal.close();
+  //     }
+  //   );
 
-    modal.open();
-  };
+  //   modal.open();
+  // };
 
-  UI.showUpdateError = function () {
-    UI.showAlert(
-      "<h1>Update Error</h1><p>An error occurred during checking for an update.</p>"
-    );
-  };
+  // UI.showUpdateError = function () {
+  //   UI.showAlert(
+  //     "<h1>Update Error</h1><p>An error occurred during checking for an update.</p>"
+  //   );
+  // };
 
-  UI.showCheckingForUpdate = function () {
-    if (showQuitAlert) {
-      return;
-    }
+  // UI.showCheckingForUpdate = function () {
+  //   if (showQuitAlert) {
+  //     return;
+  //   }
 
-    UI.showAlert(
-      "<h1>Checking for Updates...</h1><p>Checking for updates, please wait...</p>"
-    );
-  };
+  //   UI.showAlert(
+  //     "<h1>Checking for Updates...</h1><p>Checking for updates, please wait...</p>"
+  //   );
+  // };
 
-  UI.showUpdateNotAvailable = function () {
-    UI.showAlert(
-      "<h1>No Updates</h1><p>No updates are currently available.</p>"
-    );
-  };
+  // UI.showUpdateNotAvailable = function () {
+  //   UI.showAlert(
+  //     "<h1>No Updates</h1><p>No updates are currently available.</p>"
+  //   );
+  // };
 
   UI.showKillAlert = function () {
     showQuitAlert = true;
@@ -818,22 +834,22 @@ ipcRenderer.on("updateAppInfo", function (event, data) {
   ipcRenderer.send("updateAppInfo", data);
 });
 
-ipcRenderer.on("showUpdateAvailable", UI.showUpdateAvailable);
+// ipcRenderer.on("showUpdateAvailable", UI.showUpdateAvailable);
 
-ipcRenderer.on("showUpdateDownloaded", function (
-  event,
-  releaseNotes,
-  releaseName,
-  releaseDate
-) {
-  UI.showUpdateDownloaded(releaseNotes, releaseName, releaseDate);
-});
+// ipcRenderer.on("showUpdateDownloaded", function (
+//   event,
+//   releaseNotes,
+//   releaseName,
+//   releaseDate
+// ) {
+//   UI.showUpdateDownloaded(releaseNotes, releaseName, releaseDate);
+// });
 
-ipcRenderer.on("showUpdateError", UI.showUpdateError);
+// ipcRenderer.on("showUpdateError", UI.showUpdateError);
 
-ipcRenderer.on("showCheckingForUpdate", UI.showCheckingForUpdate);
+// ipcRenderer.on("showCheckingForUpdate", UI.showCheckingForUpdate);
 
-ipcRenderer.on("showUpdateNotAvailable", UI.showUpdateNotAvailable);
+// ipcRenderer.on("showUpdateNotAvailable", UI.showUpdateNotAvailable);
 
 ipcRenderer.on("showPreferences", function (event, settings) {
   UI.showPreferences(settings);
