@@ -941,8 +941,14 @@ progress[value]::-webkit-progress-value {
   }
 }
 
-.tingle-modal-box {
-  width: auto !important;
+.node-info-modal .tingle-modal-box,
+.server-address .tingle-modal-box {
+  background-color: transparent;
+  border-radius: 0;
+}
+
+.server-address .tingle-modal-box {
+  width: 50%;
 }
 
 /* Bundle Modal */
@@ -982,6 +988,70 @@ progress[value]::-webkit-progress-value {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* PIN */
+
+/* default, enabled field */
+
+.pinlogin .pinlogin-field {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.25rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  border-radius: 9999px;
+  text-align: center;
+  font-size: 1rem;
+  --text-opacity: 1;
+  color: #227648;
+  color: rgba(34, 118, 72, var(--text-opacity));
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-width: 1px;
+  --border-opacity: 1;
+  border-color: #fff;
+  border-color: rgba(255, 255, 255, var(--border-opacity));
+  --bg-opacity: 1;
+  background-color: #fff;
+  background-color: rgba(255, 255, 255, var(--bg-opacity));
+  --bg-opacity: 0.5;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-property: all;
+  transition-duration: 500ms;
+}
+
+.pinlogin .pinlogin-field:first-of-type {
+  margin-left: 0;
+}
+
+.pinlogin .pinlogin-field:last-of-type {
+  margin-right: 0;
+}
+
+/* field with focus */
+
+.pinlogin .pinlogin-field:focus {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* field that's readonly */
+
+.pinlogin .pinlogin-field:-moz-read-only {
+  background-color: transparent;
+}
+
+.pinlogin .pinlogin-field:read-only {
+  background-color: transparent;
+}
+
+/* field that's invalid */
+
+.pinlogin .pinlogin-field.invalid {
+  --border-opacity: 1;
+  border-color: #e53e3e;
+  border-color: rgba(229, 62, 62, var(--border-opacity));
 }
 
 /* Start purging... */
@@ -11871,6 +11941,10 @@ progress[value]::-webkit-progress-value {
 
 .h-64 {
   height: 16rem;
+}
+
+.h-72 {
+  height: 24rem;
 }
 
 .h-auto {
@@ -34732,6 +34806,10 @@ progress[value]::-webkit-progress-value {
     height: 16rem;
   }
 
+  .sm\:h-72 {
+    height: 24rem;
+  }
+
   .sm\:h-auto {
     height: auto;
   }
@@ -57520,6 +57598,10 @@ progress[value]::-webkit-progress-value {
 
   .md\:h-64 {
     height: 16rem;
+  }
+
+  .md\:h-72 {
+    height: 24rem;
   }
 
   .md\:h-auto {
@@ -80312,6 +80394,10 @@ progress[value]::-webkit-progress-value {
     height: 16rem;
   }
 
+  .lg\:h-72 {
+    height: 24rem;
+  }
+
   .lg\:h-auto {
     height: auto;
   }
@@ -103100,6 +103186,10 @@ progress[value]::-webkit-progress-value {
 
   .xl\:h-64 {
     height: 16rem;
+  }
+
+  .xl\:h-72 {
+    height: 24rem;
   }
 
   .xl\:h-auto {

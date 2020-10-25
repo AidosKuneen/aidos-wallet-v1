@@ -2,7 +2,7 @@
   "name": "adk-wallet",
   "productName": "ADK Wallet",
   "description": "Aidos Kuneen Wallet",
-  "version": "1.5.0",
+  "version": "2.0.2",
   "license": "GPL-3.0",
   "main": "app/js/main.js",
   "engines": {
@@ -80,6 +80,12 @@
       }
     ],
     "nodeGypRebuild": false,
+    "mac": {
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
     "dmg": {
       "iconSize": 125,
       "contents": [

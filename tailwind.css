@@ -254,9 +254,16 @@ progress[value]::-webkit-progress-value {
   }
 }
 
-.tingle-modal-box {
-  width: auto !important;
+.node-info-modal .tingle-modal-box,
+.server-address .tingle-modal-box {
+  @apply bg-transparent;
+  @apply rounded-none;
 }
+
+.server-address .tingle-modal-box {
+  @apply w-1/2;
+}
+
 /* Bundle Modal */
 #bundle-details.modal {
   max-width: 700px;
@@ -286,6 +293,52 @@ progress[value]::-webkit-progress-value {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* PIN */
+
+/* default, enabled field */
+.pinlogin .pinlogin-field {
+  @apply inline-block;
+  @apply w-10;
+  @apply h-10;
+  @apply p-1;
+  @apply mx-1;
+  @apply rounded-full;
+  @apply text-center;
+  @apply text-base;
+  @apply text-dark-green;
+  @apply outline-none;
+  @apply border;
+  @apply border-white;
+  @apply bg-white;
+  @apply bg-opacity-50;
+  @apply transition;
+  @apply transition-all;
+  @apply duration-500;
+}
+
+.pinlogin .pinlogin-field:first-of-type {
+  @apply ml-0;
+}
+
+.pinlogin .pinlogin-field:last-of-type {
+  @apply mr-0;
+}
+
+/* field with focus */
+.pinlogin .pinlogin-field:focus {
+  @apply shadow-sm;
+}
+
+/* field that's readonly */
+.pinlogin .pinlogin-field:read-only {
+  @apply bg-transparent;
+}
+
+/* field that's invalid */
+.pinlogin .pinlogin-field.invalid {
+  @apply border-red-600;
 }
 
 /* Start purging... */

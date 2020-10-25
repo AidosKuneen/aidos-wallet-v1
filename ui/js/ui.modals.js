@@ -2,7 +2,7 @@ var UI = (function (UI, $, undefined) {
   UI.showGeneratedSeed = function (returnHTML) {
     console.log("UI.showGeneratedSeed");
 
-    var seed = generateSeed();
+    // var seed = generateSeed();
 
     // var seed =
     //   "TESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEED";
@@ -110,7 +110,7 @@ var UI = (function (UI, $, undefined) {
         return callback ? callback(error) : error;
       }
 
-      var html = "<table class='table-auto' id='info-tbl'>";
+      var html = "<table class='table-auto mx-auto' id='info-tbl'>";
 
       $.each(info, function (key, value) {
         if (key != "duration") {
@@ -119,9 +119,9 @@ var UI = (function (UI, $, undefined) {
             v = v.substr(0, 30) + "...";
           }
           html +=
-            "<tr><td class='border px-4 py-2'>" +
+            "<tr><td class='border border-platinum px-4 py-2'>" +
             String(key).escapeHTML() +
-            "</td><td class='border px-4 py-2'>" +
+            "</td><td class='border border-platinum px-4 py-2'>" +
             v.escapeHTML() +
             "</td></tr>";
         }
@@ -133,14 +133,33 @@ var UI = (function (UI, $, undefined) {
         callback(
           null,
           "node-info-modal",
-          "<h1 class='text-2xl text-center pb-3'>Server Information</h1><div class='contents'>" +
-            html +
-            "</div>"
+          `<div class="flex flex-wrap h-full bg-cultured rounded-xl shadow-lg">
+            <div class="w-full">
+              <div class="px-6 flex flex-wrap items-center justify-between h-24 rounded-tl-xl rounded-tr-xl bg-dr-white">
+                <div class="flex items-center flex-shrink-0">
+                  <button type="button" class="rounded-full bg-gainsboro opacity-50 text-silver text-3xl p-2" id="modal-close">
+                    <img
+                      src="../ui/images/close.svg"
+                      alt=""
+                    />
+                  </button>
+                </div>
+                <div class="flex flex-grow items-center w-auto">
+                  <div class="flex-grow text-center">
+                    <h2 class="font-medium text-3xl">Server Information</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-full py-8 content">
+              <div class="h-72 overflow-y-scroll">${html}</div>
+            </div>
+          </div>`
         );
       } else {
         var $modal = $("#node-info-modal");
 
-        $modal.find(".contents").html(html);
+        $modal.find(".content").html(html);
 
         modal.open();
       }

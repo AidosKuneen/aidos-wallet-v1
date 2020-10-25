@@ -1,24 +1,21 @@
-const {
-  remote,
-  webFrame,
-  ipcRenderer,
-  shell,
-  clipboard,
-  BrowserView,
-} = require("electron");
+const { remote, webFrame, ipcRenderer, shell } = require("electron");
 
 const Store = require("electron-store");
-
 const schema = {
   pin: {
     type: "string",
     minLength: 6,
     maxlength: 6,
-    pattern: "^(0|[1-9][0-9]*)$",
+    pattern: "^[0-9]*$",
+  },
+  seed: {
+    type: "string",
+    minlegth: 81,
+    maxlength: 81,
   },
 };
 
-const store = new Store({ schema });
+const store = new Store({ schema, encryptionKey: $PIN_ENCRYPTION });
 
 // store.set("pin", "432525");
 // alert(store.get("pin"));
@@ -89,11 +86,6 @@ var UI = (function (UI, undefined) {
           ipcRenderer.send("showServerLog");
         });
     }
-
-    //Old Faq
-    // document.getElementById("new-user").addEventListener("click", function (e) {
-    //   UI.sendToWebview("openHelpMenu");
-    // });
   };
 
   UI.showContextMenu = function (e) {
@@ -227,6 +219,7 @@ var UI = (function (UI, undefined) {
     if (showQuitAlert) {
       return;
     }
+    UI.hideAlerts();
 
     serverLogLines = serverOutput.length;
     var log = serverOutput.join("\n");
@@ -361,6 +354,7 @@ var UI = (function (UI, undefined) {
   };
 
   UI.showPreferences = function (settings) {
+    UI.hideAlerts();
     var modal = new tingle.modal({
       footer: true,
       onOpen: function () {
@@ -414,6 +408,7 @@ var UI = (function (UI, undefined) {
     if (showQuitAlert) {
       return;
     }
+    UI.hideAlerts();
 
     var modal = new tingle.modal({
       footer: true,
@@ -456,15 +451,13 @@ var UI = (function (UI, undefined) {
     if (showQuitAlert) {
       return;
     }
+    UI.hideAlerts();
 
     var modal = new tingle.modal({
-      footer: true,
-      closeMethods: ["overlay", "button", "escape"],
+      footer: false,
+      closeMethods: ["overlay", "escape"],
+      cssClass: ["server-address"],
       onOpen: function () {
-        var close = document.querySelector(".tingle-modal__close");
-        var modalContent = document.querySelector(".tingle-modal-box__content");
-        modalContent.appendChild(close);
-
         var el = document.getElementById(
           configuration.lightWallet
             ? "server_config_host"
@@ -488,53 +481,71 @@ var UI = (function (UI, undefined) {
           host = host[1];
         }
       }
-      content =
-        "<h3 class='pb-2'>Enter Server Address: </h3>" +
-        "<input class='cfg border-b' maxlength='32' type='text' id='server_config_host' placeholder='wallet.aidoskuneen.com' value='" +
-        host +
-        "' />" +
-        "<botLabel class='ml-3'>(without 'http://' and port number)</botLabel>";
+      content = `<div class="flex flex-wrap h-full bg-cultured rounded-xl shadow-lg">
+      <div class="w-full">
+        <div class="px-6 flex flex-wrap items-center justify-between h-24 rounded-tl-xl rounded-tr-xl bg-dr-white">
+          <div class="flex items-center flex-shrink-0">
+            <button type="button" class="rounded-full bg-gainsboro opacity-50 text-silver text-3xl p-2" id="modal-close">
+              <img
+                src="../ui/images/close.svg"
+                alt=""
+              />
+            </button>
+          </div>
+          <div class="flex flex-grow items-center w-auto">
+            <div class="flex-grow text-center">
+              <h2 class="font-medium text-3xl">Server Address</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-full p-8 content">
+        <p class="text-lg pl-3 pb-2">Enter Address:</p>
+        <input class="bg-white rounded-lg py-3 px-4 w-full" maxlength="32" type="text" id="server_config_host" placeholder="wallet.aidoskuneen.com" value="${host}" />
+        <button type="submit" class="block mx-auto mt-6 bg-dark-green text-white rounded-lg text-white text-lg px-16 py-3" id="server-btn">Ok</button>
+      </div>
+    </div>`;
     }
     modal.setContent(content);
+    var serverBtn = document.getElementById("server-btn");
+    serverBtn.addEventListener("click", () => {
+      var config = {};
 
-    modal.addFooterBtn(
-      "OK",
-      "cfg-btn2 bg-dark-green text-white rounded-lg text-white px-8 py-2",
-      function () {
-        var config = {};
+      config.lightWallet = configuration.lightWallet;
 
-        config.lightWallet = configuration.lightWallet;
+      if (configuration.lightWallet) {
+        //[0-9]+
+        var res = String(document.getElementById("server_config_host").value); //.match(/^(https?:\/\/.*):(14266)$/i);
 
-        if (configuration.lightWallet) {
-          //[0-9]+
-          var res = String(document.getElementById("server_config_host").value); //.match(/^(https?:\/\/.*):(14266)$/i);
-
-          if (!res) {
-            document.getElementById("host-error").style.display = "inline";
-            document.getElementById("host-error").innerHTML = "Invalid!";
-            return;
-          }
-
-          config.lightWalletHost = "http://" + res;
-          config.lightWalletPort = configuration.testNet ? 15555 : 14266; //res[2];
-          config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
-        } else {
-          config.port = configuration.testNet ? 15555 : 14266; //parseInt(document.getElementById("server_config_port").value, 10);
-          config.depth = parseInt(
-            document.getElementById("server_config_depth").value,
-            10
-          );
-          config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
-          config.nodes = document.getElementById("server_config_peers").value;
+        if (!res) {
+          document.getElementById("host-error").style.display = "inline";
+          document.getElementById("host-error").innerHTML = "Invalid!";
+          return;
         }
 
-        modal.close();
-
-        ipcRenderer.send("updateNodeConfiguration", config);
+        config.lightWalletHost = "http://" + res;
+        config.lightWalletPort = configuration.testNet ? 15555 : 14266; //res[2];
+        config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+      } else {
+        config.port = configuration.testNet ? 15555 : 14266; //parseInt(document.getElementById("server_config_port").value, 10);
+        config.depth = parseInt(
+          document.getElementById("server_config_depth").value,
+          10
+        );
+        config.minWeightMagnitude = configuration.testNet ? "13" : "18"; //parseInt(document.getElementById("server_config_min_weight_magnitude").value, 10);
+        config.nodes = document.getElementById("server_config_peers").value;
       }
-    );
+
+      modal.close();
+
+      ipcRenderer.send("updateNodeConfiguration", config);
+    });
 
     modal.open();
+    var modalClose = document.getElementById("modal-close");
+    modalClose.addEventListener("click", () => {
+      modal.close();
+    });
   };
 
   // UI.showUpdateAvailable = function () {
@@ -604,6 +615,7 @@ var UI = (function (UI, undefined) {
 
   UI.showKillAlert = function () {
     showQuitAlert = true;
+    UI.hideAlerts();
 
     var modal = new tingle.modal({
       footer: false,
@@ -617,10 +629,21 @@ var UI = (function (UI, undefined) {
     modal.open();
   };
 
+  UI.hideAlerts = function () {
+    var nodes = document.querySelectorAll(".tingle-modal");
+    Array.prototype.forEach.call(nodes, function (node) {
+      node.parentNode.removeChild(node);
+    });
+
+    var body = document.querySelector("body");
+    body.classList.remove("tingle-enabled");
+  };
+
   UI.showAlert = function (msg, openCallback, closeCallback) {
     if (showQuitAlert) {
       return;
     }
+    UI.hideAlerts();
 
     var modal = new tingle.modal({
       footer: true,
@@ -654,6 +677,7 @@ var UI = (function (UI, undefined) {
     }
 
     showQuitAlert = true;
+    UI.hideAlerts();
 
     if (!msg) {
       msg =
@@ -737,6 +761,8 @@ var UI = (function (UI, undefined) {
   };
 
   UI.handleURL = function (url) {
+    UI.hideAlerts();
+
     url = decodeURI(
       url.replace("aidos://", "").toLowerCase().replace(/\/$/, "")
     );
@@ -772,6 +798,7 @@ var UI = (function (UI, undefined) {
   };
 
   UI.relaunch = function () {
+    UI.hideAlerts();
     showQuitAlert = false;
     webviewIsLoaded = false;
     var server = document.getElementById("server");
@@ -856,25 +883,24 @@ ipcRenderer.on("showPreferences", function (event, settings) {
 });
 
 ipcRenderer.on("showNodeInfo", function () {
+  UI.hideAlerts();
   UI.sendToWebview("showNodeInfo");
 });
 
 ipcRenderer.on("showModal", function (event, identifier, html) {
+  UI.hideAlerts();
   var modal = new tingle.modal({
     footer: false,
-    closeMethods: ["overlay", "button", "escape"],
+    closeMethods: ["overlay", "escape"],
     closeLabel: "Close",
     cssClass: [identifier],
-    onOpen: function () {
-      // var close = document.querySelector(".tingle-modal__close");
-      // var modalContent = document.querySelector(".tingle-modal-box__content");
-      // modalContent.appendChild(close);
-    },
   });
-
   modal.setContent(html);
-
   modal.open();
+  var modalClose = document.getElementById("modal-close");
+  modalClose.addEventListener("click", () => {
+    modal.close();
+  });
 });
 
 ipcRenderer.on("handleURL", function (event, url) {
@@ -882,14 +908,17 @@ ipcRenderer.on("handleURL", function (event, url) {
 });
 
 ipcRenderer.on("showPeers", function () {
+  UI.hideAlerts();
   UI.sendToWebview("showPeers");
 });
 
 ipcRenderer.on("showFAQ", function () {
+  UI.hideAlerts();
   UI.sendToWebview("showFAQ");
 });
 
 ipcRenderer.on("showTerm", function () {
+  UI.hideAlerts();
   UI.sendToWebview("showTerm");
 });
 

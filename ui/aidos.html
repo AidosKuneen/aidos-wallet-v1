@@ -12,7 +12,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"
     />
-
     <script>
       if (typeof module === "object") {
         window.module = module;
@@ -46,6 +45,7 @@
     <script type="text/javascript" src="js/ui.url.js"></script>
     <script type="text/javascript" src="js/ui.update.js"></script>
     <script type="text/javascript" src="js/ui.utils.js"></script>
+    <script type="text/javascript" src="js/other/pinlogin.pkgd.min.js"></script>
     <script src="js/index.js"></script>
     <script>
       if (window.module) module = window.module;
@@ -717,9 +717,7 @@
       </div>
 
       <div id="bundle-details" class="modal">
-        <div
-          class="flex flex-wrap -mx-4 h-full bg-cultured rounded-xl shadow-lg"
-        >
+        <div class="flex flex-wrap h-full bg-cultured rounded-xl shadow-lg">
           <div class="w-full">
             <div
               class="px-6 flex flex-wrap items-center justify-between h-24 rounded-tl-xl rounded-tr-xl bg-dr-white"
@@ -1156,6 +1154,24 @@
           INCIDENTAL, CONSEQUENTIAL, OR TORT DAMAGES, OR LOST COINS) IN
           CONNECTION WITH YOUR USE OF THE SOFTWARE.
         </p>
+      </div>
+    </div>
+
+    <div class="relative custom-bg-radial h-screen" id="pin-login">
+      <img src="./images/bgleft.png" alt="" class="absolute bottom-0 left-0" />
+      <img
+        src="./images/bgright.png"
+        alt=""
+        class="absolute bottom-0 right-0"
+      />
+      <div class="container mx-auto flex justify-center h-full">
+        <div class="w-full flex flex-col items-center justify-center">
+          <div class="flex flex-col items-center mb-8">
+            <h3 class="font-medium text-2xl text-white uppercase">Login</h3>
+            <p class="text-lg text-white">Please enter your pincode</p>
+            <div class="py-4" id="pin-form"></div>
+          </div>
+        </div>
       </div>
     </div>
   </body>

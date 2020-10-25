@@ -173,6 +173,17 @@ function fetchData() {
   });
 }
 
+function pinLogin() {
+  var pinlogin = $("#pin-form").pinlogin({
+    fields: 6,
+    complete: function (pin) {
+      alert("Awesome! You entered: " + pin);
+
+      // further processing here
+    },
+  });
+}
+
 // Load functions when dom is ready
 document.addEventListener(
   "DOMContentLoaded",
@@ -181,6 +192,7 @@ document.addEventListener(
     openTab();
     detailAsAccrdn();
     fetchData();
+    pinLogin();
   },
   false
 );
