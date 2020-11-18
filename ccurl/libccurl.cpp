@@ -61,6 +61,39 @@ HANDLE	mutex = CreateMutex(NULL,FALSE,NULL);
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
+// see https://gist.github.com/t-mat/3769328#file-cpuid-cpp
+#if defined(_MSC_VER)
+static void get_cpuid(void* p, int i) {
+  __cpuid((int*)p, i);
+}
+static void get_cpuidex(void* p, int i, int c) {
+  __cpuidex((int*)p, i, c);
+}
+
+#elif defined(__linux) || defined(__APPLE__)
+#include <cpuid.h>
+static void get_cpuid(void* p, int i) {
+  int* a = (int*) p;
+  __cpuid(i, a[0], a[1], a[2], a[3]);
+}
+static void get_cpuidex(void* p, int i, int c) {
+  int* a = (int*) p;
+  __cpuid_count(i, c, a[0], a[1], a[2], a[3]);
+}
+#endif
+
+struct CpuInfo {
+    int cpui[4];
+
+    CpuInfo(int infoType) {
+        get_cpuid(cpui, infoType);
+    }
+
+    CpuInfo(int infoType, uint32_t ecxValue) {
+        get_cpuidex(cpui, infoType, ecxValue);
+    }
+};
+
 #define HBITS 0xFFFFFFFFFFFFFFFFuLL
 #define LBITS 0x0000000000000000uLL
 #define HASH_LENGTH 243 //trits
@@ -132,19 +165,56 @@ int getCpuNum()
 #endif
 }
 
-// TODO implement
-bool hasAvx(int n)
+bool hasAvx2(int n)
 {
-    bool avx;
-#ifdef HAS_AVX
-    avx = true;
-#else
-    avx = false;
-#endif
-    if (n == 1) {
-        printf("avx %d\n", avx);
+    // see https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?redirectedfrom=MSDN&view=msvc-160
+    bool avx2 = false;
+
+    CpuInfo cpuInfo7(7, 0);
+    if (cpuInfo7.cpui[1] & 1 <<  5) {
+        avx2 = true;
     }
-    return avx;
+
+    if (n == 1) {
+        char buf[48];
+
+        // Intel / AMD
+        CpuInfo cpuInfo0(0);
+        printf("0x%x\n", cpuInfo0.cpui[0]);
+        memcpy(buf, &cpuInfo0.cpui[1], 4);
+        memcpy(buf+4, &cpuInfo0.cpui[3], 4);
+        memcpy(buf+8, &cpuInfo0.cpui[2], 4);
+        buf[12] = '\0';
+        printf("%s\n", buf);
+
+        // Processor Name, Freq
+        CpuInfo cpuInfo2(0x80000002);
+        memcpy(buf, cpuInfo2.cpui, 16);
+        CpuInfo cpuInfo3(0x80000003);
+        memcpy(buf+16, cpuInfo3.cpui, 16);
+        CpuInfo cpuInfo4(0x80000004);
+        memcpy(buf+32, cpuInfo4.cpui, 16);
+        printf("%s\n", buf);
+
+        // SIMD 
+        CpuInfo cpuInfo1(1);
+        printf("MMX:      %s\n", cpuInfo1.cpui[3] & 1 << 23 ? "OK" : "NG");
+        printf("SSE:      %s\n", cpuInfo1.cpui[3] & 1 << 25 ? "OK" : "NG");
+        printf("AVX:      %s\n", cpuInfo1.cpui[2] & 1 << 28 ? "OK" : "NG");
+        printf("FMA:      %s\n", cpuInfo1.cpui[2] & 1 << 12 ? "OK" : "NG");
+
+        CpuInfo cpuInfo7(7, 0);
+        printf("AVX2:     %s\n", cpuInfo7.cpui[1] & 1 <<  5 ? "OK" : "NG");
+        printf("AVX512F:  %s\n", cpuInfo7.cpui[1] & 1 << 16 ? "OK" : "NG");
+        printf("AVX512PF: %s\n", cpuInfo7.cpui[1] & 1 << 26 ? "OK" : "NG");
+        printf("AVX512ER: %s\n", cpuInfo7.cpui[1] & 1 << 27 ? "OK" : "NG");
+        printf("AVX512CD: %s\n", cpuInfo7.cpui[1] & 1 << 28 ? "OK" : "NG");
+        printf("SHA:      %s\n", cpuInfo7.cpui[1] & 1 << 29 ? "OK" : "NG");
+
+        printf("hasAvx2:  %d\n", avx2);
+    }
+
+    return avx2;
 }
 
 const int indices[] = {
@@ -756,7 +826,7 @@ void *pwork_(void* p)
     hmid[4] = _mm_set_epi64x(HI40, HI41);
 
     incrN128(par->n, lmid, hmid);
-    if (hasAvx(par->n)) {
+    if (hasAvx2(par->n)) {
         par->count = loop_cpu_AVX(lmid, hmid, par->mwm, par->nonce);
     } else {
         par->count = loop_cpu(lmid, hmid, par->mwm, par->nonce);
