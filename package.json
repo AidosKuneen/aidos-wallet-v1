@@ -2,7 +2,7 @@
   "name": "adk-wallet",
   "productName": "ADK Wallet",
   "description": "Aidos Kuneen Wallet",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "license": "GPL-3.0",
   "main": "app/js/main.js",
   "engines": {
@@ -10,8 +10,8 @@
   },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "start": "export NODE_ENV=development || set NODE_ENV=development && postcss tailwind.css -o ui/css/global.css && electron .",
-    "build:css": "cross-env NODE_ENV=production postcss tailwind.css -o ui/css/global.css",
+    "start": "export NODE_ENV=development || set NODE_ENV=development && postcss tailwind.css -o app/ui/css/global.css && electron .",
+    "build:css": "cross-env NODE_ENV=production postcss tailwind.css -o app/ui/css/global.css",
     "precompile": "rimraf out/*",
     "compile": "export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --win --mac --linux --x64 --ia32",
     "compile:lin": "yarn build:css && electron-builder build --linux --x64 --ia32",
@@ -30,11 +30,13 @@
     "url": "https://github.com/AidosKuneen/aidos-wallet"
   },
   "dependencies": {
+    "crypto-random-string": "^3.3.0",
     "electron-store": "^6.0.1",
     "electron-updater": "^4.3.5",
     "ffi-napi": "^3.0.1",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
+    "keytar": "^7.0.0",
     "pidusage": "^2.0.21"
   },
   "devDependencies": {
@@ -59,8 +61,7 @@
     ],
     "files": [
       "app/**/*",
-      "build/**/*",
-      "ui/**/*"
+      "build/**/*"
     ],
     "directories": {
       "buildResources": "build",
@@ -68,8 +69,7 @@
     },
     "appId": "com.aidoskuneen.wallet",
     "extraResources": [
-      "ccurl/**/*",
-      "ui/**/*"
+      "ccurl/**/*"
     ],
     "protocols": [
       {
