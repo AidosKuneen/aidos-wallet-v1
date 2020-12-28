@@ -35,6 +35,16 @@ a {
   );
 }
 
+.custom-bg-notif {
+  background: linear-gradient(
+      29.06deg,
+      #008062 7.23%,
+      #248559 69.88%,
+      #3fac55 104.25%
+    ),
+    #aaaaaa;
+}
+
 .custom-divider {
   @apply flex;
   @apply items-center;
@@ -268,6 +278,8 @@ progress[value]::-webkit-progress-value {
 #bundle-details.modal {
   max-width: 700px;
   padding: 0;
+  @apply bg-transparent !important;
+  @apply shadow-none !important;
 }
 /* FAQ Modal */
 #help.modal {
@@ -306,13 +318,12 @@ progress[value]::-webkit-progress-value {
   @apply mx-1;
   @apply rounded-full;
   @apply text-center;
-  @apply text-base;
+  @apply text-2xl;
   @apply text-dark-green;
   @apply outline-none;
   @apply border;
   @apply border-white;
   @apply bg-white;
-  @apply bg-opacity-50;
   @apply transition;
   @apply transition-all;
   @apply duration-500;
@@ -339,6 +350,63 @@ progress[value]::-webkit-progress-value {
 /* field that's invalid */
 .pinlogin .pinlogin-field.invalid {
   @apply border-red-600;
+}
+
+/* NOTIFICATION */
+
+.notification-wrapper {
+  top: 7.25rem;
+  right: 2rem;
+  z-index: 50;
+}
+.notification-wrapper:before {
+  bottom: 100%;
+  right: 5%;
+  border: solid transparent;
+  content: "";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+}
+.notification-wrapper:before {
+  border-color: transparent;
+  border-bottom-color: #f6f6f6;
+  border-width: 16px;
+  margin-left: -16px;
+}
+#notification-btn.active:after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  height: 8px;
+  width: 8px;
+  border-radius: 100%;
+  @apply bg-dark-green;
+}
+
+/* Pagination */
+
+.pagination li {
+  @apply px-3 py-2 border-t-2 border-transparent;
+}
+.pagination li a {
+  @apply text-lg;
+}
+
+.pagination li.active {
+  @apply border-dark-green text-dark-green;
+}
+
+.search {
+  @apply appearance-none;
+}
+
+.search::before,
+.search::after {
+  @apply appearance-none;
 }
 
 /* Start purging... */
