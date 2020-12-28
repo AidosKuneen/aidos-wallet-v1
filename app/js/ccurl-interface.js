@@ -124,7 +124,7 @@ var ccurlHashing = function (
         if (i < trytes.length) {
           loopTrytes();
         } else {
-          progressBar.value = 12;
+          progressBar.value = 14;
           // reverse the order so that it's ascending from currentIndex
           return callback(null, finalBundleTrytes.reverse());
         }
