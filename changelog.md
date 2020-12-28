@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.1.0 - 2020-12-29
+
+New Features
+
+### Added
+
+- Pin Code
+- Notification
+- Lock Screen
+- Deposit Page - Used and unused address
+- Transaction Page - Pagination - Search - Sort by date
+- Settings page - Change pin code - Edit node configuration
+- Code Signing Certificate for Windows and MacOS
+
 ## v2.0.1 - 2020-10-20
 
 ### Fixed
