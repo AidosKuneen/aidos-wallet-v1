@@ -16,6 +16,9 @@ const { autoUpdater } = require("electron-updater");
 var pidusage = require("pidusage");
 const url = require("url");
 
+const keytar = require("keytar");
+const cryptoRandomString = require("crypto-random-string");
+
 let win;
 let otherWin;
 let loadingWin;
@@ -125,6 +128,8 @@ var App = (function (App, undefined) {
     //   App.showAlertAndQuit("Not Supported", "Windows 32-bit is not supported at the moment.");
     //   return;
     // }
+
+    App.encryptKey();
 
     App.start();
     autoUpdater.checkForUpdatesAndNotify();
@@ -1162,7 +1167,7 @@ var App = (function (App, undefined) {
       win.webContents.send(
         "nodeStarted",
         "file://" +
-          path.join(resourcesDirectory, "ui").replace(path.sep, "/") +
+          path.join(appDirectory, "ui").replace(path.sep, "/") +
           "/aidos.html",
         {
           inApp: 1,
@@ -1518,18 +1523,18 @@ var App = (function (App, undefined) {
       });
       // otherWin.toggleDevTools({mode: "undocked"});
       otherWin.setFullScreenable(false);
-      var isClosing;
+      // var isClosing;
 
-      otherWin.on("close", function (e) {
-        // For some reason this results in a never-ending loop if we don't add
-        // this variable..
-        if (isClosing) {
-          return;
-        }
+      // otherWin.on("close", function (e) {
+      //   // For some reason this results in a never-ending loop if we don't add
+      //   // this variable..
+      //   if (isClosing) {
+      //     return;
+      //   }
 
-        isClosing = true;
-        App.quit();
-      });
+      //   isClosing = true;
+      //   App.quit();
+      // });
     }
 
     otherWin.loadURL(
@@ -1937,26 +1942,26 @@ var App = (function (App, undefined) {
 
 app.requestSingleInstanceLock();
 
-const shouldQuit = app.on("second-instance", function (
-  commandLine,
-  workingDirectory
-) {
-  if (!App.uiIsReady) {
-    return;
-  }
+const shouldQuit = app.on(
+  "second-instance",
+  function (commandLine, workingDirectory) {
+    if (!App.uiIsReady) {
+      return;
+    }
 
-  // Someone tried to run a second instance, we should focus our window.
-  if (win) {
-    if (win.isMinimized()) win.restore();
-    win.focus();
+    // Someone tried to run a second instance, we should focus our window.
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
 
-    if (process.platform == "win32" && commandLine.length == 2) {
-      if (String(commandLine[1]).match(/^aidos:\/\//i)) {
-        App.handleURL(commandLine[1]);
+      if (process.platform == "win32" && commandLine.length == 2) {
+        if (String(commandLine[1]).match(/^aidos:\/\//i)) {
+          App.handleURL(commandLine[1]);
+        }
       }
     }
   }
-});
+);
 
 // const shouldQuit = app.makeSingleInstance(function (
 //   commandLine,
@@ -1985,8 +1990,24 @@ const shouldQuit = app.on("second-instance", function (
 //   return;
 // }
 
+// Save password to password manager of operating system
+App.encryptKey = function () {
+  const keytarPass = keytar.getPassword("ADK Wallet", "ADK");
+  const randomKey = cryptoRandomString({
+    length: 40,
+    type: "ascii-printable",
+  });
+
+  keytarPass.then((res) => {
+    if (res == null) {
+      keytar.setPassword("ADK Wallet", "ADK", randomKey);
+    }
+  });
+};
+
 app.on("ready", function () {
   initialize();
+
   powerSaveBlocker.start("prevent-display-sleep"); //Prevent pc from sleeping
 });
 
@@ -2086,4 +2107,13 @@ ipcMain.on("updateStatusBar", function (event, data) {
 
 ipcMain.on("updateAppInfo", function (event, data) {
   App.updateAppInfo(data);
+});
+
+ipcMain.handle("getKey", async () => {
+  const result = await keytar.getPassword("ADK Wallet", "ADK");
+  return result;
+});
+
+ipcMain.on("settingsEditNode", () => {
+  App.editNodeConfiguration();
 });
