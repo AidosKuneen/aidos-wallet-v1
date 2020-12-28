@@ -1,25 +1,4 @@
 const { remote, webFrame, ipcRenderer, shell } = require("electron");
-
-const Store = require("electron-store");
-const schema = {
-  pin: {
-    type: "string",
-    minLength: 6,
-    maxlength: 6,
-    pattern: "^[0-9]*$",
-  },
-  seed: {
-    type: "string",
-    minlegth: 81,
-    maxlength: 81,
-  },
-};
-
-const store = new Store({ schema, encryptionKey: $PIN_ENCRYPTION });
-
-// store.set("pin", "432525");
-// alert(store.get("pin"));
-
 var __entityMap = {
   "&": "&amp;",
   "<": "&lt;",
@@ -89,7 +68,7 @@ var UI = (function (UI, undefined) {
   };
 
   UI.showContextMenu = function (e) {
-    var template = [
+    const template = [
       {
         label: "Cut",
         accelerator: "CmdOrCtrl+X",
@@ -189,8 +168,8 @@ var UI = (function (UI, undefined) {
 
     remoteContent.addListener("context-menu", function (e) {
       e.preventDefault();
-      e.stopPropagation();
       UI.showContextMenu(e);
+      // e.stopPropagation();
     });
 
     setTimeout(function () {
@@ -487,7 +466,7 @@ var UI = (function (UI, undefined) {
           <div class="flex items-center flex-shrink-0">
             <button type="button" class="rounded-full bg-gainsboro opacity-50 text-silver text-3xl p-2" id="modal-close">
               <img
-                src="../ui/images/close.svg"
+                src="ui/images/close.svg"
                 alt=""
               />
             </button>
@@ -826,14 +805,12 @@ window.addEventListener("contextmenu", function (e) {
   UI.showContextMenu(e);
 });
 
-ipcRenderer.on("showAlertAndQuit", function (
-  event,
-  msg,
-  serverOutput,
-  callback
-) {
-  UI.showAlertAndQuit(msg, serverOutput, callback);
-});
+ipcRenderer.on(
+  "showAlertAndQuit",
+  function (event, msg, serverOutput, callback) {
+    UI.showAlertAndQuit(msg, serverOutput, callback);
+  }
+);
 
 ipcRenderer.on("showKillAlert", UI.showKillAlert);
 
