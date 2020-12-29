@@ -1,10 +1,10 @@
 module.exports = {
   purge: [
     "app/**/*.html",
-    "ui/**/*.html",
+    "app/ui/**/*.html",
     "app/**/*.js",
-    "ui/**/*.js",
-    "ui/images/spinner.svg",
+    "app/ui/**/*.js",
+    "app/ui/images/spinner.svg",
   ],
   theme: {
     fontFamily: {
@@ -43,6 +43,7 @@ module.exports = {
       },
       width: {
         66: "18rem",
+
         68: "20rem",
         70: "22rem",
         72: "24rem",
