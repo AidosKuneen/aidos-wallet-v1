@@ -138,7 +138,7 @@ var UI = (function (UI, $, undefined) {
       }
       UI.updateNotification();
       UI.updateHistory();
-      // UI.refreshTransaction();
+      UI.refreshTransaction();
     }
   };
 

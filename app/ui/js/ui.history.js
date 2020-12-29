@@ -23,17 +23,7 @@ var UI = (function (UI, $, undefined) {
           }"> ${values.hash.substr(0, 40)}...</p>
                       <span class="text-xs">
                       ${values.type == "sent" ? "-" : ""}
-                      ${
-                        values.amount >= 1000000 * 100000000
-                          ? values.amount + "M ADK"
-                          : values.amount >= 1 * 100000000
-                          ? values.amount / 100000000 + " ADK"
-                          : values.amount >= 0.001 * 100000000
-                          ? values.amount / 100000000 + " m ADK"
-                          : values.amount == 0
-                          ? values.amount / 100000000 + " ADK"
-                          : values.amount / 100000000 + " u ADK"
-                      }
+                      ${values.amount / 100000000 + " ADK"}
             (${values.status ? "Confirmed" : "Pending"})
           </span>
         </div>
@@ -236,7 +226,6 @@ var UI = (function (UI, $, undefined) {
                 date: sentBundle[0].timestamp,
                 type: "sent",
               });
-              transactionList.update();
             }
           }
         });
@@ -251,7 +240,6 @@ var UI = (function (UI, $, undefined) {
                 date: receivedBundle[0].timestamp,
                 type: "received",
               });
-              transactionList.update();
             }
             bundleArr.push(receivedBundle[0]);
           }
@@ -362,10 +350,14 @@ var UI = (function (UI, $, undefined) {
           }
         });
       }
-      transactionList.refresh();
-      transactionList.sort();
     }
   };
+
+  UI.refreshTransaction = function () {
+    transactionList.refresh();
+    transactionList.sort();
+  };
+
   UI.checkAddresses = function () {
     const registeredAddress = [];
 
