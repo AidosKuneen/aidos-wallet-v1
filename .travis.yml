@@ -23,6 +23,7 @@ addons:
       - bsdtar
       - rpm
       - xz-utils
+      - libsecret-1-dev
 
 before_install:
   - node --version
