@@ -399,9 +399,9 @@ void para(char in[], __m128i l[], __m128i h[])
 void incrN128(int n, __m128i* mid_low, __m128i* mid_high)
 {
     int i, j;
-    alignas(16) unsigned long long c[2]={1,1};
     __m128i carry;
     for (j = 0; j < n; j++) {
+        alignas(16) unsigned long long c[2]={1,1};
         carry = _mm_set_epi64x(HBITS, HBITS);
         for (i = HASH_LENGTH - 7; i < HASH_LENGTH && c[0] ; i++) {
             __m128i low = mid_low[i], high = mid_high[i];
