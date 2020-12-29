@@ -2,10 +2,7 @@ var UI = (function (UI, $, undefined) {
   UI.showGeneratedSeed = function (returnHTML) {
     console.log("UI.showGeneratedSeed");
 
-    // var seed = generateSeed();
-
-    var seed =
-      "TESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEEDTESTSEED";
+    var seed = generateSeed();
 
     var $seedContainer = $("#generated-seed");
 
