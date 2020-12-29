@@ -22,7 +22,7 @@ New Features
 
 ### Improved
 
-- Proof of Work - Thanks to (@m2Lower)[https://github.com/m2Lower]
+- Proof of Work - Thanks to [@m2Lower](https://github.com/m2Lower)
 
 ## v2.0.1 - 2020-10-20
 
