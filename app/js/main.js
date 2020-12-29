@@ -159,7 +159,7 @@ var App = (function (App, undefined) {
         !settings.hasOwnProperty("bounds") ||
         typeof settings.bounds != "object"
       ) {
-        settings.bounds = { width: 1024, height: 800 };
+        settings.bounds = { width: 1400, height: 850 };
       }
       if (!settings.hasOwnProperty("lightWallet")) {
         settings.lightWallet = 1;
@@ -293,7 +293,7 @@ var App = (function (App, undefined) {
       var windowOptions = {
         width: settings.bounds.width,
         height: settings.bounds.height,
-        minWidth: 1124,
+        minWidth: 1400,
         minHeight: 850,
         center: true,
         show: false,
@@ -1508,7 +1508,7 @@ var App = (function (App, undefined) {
 
     if (!otherWin) {
       otherWin = new BrowserWindow({
-        width: 1024,
+        width: 1400,
         height: height,
         show: false,
         useContentSize: true,
