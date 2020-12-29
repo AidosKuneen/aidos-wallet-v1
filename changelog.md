@@ -20,10 +20,6 @@ New Features
   - Edit node configuration
 - Code Signing Certificate for Windows and MacOS
 
-### Improved
-
-- Proof of Work - Thanks to @m2Lower
-
 ## v2.0.1 - 2020-10-20
 
 ### Fixed
