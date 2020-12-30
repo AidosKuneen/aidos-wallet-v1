@@ -56,7 +56,7 @@ install:
   - find out
 
 script:
-  - echo "nothing to do."
+  - echo "nothing to do"
 
 deploy:
   - provider: releases
