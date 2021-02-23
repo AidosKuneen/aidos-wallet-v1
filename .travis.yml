@@ -27,7 +27,7 @@ addons:
 
 before_install:
   - node --version
-  - npm install electron@10.1.1
+  - npm install electron@11.2.3
   - npm install electron-builder@22.8.0
   - npm install -g yarn
 
