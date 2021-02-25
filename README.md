@@ -32,7 +32,7 @@ NodeJS is required to install and run the app.
 ### For Windows Users
 
 ```
-npm install -g --production windows-build-tools
+yarn install -g --production windows-build-tools
 ```
 
 This needs to be run in a cmd window with elevated rights (Administrator).

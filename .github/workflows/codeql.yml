@@ -1,4 +1,4 @@
-name: "CodeQL"
+name: CodeQL
 
 on:
   push:
@@ -16,7 +16,7 @@ on:
     - cron: '0 18 * * 3'
 
 jobs:
-  CodeQL-Build:
+  analyze:
     # CodeQL runs on ubuntu-latest, windows-latest, and macos-latest
     runs-on: ubuntu-latest
 
