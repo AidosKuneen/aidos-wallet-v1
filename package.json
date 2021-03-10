@@ -36,7 +36,7 @@
     "ffi-napi": "^3.0.1",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "keytar": "^7.0.0",
+    "keytar": "^7.4.0",
     "pidusage": "^2.0.21"
   },
   "devDependencies": {
