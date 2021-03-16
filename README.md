@@ -6,14 +6,9 @@
   <br>
 </h1>
 
-<h5 align="center">This repository contains the desktop wallet for Aidos Kuneen.</h6>
+<h5 align="center">This repository contains the desktop wallet for Aidos Kuneen</h6>
 
 <p align="center">
-  <a href="https://travis-ci.org/AidosKuneen/aidos-wallet">
-    <img src="https://api.travis-ci.org/AidosKuneen/aidos-wallet.svg?branch=master"
-         alt="Travis">
-  </a>
-  <a href="https://ci.appveyor.com/project/MYehia565/aidos-wallet"><img src="https://ci.appveyor.com/api/projects/status/rnxy5ns9muenbbp5?svg=true" alt="Appveyor"></a>
   <a href="https://raw.githubusercontent.com/AidosKuneen/aidos-wallet/master/LICENSE">
       <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" alt="License">
   </a>
