@@ -1,9 +1,10 @@
-node_modules
-app/bower_components
-ui/bower_components
-npm-debug.log
-ari/*
-out/*
+/app/bower_components
+/ari
+/node_modules
+/out
+/ui/bower_components
+/*.pfx
+.project
 aidos
-/.project
+npm-debug.log
 yarn-error.log

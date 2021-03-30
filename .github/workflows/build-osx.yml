@@ -24,9 +24,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Build
         run: ./build-osx.sh
-
-# TODO Upload artifacts
       - uses: actions/upload-artifact@v2
         with:
           name: osx-build
-          path: # FIXME
+          path: out/mac

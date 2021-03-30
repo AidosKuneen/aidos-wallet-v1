@@ -24,9 +24,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Build
         run: ./build-linux.sh
-
-# TODO Upload artifacts
       - uses: actions/upload-artifact@v2
         with:
           name: linux-build
-          path: # FIXME
+          path: out/linux

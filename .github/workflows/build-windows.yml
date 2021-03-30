@@ -39,9 +39,7 @@ jobs:
       - run: |
           yarn compile:win
           tree /f out
-
-# TODO Upload artifacts
       - uses: actions/upload-artifact@v2
         with:
           name: windows-build
-          path: # FIXME
+          path: out/win
