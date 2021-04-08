@@ -23,7 +23,7 @@
     "publish:mac": "yarn build:css && electron-builder build --mac --x64 --publish always",
     "publish:win": "yarn build:css && electron-builder build --win --x64 --ia32 --publish always"
   },
-  "author": "NIXIQ DMCC LLC <info@nixiq.com>",
+  "author": "Aidos Kuneen <info@aidoskuneen.com>",
   "homepage": "http://aidoskuneen.com",
   "repository": {
     "type": "git",
