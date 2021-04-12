@@ -79,7 +79,7 @@ var App = (function (App, undefined) {
   var ariVersion = "";
   var lastError = "";
 
-  var isTestNet = String(appName).match(/\-Testnet$/) != null;
+  var isTestNet = String(appName).match(/^tADK$/) != null;
 
   App.uiIsReady = false;
   App.uiIsInitialized = false;
@@ -189,7 +189,7 @@ var App = (function (App, undefined) {
         settings.lightWalletPort = isTestNet ? 15555 : 14266;
       }
       if (!settings.hasOwnProperty("minWeightMagnitude")) {
-        settings.minWeightMagnitude = 18;
+        settings.minWeightMagnitude = isTestNet ? 18 : 13;
       }
       if (!isTestNet && settings.minWeightMagnitude < 18) {
         settings.minWeightMagnitude = 18;
@@ -201,13 +201,14 @@ var App = (function (App, undefined) {
       console.log(err);
       settings = {
         bounds: { width: 1124, height: 850 },
-        lightWalletHost: "http://wallet.aidoskuneen.com",
+        lightWalletHost: isTestNet ? "http://testnetwallet.aidoskuneen.com" : "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
         lightWallet: 1,
         lastUpdateCheck: 0,
         showStatusBar: 0,
         isFirstRun: 1,
         port: isTestNet ? 15777 : 14265,
+        minWeightMagnitude: isTestNet ? 18 : 13,
         nodes: [],
       };
     }

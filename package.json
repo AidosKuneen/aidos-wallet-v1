@@ -1,7 +1,7 @@
 {
-  "name": "adk-wallet",
-  "productName": "ADK Wallet",
-  "description": "Aidos Kuneen Wallet",
+  "name": "tADK",
+  "productName": "Aidos Wallet Testnet",
+  "description": "Aidos Wallet Testnet",
   "version": "2.1.0",
   "license": "GPL-3.0",
   "main": "app/js/main.js",
