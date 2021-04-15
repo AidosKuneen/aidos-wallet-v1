@@ -2,7 +2,6 @@ name: Linux Build
 on: push
 jobs:
   linux-build:
-    needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -22,8 +21,13 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Build
-        run: ./build-linux.sh
+      - name: Install deps
+        run: yarn install
+#      - name: Build libccurl
+#        run: ./build-ccurl-linux.sh
+      - run: |
+          yarn run compile:lin
+          find out
       - uses: actions/upload-artifact@v2
         with:
           name: linux-build

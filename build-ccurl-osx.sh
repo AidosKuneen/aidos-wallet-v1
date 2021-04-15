@@ -3,7 +3,6 @@
 set -e
 set -x
 
-yarn install
 pushd ccurl || exit
 rm mac/libccurl.dylib || true
 rm lin64/libccurl.so || true
@@ -12,5 +11,3 @@ mkdir -p mac
 cp libccurl.dylib mac/
 rm libccurl.dylib
 popd || exit
-yarn run compile:mac
-find out

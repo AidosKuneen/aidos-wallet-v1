@@ -1,8 +1,7 @@
-name: OS X Build
+name: Mac Build
 on: push
 jobs:
-  osx-build:
-    needs: release
+  mac-build:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v1
@@ -22,9 +21,14 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Build
-        run: ./build-osx.sh
+      - name: Install deps
+        run: yarn install
+#      - name: Build libccurl
+#        run: ./build-ccurl-osx.sh
+      - run: |
+          yarn run compile:mac
+          find out
       - uses: actions/upload-artifact@v2
         with:
-          name: osx-build
+          name: mac-build
           path: out/mac
