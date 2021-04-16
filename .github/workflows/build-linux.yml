@@ -50,11 +50,11 @@ jobs:
         with:
           name: linux-build
           path: |
-            out/ADK Wallet-*.AppImage
-            out/adk-wallet-*.tar.gz
-            out/ADK Wallet-*-i386.AppImage
-            out/adk-wallet-*-ia32.tar.gz
-            out/adk-wallet-*.i686.rpm
-            out/adk-wallet-*.x86_64.rpm
-            out/adk-wallet_*_i386.deb
-            out/adk-wallet_*_amd64.deb
+            out/*.AppImage
+            out/*.tar.gz
+            out/*-i386.AppImage
+            out/*-ia32.tar.gz
+            out/*.i686.rpm
+            out/*.x86_64.rpm
+            out/*_i386.deb
+            out/*_amd64.deb
