@@ -25,7 +25,14 @@ jobs:
         run: yarn install
 #      - name: Build libccurl
 #        run: ./build-ccurl-osx.sh
-      - run: |
+      - env:
+          # This one is available in Actions by default
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+        run: |
           yarn run compile:mac
           find out
       - uses: actions/upload-artifact@v2
