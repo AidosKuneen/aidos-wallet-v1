@@ -201,7 +201,7 @@ var App = (function (App, undefined) {
       console.log(err);
       settings = {
         bounds: { width: 1124, height: 850 },
-        lightWalletHost: isTestNet ? "http://testnetwallet.aidoskuneen.com" : "http://wallet.aidoskuneen.com",
+        lightWalletHost: isTestNet ? "http://78.46.250.90" : "http://wallet.aidoskuneen.com",
         lightWalletPort: isTestNet ? 15555 : 14266,
         lightWallet: 1,
         lastUpdateCheck: 0,
@@ -717,6 +717,7 @@ var App = (function (App, undefined) {
         console.log("Error during glob:");
         console.log(err);
       }
+      // TODO Test this for tADK, overall test this scenario
       javaLocations.push(
         path.join(app.getPath("appData"), "Aidos Wallet/java/bin/java")
       );
