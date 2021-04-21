@@ -1,8 +1,8 @@
-name: Mac Build
+name: Linux Build
 on: push
 jobs:
-  mac-build:
-    runs-on: macos-latest
+  linux-build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v2
@@ -21,19 +21,40 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      - name: Install build deps
+        run: |
+          sudo apt-get install \
+          graphicsmagick \
+          icnsutils \
+          gcc-multilib \
+          g++-multilib \
+          libarchive-tools \
+          rpm \
+          xz-utils \
+          libsecret-1-dev
+      - name: Activate testnet config
+        run: rm package.json && mv package.testnet.json package.json
       - name: Install deps
         run: yarn install
 #      - name: Build libccurl
-#        run: ./build-ccurl-osx.sh
+#        run: ./build-ccurl-linux.sh
       - env:
           # This one is available in Actions by default
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
         run: |
-          yarn run compile:mac
+          yarn run compile:lin
           find out
       - uses: actions/upload-artifact@v2
         with:
-          name: mac-build
-          path: out/*.dmg
+          name: linux-build
+          path: |
+            out/*.AppImage
+            out/*.tar.gz
+            out/*-i386.AppImage
+            out/*-ia32.tar.gz
+            out/*.i686.rpm
+            out/*.x86_64.rpm
+            out/*_i386.deb
+            out/*_amd64.deb
