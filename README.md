@@ -14,6 +14,13 @@
   </a>
 </p>
 
+## Prebuilt binaries
+
+If you want to just use the wallet app, please download [the latest release](https://github.com/AidosKuneen/aidos-wallet/releases) for your OS.
+
+For every version there are two options: default (mainnet) build and testnet build. You probably need default one, for
+the mainnet. **Testnet builds should be used only for interacting with the test network of Aidos Kuneen!**
+
 ## Requirements
 
 1. Operating System
@@ -38,7 +45,7 @@ If you want to package the wallet you will need:
 
 2. Optionally [Docker](https://www.docker.com/) (In case you want to build for other platforms on Windows)
 
-## Install
+## Build & Run
 
 These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/AidosKuneen/aidos-wallet/releases).
 
@@ -48,7 +55,7 @@ These instructions are only in case you want to build the wallet by yourself. Pr
 git clone https://github.com/AidosKuneen/aidos-wallet
 ```
 
-2. Install components:
+2. Install dependencies:
 
 ```
 yarn install
