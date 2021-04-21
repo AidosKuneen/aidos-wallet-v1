@@ -1,4 +1,4 @@
-name: Linux Build
+name: Linux Build (testnet)
 on: push
 jobs:
   linux-build:

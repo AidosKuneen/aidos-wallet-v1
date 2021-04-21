@@ -1,4 +1,4 @@
-name: Windows Build
+name: Windows Build (testnet)
 on: push
 jobs:
   windows-build:
