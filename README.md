@@ -6,18 +6,20 @@
   <br>
 </h1>
 
-<h5 align="center">This repository contains the desktop wallet for Aidos Kuneen.</h6>
+<h5 align="center">This repository contains the desktop wallet for Aidos Kuneen</h6>
 
 <p align="center">
-  <a href="https://travis-ci.org/AidosKuneen/aidos-wallet">
-    <img src="https://api.travis-ci.org/AidosKuneen/aidos-wallet.svg?branch=master"
-         alt="Travis">
-  </a>
-  <a href="https://ci.appveyor.com/project/MYehia565/aidos-wallet"><img src="https://ci.appveyor.com/api/projects/status/rnxy5ns9muenbbp5?svg=true" alt="Appveyor"></a>
   <a href="https://raw.githubusercontent.com/AidosKuneen/aidos-wallet/master/LICENSE">
       <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" alt="License">
   </a>
 </p>
+
+## Prebuilt binaries
+
+If you want to just use the wallet app, please download [the latest release](https://github.com/AidosKuneen/aidos-wallet/releases) for your OS.
+
+For every version there are two options: default (mainnet) build and testnet build. You probably need default one, for
+the mainnet. **Testnet builds should be used only for interacting with the test network of Aidos Kuneen!**
 
 ## Requirements
 
@@ -43,7 +45,7 @@ If you want to package the wallet you will need:
 
 2. Optionally [Docker](https://www.docker.com/) (In case you want to build for other platforms on Windows)
 
-## Install
+## Build & Run
 
 These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/AidosKuneen/aidos-wallet/releases).
 
@@ -53,7 +55,7 @@ These instructions are only in case you want to build the wallet by yourself. Pr
 git clone https://github.com/AidosKuneen/aidos-wallet
 ```
 
-2. Install components:
+2. Install dependencies:
 
 ```
 yarn install
