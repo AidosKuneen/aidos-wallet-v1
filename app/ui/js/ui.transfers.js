@@ -15,10 +15,13 @@ var UI = (function (UI, $, undefined) {
       }
 
       $stack.addClass("loading");
-
+      var transfer_additional_data = "";
+	  
       try {
         var address = $("#transfer-address").val().toUpperCase();
 
+        transfer_additional_data = $("#transfer-additional-data").val().toUpperCase();
+	  
         if (!address) {
           throw "Address is required";
         } else if (address.length == 81) {
@@ -28,6 +31,10 @@ var UI = (function (UI, $, undefined) {
         } else if (!aidos.utils.isValidChecksum(address)) {
           throw "Incorrect address checksum";
         }
+
+		if (!transfer_additional_data) {
+			transfer_additional_data = "";
+		}
 
         // var amount = aidos.utils.convertUnits(parseFloat($("#transfer-amount").val()), $("#transfer-units-value").html(), "i");
 
@@ -64,6 +71,11 @@ var UI = (function (UI, $, undefined) {
         if (tag && /[^A-Z9]/.test(tag)) {
           throw "Tag is invalid";
         }
+		
+		if (transfer_additional_data && /[^A-Z9]/.test(transfer_additional_data)) {
+          throw "Smart Data contains invalid characters";
+        }
+		
       } catch (error) {
         $stack.removeClass("loading");
         UI.formError("transfer", error);
@@ -74,11 +86,14 @@ var UI = (function (UI, $, undefined) {
       $("#progress-bar").removeClass("hidden");
       console.log("Server.transfer: " + address + " -> " + amount);
 
+	  
       aidos.api.sendTransfer(
         connection.seed,
         connection.depth,
         connection.minWeightMagnitude,
-        [{ address: address, value: amount, message: "", tag: tag }],
+        [{ address: address, value: amount, 
+		              message: transfer_additional_data.slice(0, 2187),
+					  tag: tag }],
         function (error, transfers) {
           if (error) {
             console.log("UI.handleTransfers: Error");

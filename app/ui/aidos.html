@@ -86,7 +86,7 @@
                 class="absolute"
                 onload="SVGInject(this)"
               />
-              <span class="ml-12">Withdraw</span>
+              <span class="ml-12">Transfer</span>
             </a>
           </li>
           <li></li>
@@ -98,7 +98,7 @@
                 class="absolute"
                 onload="SVGInject(this)"
               />
-              <span class="ml-12">Deposit</span>
+              <span class="ml-12">Receive</span>
             </a>
           </li>
           <li></li>
@@ -491,6 +491,24 @@
                         id="transfer-address"
                       />
                     </div>
+					<div class="w-full pt-10 px-4">
+                      <label
+                        for="additional-data"
+                        class="block font-medium text-gravel text-sm"
+						onclick="toggleSmartData()"
+                      >
+                        Advanced: Add Smart Data [click here to show]
+                      </label>
+                      <input
+                        type="text"
+                        name="additional-data"
+                        class="w-full py-3 px-2 appearance-none bg-transparent border-b-2 small border-cerebral-grey uppercase focus:outline-none"
+						style="display:none"
+                        id="transfer-additional-data"
+						placeholder="Allowed Chars: A-Z9   Max Lenght: 2187"
+						maxLength="2187"
+				      />
+                    </div>
                   </div>
                   <div class="pt-12 flex justify-center">
                     <button
@@ -784,7 +802,7 @@
                           Edit Node Configuration
                         </button>
                       </div>
-                    </div>
+					</div>
                   </div>
                 </div>
               </div>
