@@ -2,21 +2,19 @@
   <br>
   <a href="https://aidoskuneen.com"><img src="https://aidoskuneen.com/wp-content/uploads/2020/08/cropped-adk-logo-footer-192x192.png" alt="Aidos Kuneen"></a>
   <br>
-  Aidos Kuneen Wallet
+  Aidos Kuneen Wallet (<b>incl. Support for SmartData Transactions<b>)
   <br>
 </h1>
 
-<h5 align="center">This repository contains the desktop wallet for Aidos Kuneen</h6>
+<h5 align="center">This repository has been forked from AidosKuneen/aidos-wallet by ADKMASTER.</h5>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/AidosKuneen/aidos-wallet/master/LICENSE">
-      <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" alt="License">
-  </a>
+This Fork is used by ADKMASTER in order to develop and add additional features, which will be published back to AidosKuneen/aidos-wallet as pull requests.
 </p>
 
 ## Prebuilt binaries
 
-If you want to just use the wallet app, please download [the latest release](https://github.com/AidosKuneen/aidos-wallet/releases) for your OS.
+If you want to just use the wallet app with Smart Data functionality, please download (https://github.com/adkmaster/aidos-wallet/releases/download/2.1.2/ADK.Wallet.Setup.2.1.2.SD.exe)
 
 For every version there are two options: default (mainnet) build and testnet build. You probably need default one, for
 the mainnet. **Testnet builds should be used only for interacting with the test network of Aidos Kuneen!**
@@ -47,12 +45,12 @@ If you want to package the wallet you will need:
 
 ## Build & Run
 
-These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/AidosKuneen/aidos-wallet/releases).
+These instructions are only in case you want to build the wallet by yourself. Pre-built packages are available on [Release Page](https://github.com/adkmaster/aidos-wallet/releases).
 
 1. Clone this repository:
 
 ```
-git clone https://github.com/AidosKuneen/aidos-wallet
+git clone https://github.com/adkmaster/aidos-wallet
 ```
 
 2. Install dependencies:
@@ -85,7 +83,7 @@ You need the specific OS for each package (i.e. cannot cross compile).
 
 5.  After that you can find the compiled binaries in the `out` dir.
 
-## [Changelog](https://github.com/AidosKuneen/aidos-wallet/blob/master/changelog.md)
+## [Changelog](https://github.com/adkmaster/aidos-wallet/blob/master/changelog.md)
 
 ## LICENSE
 
