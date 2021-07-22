@@ -305,6 +305,16 @@ function preventFromJumping() {
     });
   });
 }
+
+function toggleSmartData() {
+  var x = document.getElementById("transfer-additional-data");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
 // Load functions when dom is ready
 document.addEventListener(
   "DOMContentLoaded",

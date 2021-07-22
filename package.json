@@ -2,7 +2,7 @@
   "name": "adk-wallet",
   "productName": "ADK Wallet",
   "description": "Aidos Kuneen Wallet",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "license": "GPL-3.0",
   "main": "app/js/main.js",
   "engines": {
